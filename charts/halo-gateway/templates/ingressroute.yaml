@@ -3,14 +3,21 @@
 {{- if not $r.host }}{{ fail "ingressRoute.host is required when ingressRoute.enabled" }}{{ end }}
 {{- /*
 Two routes on the host; matching is case-insensitive, as ASP.NET routing is:
-  - the admin page, /admin and /admin/* (its OIDC sign-in callback /admin/signin-oidc included), with ingressRoute.admin.middlewares,
-    e.g. a forward-auth gate in front of the page's own OIDC check;
-  - everything else (the consumer API behind its keys, the OAuth callback /oauth/callback), with ingressRoute.middlewares.
+  - the admin page, /admin and /admin/* MINUS the OIDC callbacks below, with ingressRoute.admin.middlewares, e.g. a
+    forward-auth gate in front of the page's own OIDC check;
+  - everything else (the consumer API behind its keys, the OAuth callback /oauth/callback) PLUS the OIDC callbacks,
+    with ingressRoute.middlewares.
+The OIDC callbacks (AdminSession.CallbackPath/SignedOutCallbackPath: /admin/signin-oidc, /admin/signout-callback-oidc)
+go on the public route, not the admin one: Authentik's response_mode=form_post POSTs back cross-site, and the
+forward-auth cookie (SameSite=Lax) isn't sent on a cross-site POST, so forward-auth would redirect-dance the form away
+with a GET and lose it. The OIDC handler already validates state/nonce/PKCE itself, so forward-auth adds no security
+there. See GATEWAY.md.
 The anonymous health endpoints (/health, /health/*) are never routed.
 */}}
+{{- $callbacks := "(?i)^/+admin/+(signin-oidc|signout-callback-oidc)/*$" }}
 {{- $routes := list
-  (dict "match" (printf "Host(`%s`) && PathRegexp(`(?i)^/+admin(/|$)`)" $r.host) "middlewares" (($r.admin).middlewares | default list))
-  (dict "match" (printf "Host(`%s`) && !PathRegexp(`(?i)^/+(health|admin)(/|$)`)" $r.host) "middlewares" ($r.middlewares | default list)) }}
+  (dict "match" (printf "Host(`%s`) && PathRegexp(`(?i)^/+admin(/|$)`) && !PathRegexp(`%s`)" $r.host $callbacks) "middlewares" (($r.admin).middlewares | default list))
+  (dict "match" (printf "Host(`%s`) && (!PathRegexp(`(?i)^/+(health|admin)(/|$)`) || PathRegexp(`%s`))" $r.host $callbacks) "middlewares" ($r.middlewares | default list)) }}
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
