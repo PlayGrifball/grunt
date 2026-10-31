@@ -2,32 +2,30 @@
 {{- if $r.enabled }}
 {{- if not $r.host }}{{ fail "ingressRoute.host is required when ingressRoute.enabled" }}{{ end }}
 {{- $mode := $r.mode | default "callback" }}
-{{- $match := "" }}
-{{- if eq $mode "callback" }}
-{{- /* Only the OAuth callback: the browser that signs the Halo account in must reach the redirect URI. It redeems codes only for
-       a state the admin API (or admin page) issued. */}}
-{{- $match = printf "Host(`%s`) && Path(`%s`)" $r.host $r.path }}
-{{- else if eq $mode "admin" }}
-{{- /* The callback plus the browser admin page under /admin (its OIDC callback is /admin/signin-oidc). The page signs in through
-       OpenID Connect itself, and /admin/halo/* needs the admin key or that session. The consumer API stays internal. */}}
-{{- if not .Values.oidc.enabled }}{{ fail "ingressRoute.mode=admin needs oidc.enabled (the admin page answers 404 without it)" }}{{ end }}
-{{- $match = printf "Host(`%s`) && (Path(`%s`) || Path(`/admin`) || PathPrefix(`/admin/`))" $r.host $r.path }}
-{{- else if eq $mode "all" }}
-{{- /* Everything (consumer API, admin, callback) except the anonymous health endpoints, in any case and with any number of
-       leading slashes. Every other path authenticates itself (API key, admin key or admin session). */}}
-{{- $match = printf "Host(`%s`) && !PathRegexp(`(?i)^/+health(/|$)`)" $r.host }}
-{{- else }}
-{{- fail (printf "ingressRoute.mode must be callback, admin or all (got %s)" $mode) }}
-{{- end }}
-{{- $middlewares := list }}
+{{- if not (has $mode (list "callback" "all")) }}{{ fail (printf "ingressRoute.mode must be callback or all (got %s)" $mode) }}{{ end }}
+{{- $rateLimit := list }}
 {{- with $r.rateLimitMiddleware }}
 {{- if .name }}
 {{- $m := dict "name" .name }}
 {{- with .namespace }}{{ $_ := set $m "namespace" . }}{{ end }}
-{{- $middlewares = append $middlewares $m }}
+{{- $rateLimit = list $m }}
 {{- end }}
 {{- end }}
-{{- $middlewares = concat $middlewares ($r.middlewares | default list) }}
+{{- $public := concat $rateLimit ($r.middlewares | default list) }}
+{{- $admin := concat $rateLimit (($r.admin).middlewares | default list) }}
+{{- $service := dict "name" (include "halo-gateway.fullname" .) "port" (.Values.service.port | int) }}
+{{- $routes := list }}
+{{- if eq $mode "callback" }}
+{{- /* Only the OAuth callback: the browser that signs the Halo account in must reach the redirect URI. It redeems codes only for
+       a state the admin API (or admin page) issued. */}}
+{{- $routes = append $routes (dict "match" (printf "Host(`%s`) && Path(`%s`)" $r.host $r.path) "middlewares" $public) }}
+{{- else }}
+{{- /* The admin page and its OIDC callback (/admin, /admin/*, any case: ASP.NET routing ignores case) on their own route, with
+       ingressRoute.admin.middlewares (e.g. a forward-auth gate in front of the page's own OIDC check). */}}
+{{- $routes = append $routes (dict "match" (printf "Host(`%s`) && PathRegexp(`(?i)^/+admin(/|$)`)" $r.host) "middlewares" $admin) }}
+{{- /* Everything else (the consumer API behind its keys, the OAuth callback), except the anonymous health endpoints. */}}
+{{- $routes = append $routes (dict "match" (printf "Host(`%s`) && !PathRegexp(`(?i)^/+(health|admin)(/|$)`)" $r.host) "middlewares" $public) }}
+{{- end }}
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -39,15 +37,17 @@ spec:
   entryPoints:
     {{- toYaml $r.entryPoints | nindent 4 }}
   routes:
+    {{- range $routes }}
     - kind: Rule
-      match: {{ $match | quote }}
-      {{- with $middlewares }}
+      match: {{ .match | quote }}
+      {{- with .middlewares }}
       middlewares:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       services:
-        - name: {{ include "halo-gateway.fullname" . }}
-          port: {{ .Values.service.port }}
+        - name: {{ $service.name }}
+          port: {{ $service.port }}
+    {{- end }}
   {{- if or $r.tls.secretName $r.tls.certResolver }}
   tls:
     {{- with $r.tls.secretName }}
