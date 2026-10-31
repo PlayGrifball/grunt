@@ -1,0 +1,2 @@
+oauth:
+  redirectUrl: https://halo-gateway.example.com/oauth/callback

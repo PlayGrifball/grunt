@@ -1,0 +1,69 @@
+{{- $p := .Values.prometheusRule -}}
+{{- if $p.enabled }}
+{{- $sel := printf "namespace=%q" .Release.Namespace }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "halo-gateway.fullname" . }}
+  labels:
+    {{- include "halo-gateway.labels" . | nindent 4 }}
+    {{- with $p.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  groups:
+    - name: halo-gateway
+      rules:
+        - alert: HaloGatewayReauthRequired
+          expr: max(grunt_gateway_halo_reauth_required{ {{- $sel -}} }) == 1
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: The Halo gateway's account must be signed in again
+            description: >-
+              The refresh token was rejected or no token is stored in {{ .Release.Namespace }}. Open the URL from
+              GET /admin/halo/signin (admin key) and sign in; GET /admin/halo/status shows the reason.
+        - alert: HaloGatewayUpstreamErrors
+          expr: |
+            (
+              sum(rate(grunt_gateway_upstream_responses_total{ {{- $sel -}} ,status=~"5..|0"}[10m]) or vector(0))
+              + sum(rate(grunt_gateway_upstream_failures_total{ {{- $sel -}} }[10m]) or vector(0))
+            )
+            /
+            clamp_min(
+              sum(rate(grunt_gateway_upstream_responses_total{ {{- $sel -}} }[10m]) or vector(0))
+              + sum(rate(grunt_gateway_upstream_failures_total{ {{- $sel -}} }[10m]) or vector(0)),
+              1e-9
+            ) > {{ $p.upstreamErrorRatio }}
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Halo calls through the gateway keep failing
+            description: More than {{ mulf $p.upstreamErrorRatio 100 }}% of Halo calls failed (5xx or no response) after retries for 15 minutes.
+        - alert: HaloGatewayUpstreamThrottled
+          expr: sum(rate(grunt_halo_retries_total{ {{- $sel -}} ,status="429"}[10m]) or vector(0)) > {{ $p.upstreamThrottleRate }}
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: Halo keeps rate-limiting the gateway
+            description: The gateway retried Halo 429s at more than {{ $p.upstreamThrottleRate }}/s for 15 minutes; lower quotas or raise cache TTLs.
+        - alert: HaloGatewayQuotaExhausted
+          expr: sum by (key, reason) (rate(grunt_gateway_quota_rejections_total{ {{- $sel -}} }[10m])) > 0
+          for: 10m
+          labels:
+            severity: info
+          annotations:
+            summary: "Gateway quota rejecting {{ "{{" }} $labels.key {{ "}}" }} ({{ "{{" }} $labels.reason {{ "}}" }})"
+            description: A consumer key has been hitting its quota (or the global budget) for 10 minutes.
+        - alert: HaloGatewayDown
+          expr: max(up{ {{- $sel -}} ,service={{ include "halo-gateway.fullname" . | quote }}}) == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Prometheus can't scrape the Halo gateway
+            description: The gateway's /metrics has been unreachable for 5 minutes.
+{{- end }}

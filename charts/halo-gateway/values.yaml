@@ -1,0 +1,196 @@
+image:
+  repository: ghcr.io/playgrifball/halo-gateway
+  # Empty: the chart's appVersion. Prefer an immutable sha-<commit> tag or a digest.
+  tag: ""
+  digest: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# The file token store supports exactly one writer: one replica, Recreate rollouts (the old pod releases the
+# volume and the instance lock before the new one starts). Not configurable on purpose.
+
+# Microsoft app used to sign the Halo account in (Azure app registration).
+oauth:
+  # The gateway's single redirect URI; register it on the Microsoft app. Must be reachable from the browser of
+  # whoever signs in (see ingressRoute). Ex: https://halo-gateway.example.com/oauth/callback
+  redirectUrl: ""
+  # Secret with the client id and secret.
+  existingSecret: ""
+  clientIdKey: ClientId
+  clientSecretKey: ClientSecret
+
+# Admin key for /admin/halo/* (header X-Admin-Key), from a Secret. Empty secret: admin endpoints reject everything.
+admin:
+  existingSecret: ""
+  key: AdminKey
+
+# Consumer API keys, one or more per environment. Each key comes from a Secret (secretName/secretKey) or as a
+# SHA-256 hex hash (keySha256) so the clear key never reaches the gateway's config.
+# priority: 0 is highest; keys with priority <= globalQuota.reservedPriority may use the reserved share.
+apiKeys: []
+# - name: grif-prod
+#   environment: prod
+#   priority: 0
+#   permitsPerMinute: 600
+#   secretName: halo-gateway-keys
+#   secretKey: grif-prod
+# - name: grif-preview
+#   environment: preview
+#   priority: 2
+#   permitsPerMinute: 120
+#   keySha256: "<hex sha256 of the key>"
+
+globalQuota:
+  permitsPerMinute: 1200
+  reservedFraction: 0.25
+  reservedPriority: 0
+
+cache:
+  enabled: true
+  immutableTtl: "1.00:00:00"
+  maxCachedBinaryBytes: 2097152
+
+auth:
+  refreshInterval: "00:30:00"
+  signInStateLifetime: "00:15:00"
+
+# Factory backoff for Halo calls (ClientConfiguration:Retry).
+retry:
+  maxAttempts: 4
+  baseDelay: "00:00:00.500"
+  maxDelay: "00:00:20"
+  maxRetryAfter: "00:01:00"
+
+# More Gateway/ClientConfiguration settings as nested keys, turned into Section__Key variables.
+config: {}
+
+extraEnv: []
+
+# Token storage. Disabled: an emptyDir (tokens are lost on every restart; testing only).
+persistence:
+  enabled: true
+  existingClaim: ""
+  storageClass: ""
+  accessModes: [ReadWriteOnce]
+  size: 64Mi
+  # Kept when the release (or the Argo CD app) is deleted or the claim is renamed: losing it means signing in again.
+  annotations:
+    helm.sh/resource-policy: keep
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 96Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1654
+  runAsGroup: 1654
+  fsGroup: 1654
+  fsGroupChangePolicy: OnRootMismatch
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: [ALL]
+
+# /health/live runs no checks: Halo outages or a needed re-auth never restart the pod. /health/ready runs the
+# Halo account check, which is at worst Degraded (still ready: cached responses keep being served).
+startupProbe:
+  periodSeconds: 2
+  failureThreshold: 30
+  timeoutSeconds: 2
+livenessProbe:
+  periodSeconds: 20
+  failureThreshold: 3
+  timeoutSeconds: 3
+readinessProbe:
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 3
+
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# OpenTelemetry: logs, metrics and traces pushed over OTLP (metrics are also served on /metrics for Prometheus).
+telemetry:
+  enabled: false
+  # Ex: http://otel-collector.monitoring:4317
+  endpoint: ""
+  # grpc or http/protobuf.
+  protocol: grpc
+  # OTEL_SERVICE_NAME. Empty: the release name.
+  serviceName: ""
+  # deployment.environment.name. Empty: not set.
+  environment: ""
+  resourceAttributes: {}
+  metricExportInterval: ""
+
+networkPolicy:
+  enabled: true
+  # Namespaces whose pods may call the gateway API (kubernetes.io/metadata.name In ...). NetworkPolicies can't
+  # match name prefixes, so list each grif-* namespace.
+  consumerNamespaces: []
+  # Extra pod selector for consumers inside those namespaces. Empty: any pod there.
+  consumerPodSelector: {}
+  # The ingress controller, for the public OAuth callback (ingressRoute). Empty: no ingress-controller rule.
+  ingressController:
+    namespaceSelector: {}
+    podSelector: {}
+  # Prometheus scraping /metrics. Empty: no rule.
+  metricsFrom: []
+  # DNS. Empty `to`: any destination on port 53.
+  dns:
+    to: []
+  # Microsoft, Xbox Live and Halo (public HTTPS).
+  httpsTo:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except: [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 100.64.0.0/10, 169.254.0.0/16]
+    - ipBlock:
+        cidr: ::/0
+        except: [fc00::/7, fe80::/10]
+  # The OTLP collector, on the endpoint's port. Empty: anywhere on that port.
+  telemetryTo: []
+  extraIngress: []
+  extraEgress: []
+
+# Traefik IngressRoute exposing ONLY the OAuth callback path publicly (the browser must reach the redirect URI).
+# The consumer API, /admin and /metrics stay cluster-internal (port-forward for admin calls).
+ingressRoute:
+  enabled: false
+  host: ""
+  entryPoints: [websecure]
+  path: /oauth/callback
+  middlewares: []
+  tls:
+    secretName: ""
+    certResolver: ""
+
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  labels: {}
+
+prometheusRule:
+  enabled: false
+  labels: {}
+  # Sustained share of Halo responses that are failures (5xx, or no response) before alerting.
+  upstreamErrorRatio: 0.2
+  # Sustained Halo 429 rate (per second) before alerting.
+  upstreamThrottleRate: 0.05
