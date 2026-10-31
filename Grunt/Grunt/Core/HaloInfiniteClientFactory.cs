@@ -195,6 +195,18 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
         }
     }
 
+    /// <summary>
+    /// Used by every generated <see cref="IHaloInfiniteClient"/> method: runs <paramref name="call"/> on a cached or new client
+    /// under <see cref="HaloRequestPolicy"/> (auth retry on 401/403, backoff on 429/5xx/network errors), configured from
+    /// <c>ClientConfiguration:Retry</c>.
+    /// </summary>
+    private Task<TResponse> ExecuteWithPolicyAsync<TResponse>(string operation, Func<IHaloInfiniteClient, Task<TResponse>> call,
+        Func<TResponse, HaloApiErrorContainer?> error)
+    {
+        var policy = new HaloRequestPolicy(_options.CurrentValue?.Retry, _logger);
+        return policy.ExecuteAsync(operation, GetOrCreateClient, call, error);
+    }
+
     private class Tokens
     {
         public required OAuthToken OAuthToken { get; set; }

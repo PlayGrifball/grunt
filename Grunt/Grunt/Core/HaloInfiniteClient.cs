@@ -2504,6 +2504,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
         var response = await _httpClient.SendAsync(request);
 
         resultContainer.Error.Code = Convert.ToInt32(response.StatusCode);
+        if (response.Headers.RetryAfter is { } retryAfter)
+        {
+            resultContainer.Error.RetryAfter = retryAfter.Delta
+                ?? (retryAfter.Date is { } date ? date - DateTimeOffset.UtcNow : null);
+        }
         string? responseContent = null;
         if (response.Content != null)
         {

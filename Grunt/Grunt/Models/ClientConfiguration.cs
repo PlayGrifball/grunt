@@ -19,4 +19,11 @@ public class ClientConfiguration
 
     [JsonPropertyName("redirect_url")]
     public string RedirectUrl { get; set; }
+
+    /// <summary>
+    /// Retry and backoff for transient failures (429, 5xx, network errors) in <see cref="Surprenant.Grunt.Core.HaloInfiniteClientFactory"/>.
+    /// Bound from <c>ClientConfiguration:Retry</c>.
+    /// </summary>
+    [JsonPropertyName("retry")]
+    public Surprenant.Grunt.Core.HaloRetryOptions Retry { get; set; } = new();
 }
