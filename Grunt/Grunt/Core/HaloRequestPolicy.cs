@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Surprenant.Grunt.Models;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -17,6 +18,18 @@ namespace Surprenant.Grunt.Core;
 /// </summary>
 public sealed class HaloRequestPolicy
 {
+    /// <summary>Meter for Grunt client metrics; export with OpenTelemetry <c>AddMeter(HaloRequestPolicy.MeterName)</c>.</summary>
+    public const string MeterName = "Surprenant.Grunt";
+
+    private static readonly System.Diagnostics.Metrics.Meter Meter = new(MeterName);
+
+    private static readonly System.Diagnostics.Metrics.Counter<long> Retries = Meter.CreateCounter<long>(
+        "grunt.halo.retries", description: "Halo request retries by reason (auth, status code, network)");
+
+    private static void CountRetry(string operation, string reason, int status)
+        => Retries.Add(1, new KeyValuePair<string, object?>("operation", operation), new KeyValuePair<string, object?>("reason", reason),
+            new KeyValuePair<string, object?>("status", status));
+
     private readonly HaloRetryOptions _options;
     private readonly ILogger _logger;
     private readonly Func<TimeSpan, Task> _delay;
@@ -71,6 +84,7 @@ public sealed class HaloRequestPolicy
                 var wait = ComputeDelay(_options, transientAttempt, null, _random);
                 _logger.LogWarning(ex, "{Operation}: transient error on attempt {Attempt}/{MaxAttempts}, retrying in {Delay}",
                     operation, transientAttempt, maxAttempts, wait);
+                CountRetry(operation, "network", 0);
                 transientAttempt++;
                 await _delay(wait).ConfigureAwait(false);
                 continue;
@@ -85,6 +99,7 @@ public sealed class HaloRequestPolicy
                 {
                     authRetried = true;
                     forceNewClient = true;
+                    CountRetry(operation, "auth", code);
                     _logger.LogWarning("Detected auth issue, going to retry request");
                     continue;
                 }
@@ -103,6 +118,7 @@ public sealed class HaloRequestPolicy
                     var wait = ComputeDelay(_options, transientAttempt, retryAfter, _random);
                     _logger.LogWarning("{Operation}: status {Code} on attempt {Attempt}/{MaxAttempts}, retrying in {Delay}",
                         operation, code, transientAttempt, maxAttempts, wait);
+                    CountRetry(operation, "status", code);
                     transientAttempt++;
                     await _delay(wait).ConfigureAwait(false);
                     continue;

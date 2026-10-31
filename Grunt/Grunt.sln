@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surprenant.Grunt.Gateway", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surprenant.Grunt.Gateway.Client", "Grunt.Gateway.Client\Surprenant.Grunt.Gateway.Client.csproj", "{528EEC44-BA05-4C45-954F-CEC2A311D8CA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Grunt.Gateway.Host", "Grunt.Gateway.Host", "{0A0E7F2E-CC34-1437-657C-90D9CA5CC4FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surprenant.Grunt.Gateway.Host", "Grunt.Gateway.Host\Surprenant.Grunt.Gateway.Host.csproj", "{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +131,18 @@ Global
 		{528EEC44-BA05-4C45-954F-CEC2A311D8CA}.Release|x64.Build.0 = Release|Any CPU
 		{528EEC44-BA05-4C45-954F-CEC2A311D8CA}.Release|x86.ActiveCfg = Release|Any CPU
 		{528EEC44-BA05-4C45-954F-CEC2A311D8CA}.Release|x86.Build.0 = Release|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Debug|x64.Build.0 = Debug|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Debug|x86.Build.0 = Debug|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Release|x64.ActiveCfg = Release|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Release|x64.Build.0 = Release|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Release|x86.ActiveCfg = Release|Any CPU
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -134,6 +150,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{341B0A77-87D3-4BB7-ABF8-A67286516DC1} = {987A34F4-06A3-2BA9-F34E-5E76F37A2E3E}
 		{528EEC44-BA05-4C45-954F-CEC2A311D8CA} = {987A34F4-06A3-2BA9-F34E-5E76F37A2E3E}
+		{8481D7EA-C9F4-40FD-95B2-A599C2C1F4CD} = {0A0E7F2E-CC34-1437-657C-90D9CA5CC4FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9FF47EE9-7C31-4901-B53B-8F97DC879C8B}

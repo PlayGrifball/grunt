@@ -362,3 +362,8 @@ tokens.json
 
 ## Contains one time use authorization code
 AccountAuthorization.txt
+# Halo gateway / Grunt local token files
+tokens.json
+tokens.json.tmp
+.gateway.lock
+AccountAuthorization.txt

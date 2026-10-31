@@ -95,6 +95,11 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
                 _logger.LogInformation("Could not get the token even with the refresh token.");
                 currentOAuthToken = await RequestNewToken(manager, clientConfig);
             }
+            else
+            {
+                // Persist the refreshed token: Microsoft may rotate the refresh token, and the stored one must stay usable.
+                await _oAuthStorage.SetToken(currentOAuthToken);
+            }
             ticket = await manager.RequestUserToken(currentOAuthToken.AccessToken)
                 ?? throw new InvalidOperationException("Failed to get user token.");
         }
@@ -192,6 +197,28 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
             _logger.LogTrace("Releasing semaphore lock in GetOrCreateClient");
             semaphoreSlim.Release();
             _logger.LogTrace("Just released semaphore lock in GetOrCreateClient");
+        }
+    }
+
+    /// <summary>
+    /// Expiry of the cached Spartan token, or null when no client has been created yet (or after <see cref="ResetAsync"/>).
+    /// </summary>
+    public DateTime? SpartanTokenExpiresUtc => _cachedTokens?.HaloToken.ExpiresUtc.ISO8601Date;
+
+    /// <summary>
+    /// Drops the cached tokens so the next call builds a new client from <see cref="IOAuthStorage"/> (e.g. after an admin signed in
+    /// again or cleared the tokens).
+    /// </summary>
+    public async Task ResetAsync()
+    {
+        await semaphoreSlim.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            _cachedTokens = null;
+        }
+        finally
+        {
+            semaphoreSlim.Release();
         }
     }
 
