@@ -51,7 +51,6 @@ namespace Surprenant.Grunt.Gateway.Host
         public const string HealthPath = "/health";
         public const string LivePath = "/health/live";
         public const string ReadyPath = "/health/ready";
-        public const string MetricsPath = "/metrics";
         public const string ReadyTag = "ready";
 
         public static void ConfigureServices(WebApplicationBuilder builder)
@@ -83,16 +82,20 @@ namespace Surprenant.Grunt.Gateway.Host
                 // Admin/status JSON shows enum names (the generated controller uses HaloGatewayProtocol.JsonOptions instead).
                 .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 
+            // Admin endpoints: the admin key, or (when Gateway:Oidc is configured) a browser session from the admin page.
+            var oidc = gatewaySection.GetSection("Oidc").Get<OidcOptions>() ?? new OidcOptions();
             services.AddAuthentication(GatewayAuth.ConsumerScheme)
                 .AddScheme<ApiKeySchemeOptions, ApiKeyAuthenticationHandler>(GatewayAuth.ConsumerScheme, o => o.Admin = false)
-                .AddScheme<ApiKeySchemeOptions, ApiKeyAuthenticationHandler>(GatewayAuth.AdminScheme, o => o.Admin = true);
+                .AddScheme<ApiKeySchemeOptions, ApiKeyAuthenticationHandler>(GatewayAuth.AdminScheme, o => o.Admin = true)
+                .AddAdminSessions(oidc);
+            var adminSchemes = oidc.Enabled ? new[] { GatewayAuth.AdminScheme, AdminSession.CookieScheme } : new[] { GatewayAuth.AdminScheme };
             services.AddAuthorizationBuilder()
                 .AddPolicy(HaloInfiniteController.ConsumerPolicy, p => p
                     .AddAuthenticationSchemes(GatewayAuth.ConsumerScheme)
                     .RequireAuthenticatedUser()
                     .RequireRole(GatewayAuth.ConsumerRole))
                 .AddPolicy(GatewayAuth.AdminPolicy, p => p
-                    .AddAuthenticationSchemes(GatewayAuth.AdminScheme)
+                    .AddAuthenticationSchemes(adminSchemes)
                     .RequireAuthenticatedUser()
                     .RequireRole(GatewayAuth.AdminRole));
 
@@ -118,10 +121,10 @@ namespace Surprenant.Grunt.Gateway.Host
         }
 
         /// <summary>
-        /// OpenTelemetry traces (incoming requests minus health/metrics, outgoing Halo/Microsoft HttpClient calls, cache/quota tags)
+        /// OpenTelemetry traces (incoming requests minus health probes, outgoing Halo/Microsoft HttpClient calls, cache/quota tags)
         /// and metrics (ASP.NET Core, HttpClient, runtime, Grunt retries, gateway upstream/cache/quota/token meters). OTLP export
-        /// is configured by the standard OTEL_* variables (on when OTEL_EXPORTER_OTLP_ENDPOINT is set); metrics are also served
-        /// for Prometheus at /metrics. Logs go through Serilog (<see cref="Telemetry.LoggingExtensions"/>) instead of the OTel SDK's
+        /// is the only export, like GrifballWebApp: the standard OTEL_* variables configure it (on when OTEL_EXPORTER_OTLP_ENDPOINT
+        /// is set), and nothing is served for scraping (no /metrics). Logs go through Serilog (<see cref="Telemetry.LoggingExtensions"/>) instead of the OTel SDK's
         /// own logging bridge, but still carry the same trace/span ids (Serilog reads them from Activity.Current natively).
         /// </summary>
         private static void ConfigureTelemetry(WebApplicationBuilder builder)
@@ -135,15 +138,14 @@ namespace Surprenant.Grunt.Gateway.Host
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
-                    .AddMeter(HaloRequestPolicy.MeterName, HaloGatewayMetrics.MeterName, GatewayHostMetrics.MeterName)
-                    .AddPrometheusExporter());
+                    .AddMeter(HaloRequestPolicy.MeterName, HaloGatewayMetrics.MeterName, GatewayHostMetrics.MeterName));
 
             if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
                 otel.UseOtlpExporter();
         }
 
         public static bool IsInfrastructurePath(PathString path)
-            => path.StartsWithSegments(HealthPath) || path.StartsWithSegments(MetricsPath);
+            => path.StartsWithSegments(HealthPath);
 
         public static void Configure(WebApplication app)
         {
@@ -157,6 +159,8 @@ namespace Surprenant.Grunt.Gateway.Host
                 app.Logger.LogWarning("Gateway:AdminKey is not set: the Halo account admin endpoints reject every request");
             if (options.ApiKeys.Count == 0)
                 app.Logger.LogWarning("Gateway:ApiKeys is empty: every Halo gateway request will be rejected");
+            if (options.Oidc.Enabled && options.Oidc.AllowedGroups.Count == 0)
+                app.Logger.LogWarning("Gateway:Oidc:AllowedGroups is empty: nobody can use the admin page");
             foreach (var entry in app.Services.GetRequiredService<ForwardedHeadersDiagnostics>().Invalid)
                 app.Logger.LogWarning("Ignoring invalid ForwardedHeaders entry {Entry}", entry);
 
@@ -175,7 +179,6 @@ namespace Surprenant.Grunt.Gateway.Host
             app.MapHealthChecks(LivePath, new HealthCheckOptions { Predicate = _ => false });
             app.MapHealthChecks(ReadyPath, new HealthCheckOptions { Predicate = c => c.Tags.Contains(ReadyTag) });
             app.MapHealthChecks(HealthPath);
-            app.MapPrometheusScrapingEndpoint(MetricsPath);
             app.MapControllers();
         }
     }

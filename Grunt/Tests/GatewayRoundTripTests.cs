@@ -276,6 +276,15 @@ public class GatewayRoundTripTests
         Assert.That(ready.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
 
+    [Test]
+    public async Task ServesNoPrometheusScrapeEndpoint()
+    {
+        // Metrics are pushed over OTLP only; /metrics must not exist (it would be public with ingressRoute.mode=all).
+        var response = await _factory.CreateClient().GetAsync("metrics");
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+
     // ---- Admin / OAuth flow ----
 
     private static readonly System.Text.Json.JsonSerializerOptions AdminJson = new(System.Text.Json.JsonSerializerDefaults.Web)

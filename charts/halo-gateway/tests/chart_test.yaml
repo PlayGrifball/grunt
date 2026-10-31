@@ -139,19 +139,56 @@ tests:
           path: "spec.template.spec.volumes[0].emptyDir"
         template: templates/deployment.yaml
 
-  - it: routes only the OAuth callback publicly
+  - it: routes the admin page and everything else separately, never health
     template: templates/ingressroute.yaml
     asserts:
       - equal:
-          path: spec.routes[0].match
-          value: Host(`halo-gateway.example.com`) && Path(`/oauth/callback`)
+          path: metadata.name
+          value: halo-gateway
       - lengthEqual:
           path: spec.routes
-          count: 1
+          count: 2
+      - equal:
+          path: spec.routes[0].match
+          value: Host(`halo-gateway.example.com`) && PathRegexp(`(?i)^/+admin(/|$)`)
+      - equal:
+          path: spec.routes[0].middlewares
+          value: [{ name: forward-auth, namespace: auth }]
+      - equal:
+          path: spec.routes[1].match
+          value: Host(`halo-gateway.example.com`) && !PathRegexp(`(?i)^/+(health|admin)(/|$)`)
+      - equal:
+          path: spec.routes[1].middlewares
+          value: [{ name: halo-gateway-ratelimit }]
+      - equal:
+          path: spec.routes[1].services[0]
+          value: { name: halo-gateway, port: 8080 }
 
-  - it: lets only the listed consumer namespaces, the ingress controller and Prometheus in
+  - it: renders no middlewares when none are set
+    template: templates/ingressroute.yaml
+    set:
+      ingressRoute.middlewares: []
+      ingressRoute.admin.middlewares: []
+    asserts:
+      - notExists:
+          path: spec.routes[0].middlewares
+      - notExists:
+          path: spec.routes[1].middlewares
+
+  - it: needs a host
+    template: templates/ingressroute.yaml
+    set:
+      ingressRoute.host: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: ingressRoute.host is required when ingressRoute.enabled
+
+  - it: lets only the listed consumer namespaces and the ingress controller in (nothing scrapes it)
     template: templates/networkpolicy.yaml
     asserts:
+      - lengthEqual:
+          path: spec.ingress
+          count: 2
       - equal:
           path: spec.ingress[0].from[0].namespaceSelector.matchExpressions[0].values
           value: [grif-prod, grif-test, grif-preview1]
@@ -165,7 +202,54 @@ tests:
           path: "spec.egress[2].ports[0].port"
           value: 4317
 
-  - it: alerts on re-auth, upstream errors, throttling, quota and scrape failures
+  - it: allows egress to the OIDC provider when listed
+    template: templates/networkpolicy.yaml
+    set:
+      networkPolicy.oidcTo: [{ namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: authentik } } }]
+    asserts:
+      - equal:
+          path: "spec.egress[3].to[0].namespaceSelector.matchLabels[\"kubernetes.io/metadata.name\"]"
+          value: authentik
+      - equal:
+          path: "spec.egress[3].ports[0].port"
+          value: 443
+
+  - it: wires OIDC from values and the secret
+    template: templates/deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: Gateway__Oidc__Authority
+            value: https://auth.example.com/application/o/halo-gateway/
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: Gateway__Oidc__ClientId
+            value: halo-gateway
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: Gateway__Oidc__ClientSecret
+            valueFrom:
+              secretKeyRef:
+                name: halo-gateway-oidc
+                key: ClientSecret
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: Gateway__Oidc__AllowedGroups__0
+            value: admins
+
+  - it: OIDC needs allowed groups
+    template: templates/deployment.yaml
+    set:
+      oidc.allowedGroups: []
+    asserts:
+      - failedTemplate:
+          errorMessage: oidc.allowedGroups is required when oidc.enabled (nobody could sign in)
+
+  - it: alerts on the pushed metrics, selected by namespace and job
     template: templates/prometheusrule.yaml
     asserts:
       - lengthEqual:
@@ -173,4 +257,30 @@ tests:
           count: 5
       - equal:
           path: spec.groups[0].rules[0].expr
-          value: max(grunt_gateway_halo_reauth_required{namespace="halo-gateway"}) == 1
+          value: max(grunt_gateway_halo_reauth_required{k8s_namespace_name="halo-gateway", job=~"(.+/)?halo-gateway"}) == 1
+      - equal:
+          path: spec.groups[0].rules[4].alert
+          value: HaloGatewayMetricsAbsent
+      - equal:
+          path: spec.groups[0].rules[4].expr
+          value: absent(grunt_gateway_halo_reauth_required{k8s_namespace_name="halo-gateway", job=~"(.+/)?halo-gateway"})
+      - equal:
+          path: spec.groups[0].rules[4].for
+          value: 10m
+
+  - it: takes a custom selector for other pipelines
+    template: templates/prometheusrule.yaml
+    set:
+      prometheusRule.selector: service_name="halo-gateway"
+    asserts:
+      - equal:
+          path: spec.groups[0].rules[0].expr
+          value: max(grunt_gateway_halo_reauth_required{service_name="halo-gateway"}) == 1
+
+  - it: alerts need telemetry
+    template: templates/prometheusrule.yaml
+    set:
+      telemetry.enabled: false
+    asserts:
+      - failedTemplate:
+          errorMessage: "prometheusRule needs telemetry.enabled: the gateway's metrics reach Prometheus only by OTLP push"

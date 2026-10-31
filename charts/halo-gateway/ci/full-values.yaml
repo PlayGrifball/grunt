@@ -40,10 +40,6 @@ networkPolicy:
     podSelector:
       matchLabels:
         app.kubernetes.io/name: traefik
-  metricsFrom:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: monitoring
   telemetryTo:
     - namespaceSelector:
         matchLabels:
@@ -51,9 +47,19 @@ networkPolicy:
 ingressRoute:
   enabled: true
   host: halo-gateway.example.com
+  middlewares:
+    - name: halo-gateway-ratelimit
+  admin:
+    middlewares:
+      - name: forward-auth
+        namespace: auth
   tls:
     certResolver: letsencrypt
-serviceMonitor:
-  enabled: true
 prometheusRule:
   enabled: true
+oidc:
+  enabled: true
+  authority: https://auth.example.com/application/o/halo-gateway/
+  clientId: halo-gateway
+  existingSecret: halo-gateway-oidc
+  allowedGroups: [admins]

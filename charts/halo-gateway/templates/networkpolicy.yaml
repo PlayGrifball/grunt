@@ -35,7 +35,7 @@ spec:
           port: 8080
     {{- end }}
     {{- if or $np.ingressController.namespaceSelector $np.ingressController.podSelector }}
-    # The ingress controller, for the public OAuth callback route.
+    # The ingress controller, for the public route (ingressRoute).
     - from:
         - {{- with $np.ingressController.namespaceSelector }}
           namespaceSelector:
@@ -45,14 +45,6 @@ spec:
           podSelector:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      ports:
-        - protocol: TCP
-          port: 8080
-    {{- end }}
-    {{- with $np.metricsFrom }}
-    # Prometheus scraping /metrics.
-    - from:
-        {{- toYaml . | nindent 8 }}
       ports:
         - protocol: TCP
           port: 8080
@@ -78,6 +70,14 @@ spec:
       to:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+    {{- end }}
+    {{- if and .Values.oidc.enabled $np.oidcTo }}
+    # The OpenID Connect provider (discovery, token, userinfo) for the admin page's sign-in.
+    - to:
+        {{- toYaml $np.oidcTo | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: {{ $np.oidcPort | default 443 | int }}
     {{- end }}
     {{- with $np.extraEgress }}
     {{- toYaml . | nindent 4 }}

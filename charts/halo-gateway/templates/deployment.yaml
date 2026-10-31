@@ -118,6 +118,47 @@ spec:
               value: {{ .Values.cache.immutableTtl | quote }}
             - name: Gateway__Cache__MaxCachedBinaryBytes
               value: {{ .Values.cache.maxCachedBinaryBytes | int64 | quote }}
+            {{- with .Values.oidc }}
+            {{- if .enabled }}
+            {{- if not .authority }}{{ fail "oidc.authority is required when oidc.enabled" }}{{ end }}
+            {{- if not .allowedGroups }}{{ fail "oidc.allowedGroups is required when oidc.enabled (nobody could sign in)" }}{{ end }}
+            - name: Gateway__Oidc__Authority
+              value: {{ .authority | quote }}
+            {{- if .clientId }}
+            - name: Gateway__Oidc__ClientId
+              value: {{ .clientId | quote }}
+            {{- else if and .existingSecret .clientIdKey }}
+            - name: Gateway__Oidc__ClientId
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret }}
+                  key: {{ .clientIdKey }}
+            {{- else }}
+            {{- fail "oidc needs clientId, or existingSecret with clientIdKey" }}
+            {{- end }}
+            {{- if and .existingSecret .clientSecretKey }}
+            - name: Gateway__Oidc__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .existingSecret }}
+                  key: {{ .clientSecretKey }}
+            {{- end }}
+            - name: Gateway__Oidc__GroupClaim
+              value: {{ .groupClaim | default "groups" | quote }}
+            {{- range $i, $g := .allowedGroups }}
+            - name: Gateway__Oidc__AllowedGroups__{{ $i }}
+              value: {{ $g | quote }}
+            {{- end }}
+            {{- range $i, $s := .scopes }}
+            - name: Gateway__Oidc__Scopes__{{ $i }}
+              value: {{ $s | quote }}
+            {{- end }}
+            {{- if .sessionLifetime }}
+            - name: Gateway__Oidc__SessionLifetime
+              value: {{ .sessionLifetime | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
             {{- with .Values.forwardedHeaders }}
             {{- range $i, $n := .knownIPNetworks }}
             - name: ForwardedHeaders__KnownIPNetworks__{{ $i }}

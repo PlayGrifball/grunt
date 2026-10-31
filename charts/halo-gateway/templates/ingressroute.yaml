@@ -1,27 +1,37 @@
 {{- $r := .Values.ingressRoute -}}
 {{- if $r.enabled }}
 {{- if not $r.host }}{{ fail "ingressRoute.host is required when ingressRoute.enabled" }}{{ end }}
-# Only the OAuth callback is public: the browser that signs the Halo account in must reach the redirect URI.
-# The callback redeems codes only for a state the admin API issued. The consumer API, /admin and /metrics are not routed.
+{{- /*
+Two routes on the host; matching is case-insensitive, as ASP.NET routing is:
+  - the admin page, /admin and /admin/* (its OIDC sign-in callback /admin/signin-oidc included), with ingressRoute.admin.middlewares,
+    e.g. a forward-auth gate in front of the page's own OIDC check;
+  - everything else (the consumer API behind its keys, the OAuth callback /oauth/callback), with ingressRoute.middlewares.
+The anonymous health endpoints (/health, /health/*) are never routed.
+*/}}
+{{- $routes := list
+  (dict "match" (printf "Host(`%s`) && PathRegexp(`(?i)^/+admin(/|$)`)" $r.host) "middlewares" (($r.admin).middlewares | default list))
+  (dict "match" (printf "Host(`%s`) && !PathRegexp(`(?i)^/+(health|admin)(/|$)`)" $r.host) "middlewares" ($r.middlewares | default list)) }}
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ include "halo-gateway.fullname" . }}-oauth-callback
+  name: {{ include "halo-gateway.fullname" . }}
   labels:
     {{- include "halo-gateway.labels" . | nindent 4 }}
 spec:
   entryPoints:
     {{- toYaml $r.entryPoints | nindent 4 }}
   routes:
+    {{- range $routes }}
     - kind: Rule
-      match: Host(`{{ $r.host }}`) && Path(`{{ $r.path }}`)
-      {{- with $r.middlewares }}
+      match: {{ .match | quote }}
+      {{- with .middlewares }}
       middlewares:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       services:
-        - name: {{ include "halo-gateway.fullname" . }}
-          port: {{ .Values.service.port }}
+        - name: {{ include "halo-gateway.fullname" $ }}
+          port: {{ $.Values.service.port }}
+    {{- end }}
   {{- if or $r.tls.secretName $r.tls.certResolver }}
   tls:
     {{- with $r.tls.secretName }}

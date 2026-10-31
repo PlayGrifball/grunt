@@ -10,7 +10,7 @@ helm install halo-gateway oci://ghcr.io/playgrifball/charts/halo-gateway -n halo
 Images and charts are published only by GitHub Actions on `main`, signed keyless with cosign:
 
 - `gateway-image.yml` builds `sha-<commit>`, `main` and `latest` for amd64 and arm64.
-- `helm-chart.yml` publishes `halo-gateway:0.1.<run>`.
+- `helm-chart.yml` publishes `halo-gateway:0.2.<run>`.
 
 To verify an image:
 
@@ -37,18 +37,27 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
 - **Service** (ClusterIP 8080).
 - **NetworkPolicy**:
   - Ingress only from `networkPolicy.consumerNamespaces` (listed by name: NetworkPolicies can't match a `grif-*` prefix),
-    the ingress controller (for the OAuth callback) and `metricsFrom` (Prometheus).
-  - Egress: DNS, public HTTPS 443 (Microsoft login, Xbox Live, Halo) and the OTLP collector.
+    and the ingress controller (for the public route). Nothing scrapes the gateway: there is no `/metrics`.
+  - Egress: DNS, public HTTPS 443 (Microsoft login, Xbox Live, Halo), the OTLP collector and, with `oidc` and
+    `networkPolicy.oidcTo`, the OpenID Connect provider.
 - **Optional**:
-  - A Traefik IngressRoute that exposes **only** `/oauth/callback` publicly.
-  - A ServiceMonitor (`/metrics`).
-  - A PrometheusRule with these alerts:
+  - A Traefik IngressRoute (Traefik v3 `PathRegexp`, case-insensitive like ASP.NET routing) with two routes:
+    - the admin page, `(?i)^/+admin(/|$)` (its OIDC callback `/admin/signin-oidc` and the `/admin/halo/*` API included),
+      with `ingressRoute.admin.middlewares`, e.g. a forward-auth gate in front of the page's own OIDC check;
+    - everything else (the consumer API behind its keys, the OAuth callback), with `ingressRoute.middlewares` (rate limit,
+      security headers, ...).
+
+    The health endpoints, `(?i)^/+health(/|$)`, are never routed.
+  - A PrometheusRule on the **OTLP-pushed** metrics (needs `telemetry.enabled`):
     - `HaloGatewayReauthRequired`
     - `HaloGatewayUpstreamErrors`
     - `HaloGatewayUpstreamThrottled`
     - `HaloGatewayQuotaExhausted`
-    - `HaloGatewayDown`
+    - `HaloGatewayMetricsAbsent` (no pushed series for `absentFor`: down, or its export is broken; replaces an `up` alert)
 
+    Pushed series are selected by `k8s_namespace_name="<namespace>"` and `job=~"(.+/)?<service name>"`, the labels an
+    OpenTelemetry Collector gives them when its Prometheus exporter (or remote write) promotes resource attributes
+    (`resource_to_telemetry_conversion`). `prometheusRule.selector` replaces that matcher for other pipelines.
 ## Homelab values
 
 ```yaml
@@ -75,16 +84,23 @@ networkPolicy:
   ingressController:
     namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: <traefik namespace> } }
     podSelector: { matchLabels: { app.kubernetes.io/name: traefik } }
-  metricsFrom:
-    - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: <prometheus namespace> } }
   telemetryTo:
     - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: <collector namespace> } }
 ingressRoute:
   enabled: true
   host: halo-gateway.<domain>
+  middlewares: [{ name: <rate limit> }, { name: security-headers, namespace: traefik }]
+  admin:
+    middlewares: [{ name: <forward-auth>, namespace: <ns> }, { name: security-headers, namespace: traefik }]
   tls: { certResolver: <resolver> }   # or secretName
-serviceMonitor: { enabled: true }
-prometheusRule: { enabled: true }
+prometheusRule: { enabled: true }   # alerts on the pushed metrics (telemetry above)
+# The browser admin page (optional; its route is ingressRoute's admin route)
+oidc:
+  enabled: true
+  authority: https://auth.<domain>/application/o/halo-gateway/
+  existingSecret: halo-gateway-oidc         # key ClientSecret
+  clientId: halo-gateway
+  allowedGroups: [<admin group>]
 ```
 
 If the public host goes through Cloudflare, it needs the same origin setup as the other proxied hosts.
@@ -103,6 +119,13 @@ If the public host goes through Cloudflare, it needs the same origin setup as th
 
 1. On the Microsoft app registration, add the redirect URI `https://halo-gateway.<domain>/oauth/callback`. This single URI
    serves every environment.
+
+With the admin page (`oidc`, and `ingressRoute`): open `https://halo-gateway.<domain>/admin`, sign in with the
+identity provider, press **Sign in with Microsoft**, sign in with the Halo account and approve; the browser comes back
+to `/admin` showing the status. **Refresh now** and **Sign out / clear tokens** (with a confirmation) are there too.
+
+Without it:
+
 2. Run `kubectl -n halo-gateway port-forward svc/halo-gateway 8080:8080`.
 3. Run `curl -H "X-Admin-Key: $ADMIN_KEY" http://localhost:8080/admin/halo/signin`, open the returned URL, sign in with the
    Halo account and approve. The browser lands on the public callback and shows "Signed in". The link works once, for

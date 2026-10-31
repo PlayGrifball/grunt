@@ -4,7 +4,7 @@ using System.Diagnostics.Metrics;
 
 namespace Surprenant.Grunt.Gateway.Host.Telemetry;
 
-/// <summary>Host metrics (meter <see cref="MeterName"/>); Prometheus names get a <c>_total</c> suffix for counters.</summary>
+/// <summary>Host metrics (meter <see cref="MeterName"/>); pushed over OTLP; in Prometheus (through an OpenTelemetry Collector) counters get a <c>_total</c> suffix.</summary>
 public static class GatewayHostMetrics
 {
     public const string MeterName = "Surprenant.Grunt.Gateway.Host";
