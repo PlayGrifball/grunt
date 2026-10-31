@@ -6,7 +6,7 @@ Consumers: http://{{ include "halo-gateway.fullname" . }}.{{ .Release.Namespace 
 WARNING: persistence is disabled; the Halo tokens are lost on every restart.
 {{- end }}
 
-{{- if and .Values.oidc.enabled .Values.ingressRoute.enabled (ne (.Values.ingressRoute.mode | default "callback") "callback") }}
+{{- if and .Values.oidc.enabled .Values.ingressRoute.enabled }}
 
 Admin page: https://{{ .Values.ingressRoute.host }}/admin (sign in with your identity provider, then "Sign in with Microsoft").
 {{- end }}

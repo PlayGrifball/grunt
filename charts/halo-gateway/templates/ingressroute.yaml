@@ -1,36 +1,20 @@
 {{- $r := .Values.ingressRoute -}}
 {{- if $r.enabled }}
 {{- if not $r.host }}{{ fail "ingressRoute.host is required when ingressRoute.enabled" }}{{ end }}
-{{- $mode := $r.mode | default "callback" }}
-{{- if not (has $mode (list "callback" "all")) }}{{ fail (printf "ingressRoute.mode must be callback or all (got %s)" $mode) }}{{ end }}
-{{- $rateLimit := list }}
-{{- with $r.rateLimitMiddleware }}
-{{- if .name }}
-{{- $m := dict "name" .name }}
-{{- with .namespace }}{{ $_ := set $m "namespace" . }}{{ end }}
-{{- $rateLimit = list $m }}
-{{- end }}
-{{- end }}
-{{- $public := concat $rateLimit ($r.middlewares | default list) }}
-{{- $admin := concat $rateLimit (($r.admin).middlewares | default list) }}
-{{- $service := dict "name" (include "halo-gateway.fullname" .) "port" (.Values.service.port | int) }}
-{{- $routes := list }}
-{{- if eq $mode "callback" }}
-{{- /* Only the OAuth callback: the browser that signs the Halo account in must reach the redirect URI. It redeems codes only for
-       a state the admin API (or admin page) issued. */}}
-{{- $routes = append $routes (dict "match" (printf "Host(`%s`) && Path(`%s`)" $r.host $r.path) "middlewares" $public) }}
-{{- else }}
-{{- /* The admin page and its OIDC callback (/admin, /admin/*, any case: ASP.NET routing ignores case) on their own route, with
-       ingressRoute.admin.middlewares (e.g. a forward-auth gate in front of the page's own OIDC check). */}}
-{{- $routes = append $routes (dict "match" (printf "Host(`%s`) && PathRegexp(`(?i)^/+admin(/|$)`)" $r.host) "middlewares" $admin) }}
-{{- /* Everything else (the consumer API behind its keys, the OAuth callback), except the anonymous health endpoints. */}}
-{{- $routes = append $routes (dict "match" (printf "Host(`%s`) && !PathRegexp(`(?i)^/+(health|admin)(/|$)`)" $r.host) "middlewares" $public) }}
-{{- end }}
+{{- /*
+Two routes on the host; matching is case-insensitive, as ASP.NET routing is:
+  - the admin page, /admin and /admin/* (its OIDC sign-in callback /admin/signin-oidc included), with ingressRoute.admin.middlewares,
+    e.g. a forward-auth gate in front of the page's own OIDC check;
+  - everything else (the consumer API behind its keys, the OAuth callback /oauth/callback), with ingressRoute.middlewares.
+The anonymous health endpoints (/health, /health/*) are never routed.
+*/}}
+{{- $routes := list
+  (dict "match" (printf "Host(`%s`) && PathRegexp(`(?i)^/+admin(/|$)`)" $r.host) "middlewares" (($r.admin).middlewares | default list))
+  (dict "match" (printf "Host(`%s`) && !PathRegexp(`(?i)^/+(health|admin)(/|$)`)" $r.host) "middlewares" ($r.middlewares | default list)) }}
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  {{- /* callback keeps its original name, so upgrading the chart keeps the existing object. */}}
-  name: {{ include "halo-gateway.fullname" . }}{{ if eq $mode "callback" }}-oauth-callback{{ end }}
+  name: {{ include "halo-gateway.fullname" . }}
   labels:
     {{- include "halo-gateway.labels" . | nindent 4 }}
 spec:
@@ -45,8 +29,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       services:
-        - name: {{ $service.name }}
-          port: {{ $service.port }}
+        - name: {{ include "halo-gateway.fullname" $ }}
+          port: {{ $.Values.service.port }}
     {{- end }}
   {{- if or $r.tls.secretName $r.tls.certResolver }}
   tls:

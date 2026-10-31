@@ -184,26 +184,18 @@ networkPolicy:
   extraIngress: []
   extraEgress: []
 
-# Traefik IngressRoute. mode:
-#   callback  only the OAuth callback (path below; the browser signing the account in must reach the redirect URI).
-#   all       two routes: the admin page (any path matching (?i)^/+admin(/|$), its OIDC callback included) with
-#             admin.middlewares, and everything else (consumer API behind its keys, OAuth callback) with middlewares.
-#             The health endpoints ((?i)^/+health(/|$)) are never routed.
-# Whatever is not routed stays cluster-internal (port-forward for admin calls).
+# Traefik IngressRoute (Traefik v3), two routes on host, matched case-insensitively like ASP.NET routing:
+#   - the admin page: /admin and /admin/* (its OIDC callback /admin/signin-oidc included), with admin.middlewares;
+#   - everything else (the consumer API behind its keys, the OAuth callback /oauth/callback), with middlewares.
+# The anonymous health endpoints (/health, /health/*) are never routed.
 ingressRoute:
   enabled: false
-  mode: callback
   host: ""
   entryPoints: [websecure]
-  path: /oauth/callback
-  # A Traefik rate-limit Middleware (created outside the chart) put first on every route. Empty name: none.
-  rateLimitMiddleware:
-    name: ""
-    namespace: ""
-  # Middlewares on the public route (callback mode: the only route).
+  # Traefik Middlewares (created outside the chart) on the public route, e.g. a rate limit and security headers.
   middlewares: []
   admin:
-    # Middlewares on the admin route (mode all), e.g. a forward-auth gate before the page's own OIDC sign-in.
+    # Middlewares on the admin route, e.g. a forward-auth gate in front of the page's own OIDC sign-in.
     middlewares: []
   tls:
     secretName: ""

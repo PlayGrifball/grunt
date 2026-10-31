@@ -41,13 +41,13 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
   - Egress: DNS, public HTTPS 443 (Microsoft login, Xbox Live, Halo), the OTLP collector and, with `oidc` and
     `networkPolicy.oidcTo`, the OpenID Connect provider.
 - **Optional**:
-  - A Traefik IngressRoute (`ingressRoute.mode`):
-    - `callback` (default): **only** `/oauth/callback`.
-    - `all`: two routes (Traefik v3 `PathRegexp`, case-insensitive like ASP.NET routing). The admin page, `(?i)^/+admin(/|$)`
-      (its OIDC callback `/admin/signin-oidc` and the `/admin/halo/*` API included), carries `ingressRoute.admin.middlewares`,
-      e.g. a forward-auth gate before the page's own OIDC check. Everything else (the consumer API behind its keys, the OAuth
-      callback) carries `ingressRoute.middlewares`. The health endpoints, `(?i)^/+health(/|$)`, are never routed.
-    - `rateLimitMiddleware.name` puts an existing rate-limit Middleware first on every route.
+  - A Traefik IngressRoute (Traefik v3 `PathRegexp`, case-insensitive like ASP.NET routing) with two routes:
+    - the admin page, `(?i)^/+admin(/|$)` (its OIDC callback `/admin/signin-oidc` and the `/admin/halo/*` API included),
+      with `ingressRoute.admin.middlewares`, e.g. a forward-auth gate in front of the page's own OIDC check;
+    - everything else (the consumer API behind its keys, the OAuth callback), with `ingressRoute.middlewares` (rate limit,
+      security headers, ...).
+
+    The health endpoints, `(?i)^/+health(/|$)`, are never routed.
   - A PrometheusRule on the **OTLP-pushed** metrics (needs `telemetry.enabled`):
     - `HaloGatewayReauthRequired`
     - `HaloGatewayUpstreamErrors`
@@ -89,9 +89,12 @@ networkPolicy:
 ingressRoute:
   enabled: true
   host: halo-gateway.<domain>
+  middlewares: [{ name: <rate limit> }, { name: security-headers, namespace: traefik }]
+  admin:
+    middlewares: [{ name: <forward-auth>, namespace: <ns> }, { name: security-headers, namespace: traefik }]
   tls: { certResolver: <resolver> }   # or secretName
 prometheusRule: { enabled: true }   # alerts on the pushed metrics (telemetry above)
-# The browser admin page (optional), public with ingressRoute.mode: all
+# The browser admin page (optional; its route is ingressRoute's admin route)
 oidc:
   enabled: true
   authority: https://auth.<domain>/application/o/halo-gateway/
@@ -117,7 +120,7 @@ If the public host goes through Cloudflare, it needs the same origin setup as th
 1. On the Microsoft app registration, add the redirect URI `https://halo-gateway.<domain>/oauth/callback`. This single URI
    serves every environment.
 
-With the admin page (`oidc` and `ingressRoute.mode: all`): open `https://halo-gateway.<domain>/admin`, sign in with the
+With the admin page (`oidc`, and `ingressRoute`): open `https://halo-gateway.<domain>/admin`, sign in with the
 identity provider, press **Sign in with Microsoft**, sign in with the Halo account and approve; the browser comes back
 to `/admin` showing the status. **Refresh now** and **Sign out / clear tokens** (with a confirmation) are there too.
 

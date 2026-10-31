@@ -47,8 +47,12 @@ networkPolicy:
 ingressRoute:
   enabled: true
   host: halo-gateway.example.com
-  rateLimitMiddleware:
-    name: halo-gateway-ratelimit
+  middlewares:
+    - name: halo-gateway-ratelimit
+  admin:
+    middlewares:
+      - name: forward-auth
+        namespace: auth
   tls:
     certResolver: letsencrypt
 prometheusRule:

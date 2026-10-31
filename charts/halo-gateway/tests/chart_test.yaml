@@ -139,29 +139,8 @@ tests:
           path: "spec.template.spec.volumes[0].emptyDir"
         template: templates/deployment.yaml
 
-  - it: routes only the OAuth callback publicly by default, rate limit first
+  - it: routes the admin page and everything else separately, never health
     template: templates/ingressroute.yaml
-    asserts:
-      - equal:
-          path: metadata.name
-          value: halo-gateway-oauth-callback
-      - equal:
-          path: spec.routes[0].match
-          value: Host(`halo-gateway.example.com`) && Path(`/oauth/callback`)
-      - lengthEqual:
-          path: spec.routes
-          count: 1
-      - equal:
-          path: spec.routes[0].middlewares
-          value: [{ name: halo-gateway-ratelimit }]
-
-  - it: in all mode, routes the admin page and everything else separately, never health
-    template: templates/ingressroute.yaml
-    set:
-      ingressRoute.mode: all
-      ingressRoute.rateLimitMiddleware: { name: rl, namespace: traefik }
-      ingressRoute.middlewares: [{ name: security-headers, namespace: traefik }]
-      ingressRoute.admin.middlewares: [{ name: authentik-forwardauth, namespace: authentik }, { name: security-headers, namespace: traefik }]
     asserts:
       - equal:
           path: metadata.name
@@ -174,35 +153,35 @@ tests:
           value: Host(`halo-gateway.example.com`) && PathRegexp(`(?i)^/+admin(/|$)`)
       - equal:
           path: spec.routes[0].middlewares
-          value: [{ name: rl, namespace: traefik }, { name: authentik-forwardauth, namespace: authentik }, { name: security-headers, namespace: traefik }]
+          value: [{ name: forward-auth, namespace: auth }]
       - equal:
           path: spec.routes[1].match
           value: Host(`halo-gateway.example.com`) && !PathRegexp(`(?i)^/+(health|admin)(/|$)`)
       - equal:
           path: spec.routes[1].middlewares
-          value: [{ name: rl, namespace: traefik }, { name: security-headers, namespace: traefik }]
+          value: [{ name: halo-gateway-ratelimit }]
       - equal:
           path: spec.routes[1].services[0]
           value: { name: halo-gateway, port: 8080 }
 
-  - it: in all mode without middlewares renders none
+  - it: renders no middlewares when none are set
     template: templates/ingressroute.yaml
     set:
-      ingressRoute.mode: all
-      ingressRoute.rateLimitMiddleware.name: ""
+      ingressRoute.middlewares: []
+      ingressRoute.admin.middlewares: []
     asserts:
       - notExists:
           path: spec.routes[0].middlewares
       - notExists:
           path: spec.routes[1].middlewares
 
-  - it: rejects an unknown mode
+  - it: needs a host
     template: templates/ingressroute.yaml
     set:
-      ingressRoute.mode: admin
+      ingressRoute.host: ""
     asserts:
       - failedTemplate:
-          errorMessage: ingressRoute.mode must be callback or all (got admin)
+          errorMessage: ingressRoute.host is required when ingressRoute.enabled
 
   - it: lets only the listed consumer namespaces and the ingress controller in (nothing scrapes it)
     template: templates/networkpolicy.yaml
