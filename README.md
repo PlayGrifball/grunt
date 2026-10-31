@@ -42,7 +42,9 @@ And more!
 
 ### .NET
 
-[![NuGet download link for OpenSpartan.Grunt](https://img.shields.io/nuget/v/OpenSpartan.Grunt?label=NuGet)](https://www.nuget.org/packages/OpenSpartan.Grunt) [![NuGet download link for OpenSpartan.Grunt with download counter](https://img.shields.io/nuget/dt/OpenSpartan.Grunt)](https://www.nuget.org/packages/OpenSpartan.Grunt)
+[![Surprenant.Grunt on NuGet](https://img.shields.io/nuget/v/Surprenant.Grunt?label=Surprenant.Grunt)](https://www.nuget.org/packages/Surprenant.Grunt) [![Surprenant.Grunt.Gateway.Client on NuGet](https://img.shields.io/nuget/v/Surprenant.Grunt.Gateway.Client?label=Surprenant.Grunt.Gateway.Client)](https://www.nuget.org/packages/Surprenant.Grunt.Gateway.Client)
+
+This is the [PlayGrifball](https://github.com/PlayGrifball/grunt) fork of [OpenSpartan Grunt](https://github.com/OpenSpartan/grunt) by Den Delimarsky (MIT). The original package is [OpenSpartan.Grunt](https://www.nuget.org/packages/OpenSpartan.Grunt).
 
 ### Python
 
@@ -59,6 +61,9 @@ _In development_
 | [`Grunt`](https://github.com/dend/grunt/tree/main/Grunt/Grunt) | The core library, written in C#, that wraps the Halo Infinite web APIs. |
 | [`Grunt.Zeta`](https://github.com/dend/grunt/tree/main/Grunt/Grunt.Zeta) | Experimental ground for the Grunt library. It's a project where wrapped APIs from Grunt are tested in a more real scenario. |
 | [`Grunt.Librarian`](https://github.com/dend/grunt/tree/main/Grunt/Grunt.Librarian) | Tool used to auto-generate code stubs for Halo Infinite API endpoints. It's a very "brute"-ish way to produce the code, but it works for now. |
+| [`Grunt.Gateway`](https://github.com/PlayGrifball/grunt/tree/main/Grunt/Grunt.Gateway) | Generated ASP.NET Core controller exposing `[GatewayExposed]` client methods over HTTP. See [GATEWAY.md](GATEWAY.md). |
+| [`Grunt.Gateway.Client`](https://github.com/PlayGrifball/grunt/tree/main/Grunt/Grunt.Gateway.Client) | `IHaloInfiniteClient` that calls a gateway instead of Halo (NuGet `Surprenant.Grunt.Gateway.Client`). |
+| [`Grunt.Gateway.Host`](https://github.com/PlayGrifball/grunt/tree/main/Grunt/Grunt.Gateway.Host) | The gateway service: API keys, quotas, caching, Halo account sign-in and refresh, health, OpenTelemetry. |
 
 ## Setup & usage
 

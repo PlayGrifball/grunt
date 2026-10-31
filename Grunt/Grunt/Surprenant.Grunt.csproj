@@ -8,10 +8,11 @@
 		<PublishRepositoryUrl>True</PublishRepositoryUrl>
 		<EmbedUntrackedSources>True</EmbedUntrackedSources>
 		<DeterministicSourcePaths>True</DeterministicSourcePaths>
-		<PackageProjectUrl>https://github.com/NoahSurprenant/grunt</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/NoahSurprenant/grunt</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/PlayGrifball/grunt</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/PlayGrifball/grunt</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>halo,halo-api,api,halo-infinite</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageIcon>grunt-logo.png</PackageIcon>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<Version>0.0.0.6-beta</Version>
