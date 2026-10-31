@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Serilog;
 using Surprenant.Grunt.Core;
 using Surprenant.Grunt.Core.Storage;
 using Surprenant.Grunt.Gateway;
@@ -16,11 +16,28 @@ using Surprenant.Grunt.Gateway.Host.Quotas;
 using Surprenant.Grunt.Gateway.Host.Telemetry;
 using Surprenant.Grunt.Util;
 
-var builder = WebApplication.CreateBuilder(args);
-GatewayHost.ConfigureServices(builder);
-var app = builder.Build();
-GatewayHost.Configure(app);
-app.Run();
+// The logger used until the host is built, and for a startup crash before that.
+Log.Logger = LoggingExtensions.CreateBootstrapLogger();
+
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
+    GatewayHost.ConfigureServices(builder);
+    var app = builder.Build();
+    GatewayHost.Configure(app);
+    app.Run();
+}
+// HostAbortedException: tooling (dotnet-ef) and WebApplicationFactory in tests stopping the host on purpose
+// right after Build(), to read its services without actually running it.
+catch (Exception ex) when (ex is not HostAbortedException)
+{
+    Log.Fatal(ex, "The gateway host terminated unexpectedly");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
 /// <summary>Entry point type for WebApplicationFactory in tests.</summary>
 public partial class Program
@@ -85,14 +102,12 @@ namespace Surprenant.Grunt.Gateway.Host
             services.AddHealthChecks()
                 .AddCheck<HaloAuthHealthCheck>("halo_auth", HealthStatus.Degraded, new[] { ReadyTag });
 
-            services.Configure<ForwardedHeadersOptions>(o =>
-            {
-                o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
-                // Behind the cluster ingress; the proxy's address is not fixed.
-                o.KnownNetworks.Clear();
-                o.KnownProxies.Clear();
-            });
+            // Trust X-Forwarded-*/X-Real-IP only from configured networks/proxies (the ForwardedHeaders section),
+            // e.g. the cluster pod network behind Traefik. Logged once the app logger is available (Configure).
+            var forwardedHeadersInvalid = services.ConfigureAppForwardedHeaders(configuration);
+            services.AddSingleton(new ForwardedHeadersDiagnostics(forwardedHeadersInvalid));
 
+            builder.AddSerilogLogging();
             ConfigureTelemetry(builder);
         }
 
@@ -103,16 +118,14 @@ namespace Surprenant.Grunt.Gateway.Host
         }
 
         /// <summary>
-        /// OpenTelemetry traces (incoming requests minus health/metrics, outgoing Halo/Microsoft HttpClient calls, cache/quota tags),
-        /// metrics (ASP.NET Core, HttpClient, runtime, Grunt retries, gateway upstream/cache/quota/token meters) and logs. OTLP export
+        /// OpenTelemetry traces (incoming requests minus health/metrics, outgoing Halo/Microsoft HttpClient calls, cache/quota tags)
+        /// and metrics (ASP.NET Core, HttpClient, runtime, Grunt retries, gateway upstream/cache/quota/token meters). OTLP export
         /// is configured by the standard OTEL_* variables (on when OTEL_EXPORTER_OTLP_ENDPOINT is set); metrics are also served
-        /// for Prometheus at /metrics.
+        /// for Prometheus at /metrics. Logs go through Serilog (<see cref="Telemetry.LoggingExtensions"/>) instead of the OTel SDK's
+        /// own logging bridge, but still carry the same trace/span ids (Serilog reads them from Activity.Current natively).
         /// </summary>
         private static void ConfigureTelemetry(WebApplicationBuilder builder)
         {
-            builder.Logging.Configure(o => o.ActivityTrackingOptions =
-                ActivityTrackingOptions.TraceId | ActivityTrackingOptions.SpanId | ActivityTrackingOptions.ParentId);
-
             var otel = builder.Services.AddOpenTelemetry()
                 .ConfigureResource(r => r.AddService(builder.Configuration["OTEL_SERVICE_NAME"] ?? "halo-gateway"))
                 .WithTracing(t => t
@@ -123,12 +136,7 @@ namespace Surprenant.Grunt.Gateway.Host
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation()
                     .AddMeter(HaloRequestPolicy.MeterName, HaloGatewayMetrics.MeterName, GatewayHostMetrics.MeterName)
-                    .AddPrometheusExporter())
-                .WithLogging(configureBuilder: null, configureOptions: o =>
-                {
-                    o.IncludeScopes = true;
-                    o.IncludeFormattedMessage = true;
-                });
+                    .AddPrometheusExporter());
 
             if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
                 otel.UseOtlpExporter();
@@ -149,10 +157,14 @@ namespace Surprenant.Grunt.Gateway.Host
                 app.Logger.LogWarning("Gateway:AdminKey is not set: the Halo account admin endpoints reject every request");
             if (options.ApiKeys.Count == 0)
                 app.Logger.LogWarning("Gateway:ApiKeys is empty: every Halo gateway request will be rejected");
+            foreach (var entry in app.Services.GetRequiredService<ForwardedHeadersDiagnostics>().Invalid)
+                app.Logger.LogWarning("Ignoring invalid ForwardedHeaders entry {Entry}", entry);
 
             app.Services.GetRequiredService<GatewayHostGauges>();
 
             app.UseForwardedHeaders();
+            // After UseForwardedHeaders so ClientIp/the request summary log carry the real (trusted) client address.
+            app.UseRequestTelemetry();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
