@@ -42,10 +42,15 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
     `networkPolicy.oidcTo`, the OpenID Connect provider.
 - **Optional**:
   - A Traefik IngressRoute (Traefik v3 `PathRegexp`, case-insensitive like ASP.NET routing) with two routes:
-    - the admin page, `(?i)^/+admin(/|$)` (its OIDC callback `/admin/signin-oidc` and the `/admin/halo/*` API included),
-      with `ingressRoute.admin.middlewares`, e.g. a forward-auth gate in front of the page's own OIDC check;
-    - everything else (the consumer API behind its keys, the OAuth callback), with `ingressRoute.middlewares` (rate limit,
-      security headers, ...).
+    - the admin page, `(?i)^/+admin(/|$)` (the `/admin/halo/*` API included) **minus** the OIDC callbacks
+      `/admin/signin-oidc` and `/admin/signout-callback-oidc`, with `ingressRoute.admin.middlewares`, e.g. a
+      forward-auth gate in front of the page's own OIDC check;
+    - everything else (the consumer API behind its keys, the OAuth callback) **plus** those two OIDC callbacks, with
+      `ingressRoute.middlewares` (rate limit, security headers, ...).
+
+    The OIDC callbacks go on the public route, not the admin one, so a forward-auth gate never sits in front of them:
+    Authentik's `response_mode=form_post` posts back cross-site, the forward-auth cookie is `SameSite=Lax` and isn't
+    sent on that POST, and the OIDC handler validates `state`/nonce/PKCE itself anyway. See GATEWAY.md.
 
     The health endpoints, `(?i)^/+health(/|$)`, are never routed.
   - A PrometheusRule on the **OTLP-pushed** metrics (needs `telemetry.enabled`):

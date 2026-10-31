@@ -139,7 +139,7 @@ tests:
           path: "spec.template.spec.volumes[0].emptyDir"
         template: templates/deployment.yaml
 
-  - it: routes the admin page and everything else separately, never health
+  - it: routes the admin page and everything else separately, never health, with the OIDC callbacks carved out of admin
     template: templates/ingressroute.yaml
     asserts:
       - equal:
@@ -150,19 +150,29 @@ tests:
           count: 2
       - equal:
           path: spec.routes[0].match
-          value: Host(`halo-gateway.example.com`) && PathRegexp(`(?i)^/+admin(/|$)`)
+          value: Host(`halo-gateway.example.com`) && PathRegexp(`(?i)^/+admin(/|$)`) && !PathRegexp(`(?i)^/+admin/+(signin-oidc|signout-callback-oidc)/*$`)
       - equal:
           path: spec.routes[0].middlewares
           value: [{ name: forward-auth, namespace: auth }]
       - equal:
           path: spec.routes[1].match
-          value: Host(`halo-gateway.example.com`) && !PathRegexp(`(?i)^/+(health|admin)(/|$)`)
+          value: Host(`halo-gateway.example.com`) && (!PathRegexp(`(?i)^/+(health|admin)(/|$)`) || PathRegexp(`(?i)^/+admin/+(signin-oidc|signout-callback-oidc)/*$`))
       - equal:
           path: spec.routes[1].middlewares
           value: [{ name: halo-gateway-ratelimit }]
       - equal:
           path: spec.routes[1].services[0]
           value: { name: halo-gateway, port: 8080 }
+
+  - it: keeps the OIDC callback paths off the admin route's match (forward-auth never sees them) and on the public one
+    template: templates/ingressroute.yaml
+    asserts:
+      - matchRegex:
+          path: spec.routes[0].match
+          pattern: '&& !PathRegexp\(`\(\?i\)\^/\+admin/\+\(signin-oidc\|signout-callback-oidc\)/\*\$`\)$'
+      - matchRegex:
+          path: spec.routes[1].match
+          pattern: '\|\| PathRegexp\(`\(\?i\)\^/\+admin/\+\(signin-oidc\|signout-callback-oidc\)/\*\$`\)\)$'
 
   - it: renders no middlewares when none are set
     template: templates/ingressroute.yaml

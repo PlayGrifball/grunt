@@ -185,8 +185,13 @@ networkPolicy:
   extraEgress: []
 
 # Traefik IngressRoute (Traefik v3), two routes on host, matched case-insensitively like ASP.NET routing:
-#   - the admin page: /admin and /admin/* (its OIDC callback /admin/signin-oidc included), with admin.middlewares;
-#   - everything else (the consumer API behind its keys, the OAuth callback /oauth/callback), with middlewares.
+#   - the admin page: /admin and /admin/*, MINUS the OIDC callbacks (/admin/signin-oidc, /admin/signout-callback-oidc),
+#     with admin.middlewares, e.g. a forward-auth gate in front of the page's own OIDC check;
+#   - everything else (the consumer API behind its keys, the OAuth callback /oauth/callback) PLUS the OIDC callbacks,
+#     with middlewares.
+# The OIDC callbacks are kept off the admin route and its middlewares on purpose: Authentik's form_post response is a
+# cross-site POST that a SameSite=Lax forward-auth cookie never rides along with, and the OIDC handler already checks
+# state/nonce/PKCE itself. See GATEWAY.md.
 # The anonymous health endpoints (/health, /health/*) are never routed.
 ingressRoute:
   enabled: false

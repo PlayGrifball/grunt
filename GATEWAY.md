@@ -145,6 +145,17 @@ clear tokens** (after a confirmation). The page is server-rendered without scrip
 its session is an HttpOnly, Secure, SameSite=Lax cookie scoped to `/admin`. Identity headers set by a proxy are never
 trusted. `/admin/halo/*` accepts that session too (unsafe methods then need the antiforgery token) besides the admin key.
 
+If `/admin` sits behind a forward-auth middleware (e.g. the homelab's Authentik forward-auth, in front of this OIDC
+check as a second gate), the `ingressRoute` chart keeps the two OIDC callback paths
+(`AdminSession.CallbackPath`/`SignedOutCallbackPath`: `/admin/signin-oidc`, `/admin/signout-callback-oidc`) off that
+middleware, routing them through the public route instead. Authentik's `response_mode=form_post` default means the
+identity provider returns to `/admin/signin-oidc` with a cross-site `POST`; a forward-auth session cookie is
+`SameSite=Lax` and is never sent on a cross-site `POST`, so forward-auth would see an unauthenticated request, redirect
+to Authentik and come back with a `GET`, losing the posted form before it reaches the OIDC handler (a 400). Putting
+the callbacks on the public route sidesteps that: the OIDC handler is the one doing the authenticating here, and it
+already checks its own `state`, nonce, PKCE verifier and correlation cookie, so a forward-auth gate in front of it adds
+no security, only a chance to eat the form post.
+
 With the admin key (automation):
 
 2. `curl -H "X-Admin-Key: $ADMIN" https://<gateway>/admin/halo/signin` returns `{ "url": ... }`. Open it in a browser, sign
