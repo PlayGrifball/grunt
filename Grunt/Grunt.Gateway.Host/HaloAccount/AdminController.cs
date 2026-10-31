@@ -5,10 +5,12 @@ using System.Net;
 
 namespace Surprenant.Grunt.Gateway.Host.HaloAccount;
 
-/// <summary>Halo account administration; every action needs the admin key (header <c>X-Admin-Key</c>).</summary>
+/// <summary>Halo account administration; every action needs the admin key (header <c>X-Admin-Key</c>) or an admin page session
+/// (OpenID Connect, <see cref="AdminSession"/>; unsafe methods then also need its antiforgery token).</summary>
 [ApiController]
 [Route("admin/halo")]
 [Authorize(Policy = GatewayAuth.AdminPolicy)]
+[ValidateAntiforgeryForBrowserSession]
 public sealed class AdminController : ControllerBase
 {
     private readonly HaloAccountService _account;
@@ -90,21 +92,25 @@ public sealed class OAuthCallbackController : ControllerBase
     {
         if (!string.IsNullOrEmpty(error))
             return Page(400, "Sign-in failed", $"Microsoft returned {error}: {errorDescription}");
-        if (!_account.ConsumeState(state))
-            return Page(400, "Sign-in link expired", "This sign-in link is unknown, used or expired. Get a new one from GET /admin/halo/signin.");
+        if (!_account.TryConsumeState(state, out var returnToAdminPage))
+            return Page(400, "Sign-in link expired", "This sign-in link is unknown, used or expired. Start again from the admin page (/admin) or GET /admin/halo/signin.");
         if (string.IsNullOrEmpty(code))
-            return Page(400, "Sign-in failed", "Microsoft did not return a code.");
+            return returnToAdminPage ? Redirect("/admin?done=signin-failed") : Page(400, "Sign-in failed", "Microsoft did not return a code.");
 
         var result = await _account.RedeemCodeAsync(code);
+        if (returnToAdminPage)
+            return Redirect("/admin?done=" + (result.Success ? "signed-in" : "signin-failed"));
         return Page(result.Success ? 200 : 502, result.Success ? "Signed in" : "Sign-in failed", result.Message);
     }
 
-    private ContentResult Page(int status, string title, string message) => new()
+    private ContentResult Page(int status, string title, string message)
     {
-        StatusCode = status,
-        ContentType = "text/html; charset=utf-8",
-        Content = $"<!doctype html><html><head><meta charset=\"utf-8\"><title>Halo gateway: {WebUtility.HtmlEncode(title)}</title></head>" +
-                  $"<body style=\"font-family:sans-serif;max-width:40em;margin:4em auto\"><h1>{WebUtility.HtmlEncode(title)}</h1>" +
-                  $"<p>{WebUtility.HtmlEncode(message)}</p><p>You can close this tab.</p></body></html>",
-    };
+        AdminPageHtml.ApplySecurityHeaders(Response);
+        return new ContentResult
+        {
+            StatusCode = status,
+            ContentType = "text/html; charset=utf-8",
+            Content = AdminPageHtml.Message(title, message + " You can close this tab."),
+        };
+    }
 }

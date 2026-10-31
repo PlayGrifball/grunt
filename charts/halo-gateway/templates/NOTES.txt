@@ -6,7 +6,16 @@ Consumers: http://{{ include "halo-gateway.fullname" . }}.{{ .Release.Namespace 
 WARNING: persistence is disabled; the Halo tokens are lost on every restart.
 {{- end }}
 
-Sign the Halo account in (once, and again whenever the HaloGatewayReauthRequired alert fires):
+{{- if and .Values.oidc.enabled .Values.ingressRoute.enabled (ne (.Values.ingressRoute.mode | default "callback") "callback") }}
+
+Admin page: https://{{ .Values.ingressRoute.host }}/admin (sign in with your identity provider, then "Sign in with Microsoft").
+{{- end }}
+{{- if not .Values.telemetry.enabled }}
+
+NOTE: telemetry is disabled. The gateway serves no /metrics; logs, metrics and traces leave it only over OTLP (telemetry.endpoint).
+{{- end }}
+
+Sign the Halo account in with the admin key (once, and again whenever the HaloGatewayReauthRequired alert fires):
   1. Register {{ .Values.oauth.redirectUrl }} as a redirect URI on the Microsoft app.
   2. kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "halo-gateway.fullname" . }} 8080:{{ .Values.service.port }}
   3. curl -H "X-Admin-Key: $ADMIN_KEY" http://localhost:8080/admin/halo/signin   # open the returned url, sign in, approve

@@ -5,7 +5,7 @@ description: >-
   response caching, token refresh and an OAuth callback for signing the account in.
 type: application
 # The publish workflow replaces the patch number with the run number.
-version: 0.1.0
+version: 0.2.0
 kubeVersion: ">=1.30.0-0"
 appVersion: "latest"
 home: https://github.com/PlayGrifball/grunt

@@ -20,6 +20,9 @@ public sealed class GatewayOptions
     public GlobalQuotaOptions GlobalQuota { get; set; } = new();
 
     public HaloAuthOptions Auth { get; set; } = new();
+
+    /// <summary>Browser sign-in for the /admin page (OpenID Connect); off until <see cref="OidcOptions.Authority"/> and <see cref="OidcOptions.ClientId"/> are set.</summary>
+    public OidcOptions Oidc { get; set; } = new();
 }
 
 /// <summary>One consumer API key.</summary>
@@ -80,4 +83,37 @@ public sealed class HaloAuthOptions
     /// store is single-writer).
     /// </summary>
     public bool UseInstanceLock { get; set; } = true;
+}
+
+/// <summary>
+/// OpenID Connect sign-in for the browser admin page (section <c>Gateway:Oidc</c>): Authorization Code + PKCE against an external
+/// identity provider (Authentik, ...), then an HttpOnly cookie session. Only members of <see cref="AllowedGroups"/> become admins.
+/// The <c>X-Admin-Key</c> header keeps working beside it for automation.
+/// </summary>
+public sealed class OidcOptions
+{
+    /// <summary>Issuer URL (its <c>/.well-known/openid-configuration</c> is read). Ex: https://auth.example.com/application/o/halo-gateway/</summary>
+    public string? Authority { get; set; }
+
+    public string? ClientId { get; set; }
+
+    /// <summary>Client secret of a confidential client. Empty: a public client (PKCE only).</summary>
+    public string? ClientSecret { get; set; }
+
+    /// <summary>Scopes to request. Empty: openid, profile and email (Authentik puts <c>groups</c> in profile).</summary>
+    public List<string> Scopes { get; set; } = new();
+
+    /// <summary>Claim (ID token or userinfo) listing the user's groups.</summary>
+    public string GroupClaim { get; set; } = "groups";
+
+    /// <summary>Groups whose members may use the admin page (exact, case-sensitive match). Empty: nobody.</summary>
+    public List<string> AllowedGroups { get; set; } = new();
+
+    /// <summary>How long a browser session lasts before signing in again (not sliding).</summary>
+    public TimeSpan SessionLifetime { get; set; } = TimeSpan.FromHours(8);
+
+    /// <summary>Require https for the discovery document (only turn off for a local test IdP).</summary>
+    public bool RequireHttpsMetadata { get; set; } = true;
+
+    public bool Enabled => !string.IsNullOrWhiteSpace(Authority) && !string.IsNullOrWhiteSpace(ClientId);
 }

@@ -1,6 +1,13 @@
 {{- $p := .Values.prometheusRule -}}
 {{- if $p.enabled }}
-{{- $sel := printf "namespace=%q" .Release.Namespace }}
+{{- if not .Values.telemetry.enabled }}{{ fail "prometheusRule needs telemetry.enabled: the gateway's metrics reach Prometheus only by OTLP push" }}{{ end }}
+{{- /*
+The gateway serves no /metrics: its metrics are pushed over OTLP to a collector, which hands them to Prometheus (its prometheus
+exporter, or remote write). With resource attributes promoted to labels, every pushed series carries k8s_namespace_name (the chart
+sets k8s.namespace.name) and job = "[<service.namespace>/]<service.name>". The `namespace` label, if any, is the collector's.
+*/}}
+{{- $svc := .Values.telemetry.serviceName | default .Release.Name }}
+{{- $sel := $p.selector | default (printf "k8s_namespace_name=%q, job=~%q" .Release.Namespace (printf "(.+/)?%s" (regexQuoteMeta $svc))) }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -22,8 +29,8 @@ spec:
           annotations:
             summary: The Halo gateway's account must be signed in again
             description: >-
-              The refresh token was rejected or no token is stored in {{ .Release.Namespace }}. Open the URL from
-              GET /admin/halo/signin (admin key) and sign in; GET /admin/halo/status shows the reason.
+              The refresh token was rejected or no token is stored in {{ .Release.Namespace }}. Sign in again from the admin page
+              (/admin) or with GET /admin/halo/signin (admin key); /admin or GET /admin/halo/status shows the reason.
         - alert: HaloGatewayUpstreamErrors
           expr: |
             (
@@ -58,12 +65,16 @@ spec:
           annotations:
             summary: "Gateway quota rejecting {{ "{{" }} $labels.key {{ "}}" }} ({{ "{{" }} $labels.reason {{ "}}" }})"
             description: A consumer key has been hitting its quota (or the global budget) for 10 minutes.
-        - alert: HaloGatewayDown
-          expr: max(up{ {{- $sel -}} ,service={{ include "halo-gateway.fullname" . | quote }}}) == 0
-          for: 5m
+        # No `up` series for pushed metrics: the gauge below is reported on every export while the gateway runs, so its absence
+        # means the gateway is down, or its pushes stopped reaching Prometheus.
+        - alert: HaloGatewayMetricsAbsent
+          expr: absent(grunt_gateway_halo_reauth_required{ {{- $sel -}} })
+          for: {{ $p.absentFor }}
           labels:
             severity: warning
           annotations:
-            summary: Prometheus can't scrape the Halo gateway
-            description: The gateway's /metrics has been unreachable for 5 minutes.
+            summary: No metrics from the Halo gateway
+            description: >-
+              The gateway in {{ .Release.Namespace }} has pushed no metrics for {{ $p.absentFor }}: it is down, or its OTLP export
+              (telemetry.endpoint, the NetworkPolicy's telemetry egress, the collector) is broken.
 {{- end }}

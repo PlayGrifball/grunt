@@ -124,17 +124,28 @@ Configuration (`appsettings.json`, environment variables such as `Gateway__Admin
 | `Gateway:ApiKeys[]` | `Name`, `Key` (or `KeySha256`), `Environment`, `Priority` (0 = highest), `PermitsPerMinute`. |
 | `Gateway:GlobalQuota` | `PermitsPerMinute` for all keys together. `ReservedFraction` of it is kept for keys with `Priority <= ReservedPriority` (prod wins when budget is tight). |
 | `Gateway:AdminKey` | Separate key for `/admin/halo/*` (header `X-Admin-Key`). |
+| `Gateway:Oidc` | Browser admin page `/admin`: `Authority`, `ClientId`, `ClientSecret`, `AllowedGroups[]`, `GroupClaim` (default `groups`), `Scopes[]`, `SessionLifetime`. Off (404) until `Authority` and `ClientId` are set. Redirect URI: `https://<public gateway host>/admin/signin-oidc`. |
 | `Gateway:Cache` | `Enabled`, `ImmutableTtl`, `MaxCachedBinaryBytes`. |
 | `Gateway:Auth` | `TokenPath` (on a volume), `RefreshInterval`, `SignInStateLifetime`, `UseInstanceLock`. |
 | `ForwardedHeaders:KnownIPNetworks[]` / `KnownProxies[]` | CIDRs/addresses whose immediate requests may set the client address, scheme and host (X-Forwarded-\*). Unset: the ASP.NET Core default of loopback only, i.e. nothing coming through a real proxy is trusted. |
 | `ForwardedHeaders:ForwardedForHeaderName` | Header carrying the client address, e.g. `X-Real-IP` behind Traefik (it has already resolved the real client). Default `X-Forwarded-For`. |
 | `ForwardedHeaders:ForwardLimit` | How many proxy entries to walk back through. Default 1. |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`, ... | Standard OpenTelemetry variables. OTLP export turns on when the endpoint is set (traces, metrics, and the Serilog logs sink). |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`, ... | Standard OpenTelemetry variables. OTLP export turns on when the endpoint is set (traces, metrics, and the Serilog logs sink). It is the only export: nothing is served for scraping. |
 
 ### One-time sign-in (and re-auth)
 
 1. On the Microsoft app registration, add the redirect URI `https://<public gateway host>/oauth/callback`. This one URI
    serves every environment.
+
+From a browser (`Gateway:Oidc` configured): open `https://<gateway>/admin`, sign in with the identity provider (only members
+of `AllowedGroups`), press **Sign in with Microsoft**, sign in with the Halo account and approve. The callback sends the browser
+back to `/admin`, which shows the status, token expiries, last refresh and last error, with **Refresh now** and **Sign out /
+clear tokens** (after a confirmation). The page is server-rendered without scripts; its forms carry antiforgery tokens and
+its session is an HttpOnly, Secure, SameSite=Lax cookie scoped to `/admin`. Identity headers set by a proxy are never
+trusted. `/admin/halo/*` accepts that session too (unsafe methods then need the antiforgery token) besides the admin key.
+
+With the admin key (automation):
+
 2. `curl -H "X-Admin-Key: $ADMIN" https://<gateway>/admin/halo/signin` returns `{ "url": ... }`. Open it in a browser, sign
    in with the Halo account and approve. Microsoft redirects to `/oauth/callback`, and the gateway redeems the code (only for
    a state it issued, once, within 15 minutes) and stores the token. "Signed in" means done.
@@ -151,7 +162,7 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
 
 - `/health/live` runs no checks, so a Halo outage or a missing sign-in never restarts the pod. `/health/ready` and `/health`
   run `halo_auth` (Healthy, or Degraded, which still returns 200). Responses contain only the status word.
-- `/metrics` (Prometheus) and OTLP export:
+- Metrics, pushed over OTLP only (no `/metrics`; through an OpenTelemetry Collector into Prometheus they get these names):
   - `grunt_gateway_requests_total{key,environment,action}`
   - `grunt_gateway_quota_rejections_total{key,reason}`
   - `grunt_gateway_quota_remaining{key}`
@@ -163,13 +174,13 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
   - `grunt_gateway_halo_token_expiry_seconds{token}`
   - `grunt_gateway_halo_token_refreshes_total{result}`
   - ASP.NET Core, HttpClient and runtime metrics
-- Traces cover incoming requests (health and metrics excluded) and outgoing Halo/Microsoft calls, with
+- Traces cover incoming requests (health probes excluded) and outgoing Halo/Microsoft calls, with
   `grunt.cache`, `grunt.api_key` and `halo.upstream.status` tags.
 - Logs go through Serilog: compact JSON on the console (what `kubectl logs` and the cluster's log collector see),
   with trace and span ids carried natively on every line. One summary line per request logs `ClientIp` (after
   `ForwardedHeaders` trust is applied), `RequestHost`, `RequestScheme`, method, path, status, elapsed, the
   matched endpoint and `ConsumerKeyName` (the API key's configured `Name`, never the key itself) once
-  authenticated; health/metrics probes log at Verbose (dropped by default).
+  authenticated; health probes log at Verbose (dropped by default).
 
 ### Scale and storage
 

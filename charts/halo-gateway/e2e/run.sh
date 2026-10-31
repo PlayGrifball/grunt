@@ -6,7 +6,7 @@
 #   2. from a consumer namespace (grif-e2e): no API key -> 401; a valid key reaches the generated controller and
 #      HaloInfiniteClientFactory, which has no token yet -> 502 with X-Halo-Upstream-Status: 0;
 #      admin status needs the admin key and reports ReauthRequired; /health says Degraded (still 200);
-#      /metrics shows grunt_gateway_halo_reauth_required 1;
+#      /metrics is not served (metrics are OTLP push only);
 #   3. from a namespace not listed (other-e2e): the gateway is unreachable (NetworkPolicy);
 #   4. persistence + egress: a token written to the volume while the gateway is scaled down is read after it
 #      comes back, and its refresh reaches login.live.com over HTTPS (allowed egress), which rejects the fake
@@ -83,8 +83,7 @@ done
 echo "$status"
 grep -q '"status":"ReauthRequired"' <<<"$status" || fail "admin status should report ReauthRequired"
 [ "$(curl_in "$consumer" c "$svc/health")" = Degraded ] || fail "/health should be Degraded until signed in"
-curl_in "$consumer" c "$svc/metrics" | grep -E '^grunt_gateway_halo_reauth_required(\{[^}]*\})? 1' \
-  || fail "/metrics should show grunt_gateway_halo_reauth_required 1"
+[ "$(status_of "$svc/metrics")" = 404 ] || fail "/metrics should not be served (OTLP push only)"
 signin=$(curl_in "$consumer" c -H 'X-Admin-Key: e2e-admin-key' "$svc/admin/halo/signin")
 grep -q 'login.live.com' <<<"$signin" || fail "sign-in URL should point at login.live.com"
 [ "$(status_of "$svc/oauth/callback?code=x&state=forged")" = 400 ] || fail "a forged OAuth state should be 400"

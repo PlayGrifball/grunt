@@ -137,7 +137,9 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
-# OpenTelemetry: logs, metrics and traces pushed over OTLP (metrics are also served on /metrics for Prometheus).
+# OpenTelemetry: logs, metrics and traces pushed over OTLP to a collector, the gateway's only telemetry path (there is no
+# /metrics to scrape). Off by default only because the collector's address is cluster-specific: set endpoint and turn it on.
+# prometheusRule needs it.
 telemetry:
   enabled: false
   # Ex: http://otel-collector.monitoring:4317
@@ -162,8 +164,6 @@ networkPolicy:
   ingressController:
     namespaceSelector: {}
     podSelector: {}
-  # Prometheus scraping /metrics. Empty: no rule.
-  metricsFrom: []
   # DNS. Empty `to`: any destination on port 53.
   dns:
     to: []
@@ -177,30 +177,65 @@ networkPolicy:
         except: [fc00::/7, fe80::/10]
   # The OTLP collector, on the endpoint's port. Empty: anywhere on that port.
   telemetryTo: []
+  # The OpenID Connect provider (oidc.authority: discovery, token and userinfo), on oidcPort. Empty: no extra rule (httpsTo
+  # already allows public HTTPS; set this when the provider resolves to a private or in-cluster address).
+  oidcTo: []
+  oidcPort: 443
   extraIngress: []
   extraEgress: []
 
-# Traefik IngressRoute exposing ONLY the OAuth callback path publicly (the browser must reach the redirect URI).
-# The consumer API, /admin and /metrics stay cluster-internal (port-forward for admin calls).
+# Traefik IngressRoute. mode:
+#   callback  only the OAuth callback (path below; the browser signing the account in must reach the redirect URI).
+#   admin     the callback and the browser admin page (/admin, /admin/*; needs oidc). The consumer API stays internal.
+#   all       the whole host except the anonymous health endpoints (any path matching (?i)^/+health(/|$)). Every
+#             other path authenticates itself (API key, admin key or admin session).
+# Whatever is not routed stays cluster-internal (port-forward for admin calls).
 ingressRoute:
   enabled: false
+  mode: callback
   host: ""
   entryPoints: [websecure]
   path: /oauth/callback
+  # A Traefik rate-limit Middleware (created outside the chart) put first on the route. Empty name: none.
+  rateLimitMiddleware:
+    name: ""
+    namespace: ""
   middlewares: []
   tls:
     secretName: ""
     certResolver: ""
 
-serviceMonitor:
-  enabled: false
-  interval: 30s
-  labels: {}
-
+# Alerts on the gateway's OTLP-pushed metrics (needs telemetry.enabled and a collector that promotes resource attributes to
+# labels: k8s_namespace_name and job="[<service.namespace>/]<service.name>"). HaloGatewayMetricsAbsent replaces an `up` alert.
 prometheusRule:
   enabled: false
   labels: {}
+  # PromQL label matchers selecting the gateway's series. Empty: k8s_namespace_name="<release namespace>",
+  # job=~"(.+/)?<telemetry.serviceName or release name>".
+  selector: ""
+  # How long without any pushed series before HaloGatewayMetricsAbsent fires.
+  absentFor: 10m
   # Sustained share of Halo responses that are failures (5xx, or no response) before alerting.
   upstreamErrorRatio: 0.2
   # Sustained Halo 429 rate (per second) before alerting.
   upstreamThrottleRate: 0.05
+
+# Browser sign-in for the admin page (/admin): OpenID Connect, Authorization Code + PKCE, against an external provider
+# (Authentik, ...). Register <host>/admin/signin-oidc as the redirect URI. Only members of allowedGroups may use the page;
+# the X-Admin-Key header keeps working for automation. Off: /admin answers 404.
+oidc:
+  enabled: false
+  # Issuer URL. Ex: https://auth.example.com/application/o/halo-gateway/
+  authority: ""
+  # Client id in clear, or from existingSecret/clientIdKey.
+  clientId: ""
+  existingSecret: ""
+  clientIdKey: ""
+  # Client secret (confidential client) from existingSecret. Empty key: a public client.
+  clientSecretKey: ClientSecret
+  groupClaim: groups
+  allowedGroups: []
+  # Empty: openid, profile, email.
+  scopes: []
+  # Empty: 8 hours. Ex: "04:00:00"
+  sessionLifetime: ""

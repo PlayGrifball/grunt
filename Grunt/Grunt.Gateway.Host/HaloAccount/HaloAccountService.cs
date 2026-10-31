@@ -97,7 +97,9 @@ public sealed class HaloAccountService
     private readonly IOptionsMonitor<GatewayOptions> _options;
     private readonly TimeProvider _time;
     private readonly ILogger<HaloAccountService> _logger;
-    private readonly ConcurrentDictionary<string, DateTimeOffset> _pendingStates = new();
+    private readonly ConcurrentDictionary<string, PendingSignIn> _pendingStates = new();
+
+    private sealed record PendingSignIn(DateTimeOffset Expires, bool ReturnToAdminPage);
 
     public HaloAccountService(IOAuthTokenStore store, IHaloOAuthClient oauth, IHaloSession session, HaloAuthState state,
         IOptionsMonitor<GatewayOptions> options, TimeProvider time, ILogger<HaloAccountService> logger)
@@ -113,21 +115,31 @@ public sealed class HaloAccountService
 
     public HaloAuthSnapshot Status() => _state.Snapshot(_session.SpartanTokenExpiresUtc);
 
-    /// <summary>A Microsoft sign-in URL carrying a fresh one-time state, valid for <see cref="HaloAuthOptions.SignInStateLifetime"/>.</summary>
-    public string CreateSignInUrl()
+    /// <summary>A Microsoft sign-in URL carrying a fresh one-time state, valid for <see cref="HaloAuthOptions.SignInStateLifetime"/>.
+    /// With <paramref name="returnToAdminPage"/>, the callback sends the browser back to the admin page instead of showing its own.</summary>
+    public string CreateSignInUrl(bool returnToAdminPage = false)
     {
         var now = _time.GetUtcNow();
-        foreach (var expired in _pendingStates.Where(p => p.Value < now).Select(p => p.Key).ToList())
+        foreach (var expired in _pendingStates.Where(p => p.Value.Expires < now).Select(p => p.Key).ToList())
             _pendingStates.TryRemove(expired, out _);
 
         var state = Convert.ToHexString(RandomNumberGenerator.GetBytes(16)).ToLowerInvariant();
-        _pendingStates[state] = now + _options.CurrentValue.Auth.SignInStateLifetime;
+        _pendingStates[state] = new PendingSignIn(now + _options.CurrentValue.Auth.SignInStateLifetime, returnToAdminPage);
         return _oauth.BuildSignInUrl(state);
     }
 
     /// <summary>True once for a state issued by <see cref="CreateSignInUrl"/> that has not expired.</summary>
-    public bool ConsumeState(string? state)
-        => !string.IsNullOrEmpty(state) && _pendingStates.TryRemove(state, out var expires) && expires >= _time.GetUtcNow();
+    public bool ConsumeState(string? state) => TryConsumeState(state, out _);
+
+    /// <summary><see cref="ConsumeState"/>, also telling whether the sign-in started from the admin page.</summary>
+    public bool TryConsumeState(string? state, out bool returnToAdminPage)
+    {
+        returnToAdminPage = false;
+        if (string.IsNullOrEmpty(state) || !_pendingStates.TryRemove(state, out var pending) || pending.Expires < _time.GetUtcNow())
+            return false;
+        returnToAdminPage = pending.ReturnToAdminPage;
+        return true;
+    }
 
     /// <summary>Redeems an authorization code, stores the token, resets and validates the factory session.</summary>
     public async Task<SignInResult> RedeemCodeAsync(string code)
