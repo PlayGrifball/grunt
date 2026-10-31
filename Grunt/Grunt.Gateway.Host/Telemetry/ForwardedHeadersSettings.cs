@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
+// ForwardedHeadersOptions.KnownIPNetworks is IList<System.Net.IPNetwork>, but Microsoft.AspNetCore.HttpOverrides
+// also has its own (obsolete-property-only) IPNetwork type; disambiguate explicitly.
+using IPNetwork = System.Net.IPNetwork;
 
 namespace Surprenant.Grunt.Gateway.Host.Telemetry;
 

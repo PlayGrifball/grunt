@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Surprenant.Grunt.Gateway.Host.Telemetry;
 using System.Net;
+// ForwardedHeadersOptions.KnownIPNetworks is IList<System.Net.IPNetwork>, which otherwise collides with
+// Microsoft.AspNetCore.HttpOverrides.IPNetwork.
+using IPNetwork = System.Net.IPNetwork;
 
 namespace Tests;
 
