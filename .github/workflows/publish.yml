@@ -1,0 +1,64 @@
+# Publishes Surprenant.Grunt and Surprenant.Grunt.Gateway.Client to nuget.org with Trusted Publishing:
+# GitHub's OIDC token is exchanged for a one-hour, single-use API key (NuGet/login), so no API key is
+# stored anywhere. The nuget.org policy trusts PlayGrifball/grunt, workflow file publish.yml.
+# https://learn.microsoft.com/nuget/nuget-org/trusted-publishing
+#
+# Release: push a tag such as v0.1.0 (the version is the tag without the "v"), or run it by hand with a version.
+name: Publish NuGet packages
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version, e.g. 0.1.0'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: nuget
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # The SDK (9.0) builds the source generator (Roslyn 4.14); the projects target net8.0, so tests need the 8.0 runtime.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+
+      - name: Version
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          version="${INPUT_VERSION:-$GITHUB_REF_NAME}"
+          echo "VERSION=${version#v}" >> "$GITHUB_ENV"
+
+      - name: Test
+        run: dotnet test Grunt/Grunt.sln --configuration Release
+
+      - name: Pack
+        run: |
+          dotnet pack Grunt/Grunt/Surprenant.Grunt.csproj --configuration Release --output out -p:PackageVersion="$VERSION"
+          dotnet pack Grunt/Grunt.Gateway.Client/Surprenant.Grunt.Gateway.Client.csproj --configuration Release --output out -p:PackageVersion="$VERSION"
+
+      # Right before the push: the key is valid for one hour.
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: NoahSurprenant
+
+      - name: Push
+        run: dotnet nuget push "out/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

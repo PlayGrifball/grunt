@@ -46,6 +46,8 @@ And more!
 
 This is the [PlayGrifball](https://github.com/PlayGrifball/grunt) fork of [OpenSpartan Grunt](https://github.com/OpenSpartan/grunt) by Den Delimarsky (MIT). The original package is [OpenSpartan.Grunt](https://www.nuget.org/packages/OpenSpartan.Grunt).
 
+**Releasing:** push a tag such as `v0.1.0`. The [publish workflow](.github/workflows/publish.yml) tests, packs both packages at that version and pushes them to nuget.org with [Trusted Publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing) (no API key is stored). It can also be run by hand from the Actions tab with a version.
+
 ### Python
 
 _In development_
