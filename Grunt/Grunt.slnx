@@ -1,0 +1,20 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Grunt.Gateway.Host/">
+    <Project Path="Grunt.Gateway.Host/Surprenant.Grunt.Gateway.Host.csproj" />
+  </Folder>
+  <Folder Name="/Grunt.Gateway/">
+    <Project Path="Grunt.Gateway.Client/Surprenant.Grunt.Gateway.Client.csproj" />
+    <Project Path="Grunt.Gateway/Surprenant.Grunt.Gateway.csproj" />
+  </Folder>
+  <Project Path="Grunt.ApiTest/Grunt.ApiTest.csproj" />
+  <Project Path="Grunt.Librarian/Grunt.Librarian.csproj" />
+  <Project Path="Grunt.SourceGenerator/Grunt.SourceGenerator.csproj" />
+  <Project Path="Grunt.Zeta/Grunt.Zeta.csproj" />
+  <Project Path="Grunt/Surprenant.Grunt.csproj" />
+  <Project Path="Tests/Tests.csproj" />
+</Solution>

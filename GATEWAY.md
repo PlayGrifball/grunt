@@ -126,7 +126,10 @@ Configuration (`appsettings.json`, environment variables such as `Gateway__Admin
 | `Gateway:AdminKey` | Separate key for `/admin/halo/*` (header `X-Admin-Key`). |
 | `Gateway:Cache` | `Enabled`, `ImmutableTtl`, `MaxCachedBinaryBytes`. |
 | `Gateway:Auth` | `TokenPath` (on a volume), `RefreshInterval`, `SignInStateLifetime`, `UseInstanceLock`. |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`, ... | Standard OpenTelemetry variables. OTLP export turns on when the endpoint is set. |
+| `ForwardedHeaders:KnownIPNetworks[]` / `KnownProxies[]` | CIDRs/addresses whose immediate requests may set the client address, scheme and host (X-Forwarded-\*). Unset: the ASP.NET Core default of loopback only, i.e. nothing coming through a real proxy is trusted. |
+| `ForwardedHeaders:ForwardedForHeaderName` | Header carrying the client address, e.g. `X-Real-IP` behind Traefik (it has already resolved the real client). Default `X-Forwarded-For`. |
+| `ForwardedHeaders:ForwardLimit` | How many proxy entries to walk back through. Default 1. |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`, ... | Standard OpenTelemetry variables. OTLP export turns on when the endpoint is set (traces, metrics, and the Serilog logs sink). |
 
 ### One-time sign-in (and re-auth)
 
@@ -161,7 +164,12 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
   - `grunt_gateway_halo_token_refreshes_total{result}`
   - ASP.NET Core, HttpClient and runtime metrics
 - Traces cover incoming requests (health and metrics excluded) and outgoing Halo/Microsoft calls, with
-  `grunt.cache`, `grunt.api_key` and `halo.upstream.status` tags. Logs are JSON with trace and span ids.
+  `grunt.cache`, `grunt.api_key` and `halo.upstream.status` tags.
+- Logs go through Serilog: compact JSON on the console (what `kubectl logs` and the cluster's log collector see),
+  with trace and span ids carried natively on every line. One summary line per request logs `ClientIp` (after
+  `ForwardedHeaders` trust is applied), `RequestHost`, `RequestScheme`, method, path, status, elapsed, the
+  matched endpoint and `ConsumerKeyName` (the API key's configured `Name`, never the key itself) once
+  authenticated; health/metrics probes log at Verbose (dropped by default).
 
 ### Scale and storage
 
@@ -180,5 +188,5 @@ docker build -f Grunt/Grunt.Gateway.Host/Dockerfile -t halo-gateway .
 docker run -p 8080:8080 -v halo-gateway-data:/data -e Gateway__AdminKey=... halo-gateway
 ```
 
-The image is the chiseled (distroless, non-root) ASP.NET 8 runtime. It works with a read-only root filesystem and writes only
+The image is the chiseled (distroless, non-root) ASP.NET 10 runtime. It works with a read-only root filesystem and writes only
 to `/data`.

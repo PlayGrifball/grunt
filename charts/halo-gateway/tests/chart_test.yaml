@@ -70,8 +70,22 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].env
           content:
-            name: Logging__LogLevel__Surprenant.Grunt
+            name: Serilog__MinimumLevel__Override__Surprenant.Grunt
             value: Debug
+
+  - it: trusts the pod network for forwarded headers by default
+    template: templates/deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ForwardedHeaders__KnownIPNetworks__0
+            value: "10.42.0.0/16"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: ForwardedHeaders__ForwardedForHeaderName
+            value: X-Real-IP
 
   - it: sets OTEL variables when telemetry is on
     template: templates/deployment.yaml

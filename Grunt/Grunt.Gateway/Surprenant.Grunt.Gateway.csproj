@@ -2,7 +2,7 @@
   <!-- ASP.NET Core side of the Halo gateway: the generated HaloInfiniteController plus result mapping and response caching.
        The gateway source generator emits the controller because of [assembly: GenerateGatewayController] in GatewayAssembly.cs. -->
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
