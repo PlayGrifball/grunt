@@ -1,0 +1,85 @@
+{{- $np := .Values.networkPolicy -}}
+{{- if $np.enabled }}
+{{- $dns := dict "ports" (list (dict "protocol" "UDP" "port" 53) (dict "protocol" "TCP" "port" 53)) }}
+{{- with $np.dns.to }}{{ $_ := set $dns "to" . }}{{ end }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "halo-gateway.fullname" . }}
+  labels:
+    {{- include "halo-gateway.labels" . | nindent 4 }}
+  annotations:
+    # First (Argo CD), so the pod is covered from its start.
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "halo-gateway.selectorLabels" . | nindent 6 }}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    {{- with $np.consumerNamespaces }}
+    # Gateway API consumers (the grif-* environments).
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  {{- toYaml . | nindent 18 }}
+          {{- with $np.consumerPodSelector }}
+          podSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      ports:
+        - protocol: TCP
+          port: 8080
+    {{- end }}
+    {{- if or $np.ingressController.namespaceSelector $np.ingressController.podSelector }}
+    # The ingress controller, for the public OAuth callback route.
+    - from:
+        - {{- with $np.ingressController.namespaceSelector }}
+          namespaceSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $np.ingressController.podSelector }}
+          podSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      ports:
+        - protocol: TCP
+          port: 8080
+    {{- end }}
+    {{- with $np.metricsFrom }}
+    # Prometheus scraping /metrics.
+    - from:
+        {{- toYaml . | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: 8080
+    {{- end }}
+    {{- with $np.extraIngress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  egress:
+    {{- toYaml (list $dns) | nindent 4 }}
+    # Microsoft (login.live.com), Xbox Live and Halo over HTTPS.
+    - to:
+        {{- toYaml $np.httpsTo | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: 443
+    {{- if .Values.telemetry.enabled }}
+    {{- $port := regexFind ":[0-9]+" (.Values.telemetry.endpoint | default "") | trimPrefix ":" | default "4317" }}
+    # The OpenTelemetry collector.
+    - ports:
+        - protocol: TCP
+          port: {{ $port | int }}
+      {{- with $np.telemetryTo }}
+      to:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- with $np.extraEgress }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

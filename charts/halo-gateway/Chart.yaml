@@ -1,0 +1,13 @@
+apiVersion: v2
+name: halo-gateway
+description: >-
+  Grunt Halo gateway: one Halo Infinite account behind an HTTP API with API keys, per-key quotas,
+  response caching, token refresh and an OAuth callback for signing the account in.
+type: application
+# The publish workflow replaces the patch number with the run number.
+version: 0.1.0
+kubeVersion: ">=1.30.0-0"
+appVersion: "latest"
+home: https://github.com/PlayGrifball/grunt
+sources:
+  - https://github.com/PlayGrifball/grunt
