@@ -21,4 +21,9 @@ public class HaloApiErrorContainer
     /// Gets or sets the error message returned by the API.
     /// </summary>
     public string? Message { get; set; }
+
+    /// <summary>
+    /// Gets or sets how long the API asked callers to wait before retrying (the <c>Retry-After</c> response header), if it sent one.
+    /// </summary>
+    public System.TimeSpan? RetryAfter { get; set; }
 }

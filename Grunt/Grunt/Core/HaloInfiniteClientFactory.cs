@@ -95,6 +95,11 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
                 _logger.LogInformation("Could not get the token even with the refresh token.");
                 currentOAuthToken = await RequestNewToken(manager, clientConfig);
             }
+            else
+            {
+                // Persist the refreshed token: Microsoft may rotate the refresh token, and the stored one must stay usable.
+                await _oAuthStorage.SetToken(currentOAuthToken);
+            }
             ticket = await manager.RequestUserToken(currentOAuthToken.AccessToken)
                 ?? throw new InvalidOperationException("Failed to get user token.");
         }
@@ -193,6 +198,40 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
             semaphoreSlim.Release();
             _logger.LogTrace("Just released semaphore lock in GetOrCreateClient");
         }
+    }
+
+    /// <summary>
+    /// Expiry of the cached Spartan token, or null when no client has been created yet (or after <see cref="ResetAsync"/>).
+    /// </summary>
+    public DateTime? SpartanTokenExpiresUtc => _cachedTokens?.HaloToken.ExpiresUtc.ISO8601Date;
+
+    /// <summary>
+    /// Drops the cached tokens so the next call builds a new client from <see cref="IOAuthStorage"/> (e.g. after an admin signed in
+    /// again or cleared the tokens).
+    /// </summary>
+    public async Task ResetAsync()
+    {
+        await semaphoreSlim.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            _cachedTokens = null;
+        }
+        finally
+        {
+            semaphoreSlim.Release();
+        }
+    }
+
+    /// <summary>
+    /// Used by every generated <see cref="IHaloInfiniteClient"/> method: runs <paramref name="call"/> on a cached or new client
+    /// under <see cref="HaloRequestPolicy"/> (auth retry on 401/403, backoff on 429/5xx/network errors), configured from
+    /// <c>ClientConfiguration:Retry</c>.
+    /// </summary>
+    private Task<TResponse> ExecuteWithPolicyAsync<TResponse>(string operation, Func<IHaloInfiniteClient, Task<TResponse>> call,
+        Func<TResponse, HaloApiErrorContainer?> error)
+    {
+        var policy = new HaloRequestPolicy(_options.CurrentValue?.Retry, _logger);
+        return policy.ExecuteAsync(operation, GetOrCreateClient, call, error);
     }
 
     private class Tokens

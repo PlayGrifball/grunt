@@ -14,7 +14,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.11" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="NUnit" Version="4.4.0" />
     <PackageReference Include="NUnit.Analyzers" Version="4.10.0">
       <PrivateAssets>all</PrivateAssets>
@@ -25,10 +28,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Grunt\Surprenant.Grunt.csproj" />
+    <ProjectReference Include="..\Grunt.Gateway\Surprenant.Grunt.Gateway.csproj" />
+    <ProjectReference Include="..\Grunt.Gateway.Client\Surprenant.Grunt.Gateway.Client.csproj" />
+    <ProjectReference Include="..\Grunt.Gateway.Host\Surprenant.Grunt.Gateway.Host.csproj" />
+    <!-- Referenced as a library (not an analyzer) so the generator tests can drive GatewayGenerator directly. -->
+    <ProjectReference Include="..\Grunt.SourceGenerator\Grunt.SourceGenerator.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="NUnit.Framework" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Expected generator output for the real HaloInfiniteClient; regenerate by building with EmitCompilerGeneratedFiles=true. -->
+    <None Include="Snapshots\*.cs" CopyToOutputDirectory="PreserveNewest" />
+    <Compile Remove="Snapshots\*.cs" />
   </ItemGroup>
 
 </Project>

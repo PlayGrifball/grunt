@@ -59,6 +59,38 @@ public interface IHaloInfiniteClient
 }
 ```
 
+## Generated factory and request policy
+
+The same generator emits the generated half of `partial class HaloInfiniteClientFactory : IHaloInfiniteClient`. Each method is a one-liner:
+
+```csharp
+public Task<HaloApiResultContainer<MatchStats, HaloApiErrorContainer>> StatsGetMatchStats(string matchId)
+    => ExecuteWithPolicyAsync("StatsGetMatchStats", client => client.StatsGetMatchStats(matchId), static response => response?.Error);
+```
+
+`ExecuteWithPolicyAsync` (hand-written half) runs the call under `HaloRequestPolicy`:
+
+- **401/403**: rebuild the client with fresh tokens and retry once (same as before). This doesn't count against the retry budget.
+- **429, 408, 500, 502, 503, 504 and network errors** (`HttpRequestException`, timeouts): retry with exponential backoff and equal jitter, honouring `Retry-After` (captured on `HaloApiErrorContainer.RetryAfter`).
+
+Configure it under `ClientConfiguration:Retry`:
+
+| Setting | Default |
+|:--------|:--------|
+| `MaxAttempts` | 4 (1 turns transient retries off) |
+| `BaseDelay` | 500 ms |
+| `MaxDelay` | 20 s |
+| `MaxRetryAfter` | 60 s (a longer `Retry-After` is returned instead of waited out) |
+| `UseJitter` | true |
+| `RetryOnNetworkErrors` | true |
+| `RetryStatusCodes` | the defaults listed above |
+
+Retries are counted in the `grunt.halo.retries` metric (meter `Surprenant.Grunt`).
+
+## Gateway generation
+
+`GatewayGenerator` (same analyzer assembly) turns `[GatewayExposed]` methods into an ASP.NET Core controller and an HTTP client. See [GATEWAY.md](GATEWAY.md).
+
 ## Compilation-Time Generation
 
 The source generator runs automatically during each build:

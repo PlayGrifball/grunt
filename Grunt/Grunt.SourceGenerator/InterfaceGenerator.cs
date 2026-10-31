@@ -115,7 +115,7 @@ public class InterfaceGenerator : IIncrementalGenerator
 
         foreach (var method in publicMethods)
         {
-            AppendComments(sb, method);
+            sb.AppendLine("    /// <inheritdoc/>");
 
             var returnType = GetSimpleType(method.ReturnType);
             var methodName = method.Name;
@@ -134,30 +134,9 @@ public class InterfaceGenerator : IIncrementalGenerator
                     ? $"where {tp.Name} : {string.Join(", ", tp.ConstraintTypes.Select(GetSimpleType))}"
                     : ""));
 
-            sb.AppendLine($"    public async {returnType} {methodName}{genericDeclaration}({parameters}) {typeParameterConstraints}");
-            sb.AppendLine($"    {{");
-            sb.AppendLine($"        var client = await GetOrCreateClient().ConfigureAwait(false);");
-            sb.AppendLine($"        var response = await client.{methodName}{genericInvocation}({args}).ConfigureAwait(false);");
-            sb.AppendLine($"        if (response.Error.Code == 401 || response.Error.Code == 403)");
-            sb.AppendLine($"        {{");
-            sb.AppendLine($"            _logger.LogWarning(\"Detected auth issue, going to retry request\");");
-            sb.AppendLine($"            client = await GetOrCreateClient(true).ConfigureAwait(false);");
-            sb.AppendLine($"            response = await client.{methodName}{genericInvocation}({args}).ConfigureAwait(false);");
-            sb.AppendLine($"            if (response.Error.Code == 401 || response.Error.Code == 403)");
-            sb.AppendLine($"            {{");
-            sb.AppendLine($"                _logger.LogCritical(\"Auth retry failed!\");");
-            sb.AppendLine($"            }}");
-            sb.AppendLine($"        }}");
-            sb.AppendLine($"        if (response.Error.Code > 299)");
-            sb.AppendLine($"        {{");
-            sb.AppendLine($"            _logger.LogError(\"Status code does not indicate success: {{Code}}\", response.Error.Code);");
-            sb.AppendLine($"        }}");
-            sb.AppendLine($"        else");
-            sb.AppendLine($"        {{");
-            sb.AppendLine($"            _logger.LogTrace(\"Status code appears successful: {{Code}}\", response.Error.Code);");
-            sb.AppendLine($"        }}");
-            sb.AppendLine($"        return response;");
-            sb.AppendLine($"    }}");
+            // Auth retry (401/403, once) and transient backoff (429/5xx/network) live in HaloRequestPolicy.
+            sb.AppendLine($"    public {returnType} {methodName}{genericDeclaration}({parameters}) {typeParameterConstraints}");
+            sb.AppendLine($"        => ExecuteWithPolicyAsync(\"{methodName}\", client => client.{methodName}{genericInvocation}({args}), static response => response?.Error);");
         }
         sb.AppendLine("}");
         return sb.ToString();

@@ -362,3 +362,6 @@ tokens.json
 
 ## Contains one time use authorization code
 AccountAuthorization.txt
+# Halo gateway token store temp/lock files
+tokens.json.tmp
+.gateway.lock

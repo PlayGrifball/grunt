@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+**/TestResults/
+.git/
+.github/
+**/*.user
+**/tokens.json
+**/AccountAuthorization.txt
