@@ -29,6 +29,9 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
   - Probes: startup and liveness on `/health/live`, which runs no checks, so a Halo outage or missing sign-in never
     restarts the pod. Readiness is on `/health/ready`, which runs the Halo account check. That check is at worst
     *Degraded*, which still counts as ready.
+  - X-Forwarded-*/X-Real-IP are trusted only from `forwardedHeaders.knownIPNetworks` (default: the cluster pod
+    network, matching Traefik's `X-Real-IP`); anything else keeps the connection's own peer address. Set it to the
+    real cluster pod CIDR if a non-default one is used.
 - **PVC** for the token file. It's annotated `helm.sh/resource-policy: keep` and `argocd.argoproj.io/sync-options:
   Prune=false,Delete=false`, so it survives uninstalls, Argo prunes and source switches. Losing it means signing in again.
 - **Service** (ClusterIP 8080).

@@ -118,6 +118,24 @@ spec:
               value: {{ .Values.cache.immutableTtl | quote }}
             - name: Gateway__Cache__MaxCachedBinaryBytes
               value: {{ .Values.cache.maxCachedBinaryBytes | int64 | quote }}
+            {{- with .Values.forwardedHeaders }}
+            {{- range $i, $n := .knownIPNetworks }}
+            - name: ForwardedHeaders__KnownIPNetworks__{{ $i }}
+              value: {{ $n | quote }}
+            {{- end }}
+            {{- range $i, $p := .knownProxies }}
+            - name: ForwardedHeaders__KnownProxies__{{ $i }}
+              value: {{ $p | quote }}
+            {{- end }}
+            {{- if .forwardedForHeaderName }}
+            - name: ForwardedHeaders__ForwardedForHeaderName
+              value: {{ .forwardedForHeaderName | quote }}
+            {{- end }}
+            {{- if .forwardLimit }}
+            - name: ForwardedHeaders__ForwardLimit
+              value: {{ .forwardLimit | quote }}
+            {{- end }}
+            {{- end }}
             {{- with .Values.telemetry }}
             {{- if .enabled }}
             - name: OTEL_SERVICE_NAME

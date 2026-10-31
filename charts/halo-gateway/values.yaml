@@ -55,6 +55,16 @@ auth:
   refreshInterval: "00:30:00"
   signInStateLifetime: "00:15:00"
 
+# Trusted proxy addresses for X-Forwarded-*/X-Real-IP (ASP.NET Core ForwardedHeadersMiddleware). Only requests
+# whose immediate peer matches one of these may set the client address, scheme and host; everything else keeps
+# the connection's own peer address. Default: the cluster pod network, matching homelab's own Traefik setup
+# (Traefik sets X-Real-IP after resolving the real client against the ranges it trusts).
+forwardedHeaders:
+  knownIPNetworks: ["10.42.0.0/16"]
+  knownProxies: []
+  forwardedForHeaderName: X-Real-IP
+  forwardLimit: ""
+
 # Factory backoff for Halo calls (ClientConfiguration:Retry).
 retry:
   maxAttempts: 4
