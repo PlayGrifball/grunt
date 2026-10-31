@@ -67,8 +67,15 @@ public sealed class HaloGatewayCacheFilter : IAsyncResourceFilter
             return;
         }
 
-        var executed = await next();
+        // Resource filters wrap result execution: headers must be set before the response starts.
         Record(http, action, "miss", ttl);
+        http.Response.OnStarting(() =>
+        {
+            if (http.Response.StatusCode == StatusCodes.Status200OK)
+                http.Response.Headers.CacheControl = CacheControl(ttl);
+            return Task.CompletedTask;
+        });
+        var executed = await next();
         if (executed.Exception is not null && !executed.ExceptionHandled)
             return;
 
@@ -82,7 +89,6 @@ public sealed class HaloGatewayCacheFilter : IAsyncResourceFilter
         if (cacheable && http.Response.Headers.TryGetValue(HaloGatewayProtocol.UpstreamStatusHeader, out var upstream))
         {
             _cache.Set(key, new Entry(result!, upstream.ToString()), ttl);
-            http.Response.Headers.CacheControl = "private, max-age=" + ((int)ttl.TotalSeconds).ToString(CultureInfo.InvariantCulture);
         }
     }
 
@@ -93,8 +99,11 @@ public sealed class HaloGatewayCacheFilter : IAsyncResourceFilter
         Activity.Current?.SetTag("grunt.cache", outcome);
         Activity.Current?.SetTag("grunt.cache.ttl_seconds", (int)ttl.TotalSeconds);
         if (outcome == "hit")
-            http.Response.Headers.CacheControl = "private, max-age=" + ((int)ttl.TotalSeconds).ToString(CultureInfo.InvariantCulture);
+            http.Response.Headers.CacheControl = CacheControl(ttl);
     }
+
+    private static string CacheControl(TimeSpan ttl)
+        => "private, max-age=" + ((int)ttl.TotalSeconds).ToString(CultureInfo.InvariantCulture);
 
     internal static string BuildKey(HttpRequest request)
     {
