@@ -22,22 +22,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # The SDK (9.0) builds the source generator (Roslyn 4.14); the projects target net8.0, so tests need the 8.0 runtime.
+      # global.json pins the SDK (10.0, rollForward latestFeature); Grunt.SourceGenerator stays netstandard2.0
+      # (a Roslyn analyzer), everything else targets net10.0.
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
+          dotnet-version: 10.0.x
 
       - name: Restore
-        run: dotnet restore Grunt/Grunt.sln
+        run: dotnet restore Grunt/Grunt.slnx
 
       - name: Build
-        run: dotnet build Grunt/Grunt.sln --configuration Release --no-restore
+        run: dotnet build Grunt/Grunt.slnx --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test Grunt/Grunt.sln --configuration Release --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
+        run: dotnet test Grunt/Grunt.slnx --configuration Release --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
 
       - name: Upload test results
         if: always()

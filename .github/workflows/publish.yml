@@ -30,13 +30,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # The SDK (9.0) builds the source generator (Roslyn 4.14); the projects target net8.0, so tests need the 8.0 runtime.
+      # global.json pins the SDK (10.0, rollForward latestFeature); Grunt.SourceGenerator stays netstandard2.0
+      # (a Roslyn analyzer), everything else targets net10.0.
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8.0.x
-            9.0.x
+          dotnet-version: 10.0.x
 
       - name: Version
         env:
@@ -46,7 +45,7 @@ jobs:
           echo "VERSION=${version#v}" >> "$GITHUB_ENV"
 
       - name: Test
-        run: dotnet test Grunt/Grunt.sln --configuration Release
+        run: dotnet test Grunt/Grunt.slnx --configuration Release
 
       - name: Pack
         run: |
