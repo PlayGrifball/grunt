@@ -27,6 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- ForwardedHeadersOptions/UseForwardedHeaders() etc. (Microsoft.AspNetCore.HttpOverrides/Builder), for ForwardedHeadersTests. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Grunt\Surprenant.Grunt.csproj" />
     <ProjectReference Include="..\Grunt.Gateway\Surprenant.Grunt.Gateway.csproj" />
     <ProjectReference Include="..\Grunt.Gateway.Client\Surprenant.Grunt.Gateway.Client.csproj" />
