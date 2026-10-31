@@ -11,10 +11,13 @@ COPY README.md LICENSE ./
 RUN dotnet restore Grunt/Grunt.Gateway.Host/Surprenant.Grunt.Gateway.Host.csproj -a $TARGETARCH
 RUN dotnet publish Grunt/Grunt.Gateway.Host/Surprenant.Grunt.Gateway.Host.csproj -c Release -a $TARGETARCH --no-restore \
     -o /app /p:UseAppHost=false
+# /data must exist in the image owned by the app user, so a fresh (anonymous or named) volume mounted there is writable.
+RUN mkdir -p /data-owned
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled AS final
 WORKDIR /app
 COPY --from=build /app .
+COPY --from=build --chown=1654:1654 /data-owned /data
 ENV ASPNETCORE_HTTP_PORTS=8080 \
     DOTNET_EnableDiagnostics=0 \
     Gateway__Auth__TokenPath=/data/tokens.json

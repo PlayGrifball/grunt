@@ -278,6 +278,11 @@ public class GatewayRoundTripTests
 
     // ---- Admin / OAuth flow ----
 
+    private static readonly System.Text.Json.JsonSerializerOptions AdminJson = new(System.Text.Json.JsonSerializerDefaults.Web)
+    {
+        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
+    };
+
     private HttpClient Admin()
     {
         var http = _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
@@ -308,7 +313,7 @@ public class GatewayRoundTripTests
         var forged = await anonymous.GetAsync("oauth/callback?code=the-code&state=forged");
         var ok = await anonymous.GetAsync($"oauth/callback?code=the-code&state={issuedState}");
         var replay = await anonymous.GetAsync($"oauth/callback?code=the-code&state={issuedState}");
-        var status = await admin.GetFromJsonAsync<HaloAuthSnapshot>("admin/halo/status");
+        var status = await admin.GetFromJsonAsync<HaloAuthSnapshot>("admin/halo/status", AdminJson);
 
         Assert.Multiple(() =>
         {
@@ -331,7 +336,7 @@ public class GatewayRoundTripTests
 
         var pasted = await admin.PostAsJsonAsync("admin/halo/code", new { code = "https://gateway.example/oauth/callback?code=M.C123&state=x" });
         var cleared = await admin.DeleteAsync("admin/halo/tokens");
-        var status = await admin.GetFromJsonAsync<HaloAuthSnapshot>("admin/halo/status");
+        var status = await admin.GetFromJsonAsync<HaloAuthSnapshot>("admin/halo/status", AdminJson);
 
         Assert.That(pasted.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         Assert.That(cleared.StatusCode, Is.EqualTo(HttpStatusCode.OK));

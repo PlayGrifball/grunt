@@ -62,7 +62,9 @@ namespace Surprenant.Grunt.Gateway.Host
 
             // Generated controller + response cache, admin/callback controllers from this assembly.
             services.AddHaloGateway(gatewaySection.GetSection("Cache"))
-                .AddApplicationPart(typeof(GatewayHost).Assembly);
+                .AddApplicationPart(typeof(GatewayHost).Assembly)
+                // Admin/status JSON shows enum names (the generated controller uses HaloGatewayProtocol.JsonOptions instead).
+                .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 
             services.AddAuthentication(GatewayAuth.ConsumerScheme)
                 .AddScheme<ApiKeySchemeOptions, ApiKeyAuthenticationHandler>(GatewayAuth.ConsumerScheme, o => o.Admin = false)
