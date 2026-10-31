@@ -1,0 +1,193 @@
+{{- $fullname := include "halo-gateway.fullname" . }}
+{{- if not .Values.oauth.redirectUrl }}
+{{- fail "oauth.redirectUrl is required (https://<public host>/oauth/callback, registered on the Microsoft app)" }}
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}
+  labels:
+    {{- include "halo-gateway.labels" . | nindent 4 }}
+spec:
+  # One writer for the token file: never more than one pod, and the old one stops before the new one starts.
+  replicas: 1
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      {{- include "halo-gateway.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "halo-gateway.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: gateway
+          image: {{ include "halo-gateway.image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_HTTP_PORTS
+              value: "8080"
+            - name: Gateway__Auth__TokenPath
+              value: /data/tokens.json
+            - name: Gateway__Auth__RefreshInterval
+              value: {{ .Values.auth.refreshInterval | quote }}
+            - name: Gateway__Auth__SignInStateLifetime
+              value: {{ .Values.auth.signInStateLifetime | quote }}
+            - name: ClientConfiguration__RedirectUrl
+              value: {{ .Values.oauth.redirectUrl | quote }}
+            {{- with .Values.oauth.existingSecret }}
+            - name: ClientConfiguration__ClientId
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . }}
+                  key: {{ $.Values.oauth.clientIdKey }}
+            - name: ClientConfiguration__ClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . }}
+                  key: {{ $.Values.oauth.clientSecretKey }}
+            {{- end }}
+            - name: ClientConfiguration__Retry__MaxAttempts
+              value: {{ .Values.retry.maxAttempts | int64 | quote }}
+            - name: ClientConfiguration__Retry__BaseDelay
+              value: {{ .Values.retry.baseDelay | quote }}
+            - name: ClientConfiguration__Retry__MaxDelay
+              value: {{ .Values.retry.maxDelay | quote }}
+            - name: ClientConfiguration__Retry__MaxRetryAfter
+              value: {{ .Values.retry.maxRetryAfter | quote }}
+            {{- with .Values.admin.existingSecret }}
+            - name: Gateway__AdminKey
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . }}
+                  key: {{ $.Values.admin.key }}
+            {{- end }}
+            {{- range $i, $k := .Values.apiKeys }}
+            {{- if not $k.name }}{{ fail (printf "apiKeys[%d].name is required" $i) }}{{ end }}
+            - name: Gateway__ApiKeys__{{ $i }}__Name
+              value: {{ $k.name | quote }}
+            - name: Gateway__ApiKeys__{{ $i }}__Environment
+              value: {{ $k.environment | default "unknown" | quote }}
+            - name: Gateway__ApiKeys__{{ $i }}__Priority
+              value: {{ hasKey $k "priority" | ternary $k.priority 1 | quote }}
+            - name: Gateway__ApiKeys__{{ $i }}__PermitsPerMinute
+              value: {{ hasKey $k "permitsPerMinute" | ternary $k.permitsPerMinute 600 | int64 | quote }}
+            {{- if $k.secretName }}
+            - name: Gateway__ApiKeys__{{ $i }}__Key
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $k.secretName }}
+                  key: {{ $k.secretKey | default $k.name }}
+            {{- else if $k.keySha256 }}
+            - name: Gateway__ApiKeys__{{ $i }}__KeySha256
+              value: {{ $k.keySha256 | quote }}
+            {{- else }}
+            {{- fail (printf "apiKeys[%d] (%s) needs secretName or keySha256" $i $k.name) }}
+            {{- end }}
+            {{- end }}
+            - name: Gateway__GlobalQuota__PermitsPerMinute
+              value: {{ .Values.globalQuota.permitsPerMinute | int64 | quote }}
+            - name: Gateway__GlobalQuota__ReservedFraction
+              value: {{ .Values.globalQuota.reservedFraction | quote }}
+            - name: Gateway__GlobalQuota__ReservedPriority
+              value: {{ .Values.globalQuota.reservedPriority | quote }}
+            - name: Gateway__Cache__Enabled
+              value: {{ .Values.cache.enabled | quote }}
+            - name: Gateway__Cache__ImmutableTtl
+              value: {{ .Values.cache.immutableTtl | quote }}
+            - name: Gateway__Cache__MaxCachedBinaryBytes
+              value: {{ .Values.cache.maxCachedBinaryBytes | int64 | quote }}
+            {{- with .Values.telemetry }}
+            {{- if .enabled }}
+            - name: OTEL_SERVICE_NAME
+              value: {{ .serviceName | default $.Release.Name | quote }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ required "telemetry.endpoint is required when telemetry is enabled" .endpoint | quote }}
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: {{ .protocol | quote }}
+            {{- $attrs := list (printf "k8s.namespace.name=%s" $.Release.Namespace) }}
+            {{- if .environment }}{{ $attrs = append $attrs (printf "deployment.environment.name=%s" .environment) }}{{ end }}
+            {{- range $k, $v := .resourceAttributes }}{{ $attrs = append $attrs (printf "%s=%v" $k $v) }}{{ end }}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: {{ join "," $attrs | quote }}
+            {{- if .metricExportInterval }}
+            - name: OTEL_METRIC_EXPORT_INTERVAL
+              value: {{ .metricExportInterval | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- with (include "halo-gateway.flatten" (dict "prefix" "" "value" .Values.config) | trim) }}
+            {{- . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          startupProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "halo-gateway.claimName" . }}
+          {{- else }}
+          emptyDir:
+            sizeLimit: 16Mi
+          {{- end }}
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

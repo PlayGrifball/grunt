@@ -1,0 +1,13 @@
+Halo gateway {{ include "halo-gateway.fullname" . }} in {{ .Release.Namespace }}.
+
+Consumers: http://{{ include "halo-gateway.fullname" . }}.{{ .Release.Namespace }}.svc:{{ .Values.service.port }}/ with header X-Api-Key.
+{{- if not .Values.persistence.enabled }}
+
+WARNING: persistence is disabled; the Halo tokens are lost on every restart.
+{{- end }}
+
+Sign the Halo account in (once, and again whenever the HaloGatewayReauthRequired alert fires):
+  1. Register {{ .Values.oauth.redirectUrl }} as a redirect URI on the Microsoft app.
+  2. kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "halo-gateway.fullname" . }} 8080:{{ .Values.service.port }}
+  3. curl -H "X-Admin-Key: $ADMIN_KEY" http://localhost:8080/admin/halo/signin   # open the returned url, sign in, approve
+  4. curl -H "X-Admin-Key: $ADMIN_KEY" http://localhost:8080/admin/halo/status

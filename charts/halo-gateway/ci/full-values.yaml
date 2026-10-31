@@ -1,0 +1,58 @@
+image:
+  tag: sha-0000000
+oauth:
+  redirectUrl: https://halo-gateway.example.com/oauth/callback
+  existingSecret: halo-gateway-oauth
+admin:
+  existingSecret: halo-gateway-admin
+apiKeys:
+  - name: grif-prod
+    environment: prod
+    priority: 0
+    permitsPerMinute: 600
+    secretName: halo-gateway-keys
+    secretKey: grif-prod
+  - name: grif-test
+    environment: test
+    priority: 1
+    permitsPerMinute: 120
+    secretName: halo-gateway-keys
+  - name: grif-preview
+    environment: preview
+    priority: 2
+    permitsPerMinute: 60
+    keySha256: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+config:
+  Logging:
+    LogLevel:
+      Surprenant.Grunt: Debug
+telemetry:
+  enabled: true
+  endpoint: http://otel-collector.monitoring:4317
+  environment: homelab
+networkPolicy:
+  consumerNamespaces: [grif-prod, grif-test, grif-preview1]
+  ingressController:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: kube-system
+    podSelector:
+      matchLabels:
+        app.kubernetes.io/name: traefik
+  metricsFrom:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: monitoring
+  telemetryTo:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: monitoring
+ingressRoute:
+  enabled: true
+  host: halo-gateway.example.com
+  tls:
+    certResolver: letsencrypt
+serviceMonitor:
+  enabled: true
+prometheusRule:
+  enabled: true

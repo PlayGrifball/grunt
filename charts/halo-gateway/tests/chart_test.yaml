@@ -1,0 +1,121 @@
+suite: halo-gateway
+release:
+  name: halo-gateway
+  namespace: halo-gateway
+values:
+  - ../ci/full-values.yaml
+tests:
+  - it: runs one replica with Recreate, non-root, read-only root filesystem and CPU limits
+    template: templates/deployment.yaml
+    asserts:
+      - equal: { path: spec.replicas, value: 1 }
+      - equal: { path: spec.strategy.type, value: Recreate }
+      - equal: { path: spec.template.spec.securityContext.runAsNonRoot, value: true }
+      - equal: { path: spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem, value: true }
+      - isNotEmpty: { path: spec.template.spec.containers[0].resources.limits.cpu }
+      - equal: { path: spec.template.spec.containers[0].image, value: "ghcr.io/playgrifball/halo-gateway:sha-0000000" }
+
+  - it: probes liveness without checks and readiness with the Halo account check
+    template: templates/deployment.yaml
+    asserts:
+      - equal: { path: spec.template.spec.containers[0].livenessProbe.httpGet.path, value: /health/live }
+      - equal: { path: spec.template.spec.containers[0].startupProbe.httpGet.path, value: /health/live }
+      - equal: { path: spec.template.spec.containers[0].readinessProbe.httpGet.path, value: /health/ready }
+
+  - it: wires consumer keys from secrets or hashes, with priority 0 kept
+    template: templates/deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: { name: Gateway__ApiKeys__0__Priority, value: "0" }
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: Gateway__ApiKeys__0__Key
+            valueFrom: { secretKeyRef: { name: halo-gateway-keys, key: grif-prod } }
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: Gateway__ApiKeys__1__Key
+            valueFrom: { secretKeyRef: { name: halo-gateway-keys, key: grif-test } }
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: { name: Gateway__ApiKeys__2__KeySha256, value: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 }
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: Gateway__AdminKey
+            valueFrom: { secretKeyRef: { name: halo-gateway-admin, key: AdminKey } }
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: { name: Logging__LogLevel__Surprenant.Grunt, value: Debug }
+
+  - it: sets OTEL variables when telemetry is on
+    template: templates/deployment.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: { name: OTEL_EXPORTER_OTLP_ENDPOINT, value: "http://otel-collector.monitoring:4317" }
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content: { name: OTEL_SERVICE_NAME, value: halo-gateway }
+
+  - it: fails without a key source
+    template: templates/deployment.yaml
+    set:
+      apiKeys:
+        - name: broken
+    asserts:
+      - failedTemplate:
+          errorMessage: apiKeys[0] (broken) needs secretName or keySha256
+
+  - it: fails without a redirect URL
+    template: templates/deployment.yaml
+    set:
+      oauth.redirectUrl: ""
+    asserts:
+      - failedTemplate: {}
+
+  - it: keeps the token claim on uninstall and when Argo CD prunes
+    template: templates/pvc.yaml
+    asserts:
+      - equal: { path: metadata.annotations["helm.sh/resource-policy"], value: keep }
+      - equal: { path: metadata.annotations["argocd.argoproj.io/sync-options"], value: "Prune=false,Delete=false" }
+
+  - it: mounts an emptyDir and no claim without persistence
+    templates: [templates/deployment.yaml, templates/pvc.yaml]
+    set:
+      persistence.enabled: false
+    asserts:
+      - hasDocuments: { count: 0 }
+        template: templates/pvc.yaml
+      - isNotNull: { path: spec.template.spec.volumes[0].emptyDir }
+        template: templates/deployment.yaml
+
+  - it: routes only the OAuth callback publicly
+    template: templates/ingressroute.yaml
+    asserts:
+      - equal:
+          path: spec.routes[0].match
+          value: Host(`halo-gateway.example.com`) && Path(`/oauth/callback`)
+      - lengthEqual: { path: spec.routes, count: 1 }
+
+  - it: lets only the listed consumer namespaces, the ingress controller and Prometheus in
+    template: templates/networkpolicy.yaml
+    asserts:
+      - equal:
+          path: spec.ingress[0].from[0].namespaceSelector.matchExpressions[0].values
+          value: [grif-prod, grif-test, grif-preview1]
+      - equal:
+          path: spec.ingress[1].from[0].podSelector.matchLabels["app.kubernetes.io/name"]
+          value: traefik
+      - equal: { path: spec.egress[1].ports[0].port, value: 443 }
+      - equal: { path: spec.egress[2].ports[0].port, value: 4317 }
+
+  - it: alerts on re-auth, upstream errors, throttling, quota and scrape failures
+    template: templates/prometheusrule.yaml
+    asserts:
+      - lengthEqual: { path: spec.groups[0].rules, count: 5 }
+      - equal:
+          path: spec.groups[0].rules[0].expr
+          value: max(grunt_gateway_halo_reauth_required{namespace="halo-gateway"}) == 1
