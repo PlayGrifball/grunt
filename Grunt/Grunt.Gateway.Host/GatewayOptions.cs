@@ -23,6 +23,9 @@ public sealed class GatewayOptions
 
     /// <summary>Browser sign-in for the /admin page (OpenID Connect); off until <see cref="OidcOptions.Authority"/> and <see cref="OidcOptions.ClientId"/> are set.</summary>
     public OidcOptions Oidc { get; set; } = new();
+
+    /// <summary>ASP.NET Core Data Protection key ring (section <c>Gateway:DataProtection</c>).</summary>
+    public GatewayDataProtectionOptions DataProtection { get; set; } = new();
 }
 
 /// <summary>One consumer API key.</summary>
@@ -83,6 +86,22 @@ public sealed class HaloAuthOptions
     /// store is single-writer).
     /// </summary>
     public bool UseInstanceLock { get; set; } = true;
+}
+
+/// <summary>
+/// ASP.NET Core Data Protection key ring, used to protect the OIDC browser session cookie, antiforgery tokens and the OAuth
+/// sign-in state (<see cref="HaloAuthOptions.SignInStateLifetime"/>). Without a persisted key ring, every restart gets fresh
+/// in-memory keys, which invalidates all three (the admin page silently signs everyone out and fails in-flight sign-ins).
+/// </summary>
+public sealed class GatewayDataProtectionOptions
+{
+    /// <summary>
+    /// Directory the key ring is persisted to. Empty (default): <see cref="HaloAuthOptions.TokenPath"/>'s directory plus
+    /// <c>data-protection-keys</c>, i.e. the same persistent volume as the OAuth token, no extra volume needed. Keys are
+    /// written unencrypted at rest, which is fine for this single-tenant internal service; add
+    /// <c>ProtectKeysWithCertificate</c> later if that changes.
+    /// </summary>
+    public string? KeysPath { get; set; }
 }
 
 /// <summary>

@@ -127,6 +127,7 @@ Configuration (`appsettings.json`, environment variables such as `Gateway__Admin
 | `Gateway:Oidc` | Browser admin page `/admin`: `Authority`, `ClientId`, `ClientSecret`, `AllowedGroups[]`, `GroupClaim` (default `groups`), `Scopes[]`, `SessionLifetime`. Off (404) until `Authority` and `ClientId` are set. Redirect URI: `https://<public gateway host>/admin/signin-oidc`. |
 | `Gateway:Cache` | `Enabled`, `ImmutableTtl`, `MaxCachedBinaryBytes`. |
 | `Gateway:Auth` | `TokenPath` (on a volume), `RefreshInterval`, `SignInStateLifetime`, `UseInstanceLock`. |
+| `Gateway:DataProtection:KeysPath` | Where the ASP.NET Core Data Protection key ring is persisted. Default: `TokenPath`'s directory plus `data-protection-keys` (the same volume, no chart change needed). |
 | `ForwardedHeaders:KnownIPNetworks[]` / `KnownProxies[]` | CIDRs/addresses whose immediate requests may set the client address, scheme and host (X-Forwarded-\*). Unset: the ASP.NET Core default of loopback only, i.e. nothing coming through a real proxy is trusted. |
 | `ForwardedHeaders:ForwardedForHeaderName` | Header carrying the client address, e.g. `X-Real-IP` behind Traefik (it has already resolved the real client). Default `X-Forwarded-For`. |
 | `ForwardedHeaders:ForwardLimit` | How many proxy entries to walk back through. Default 1. |
@@ -180,7 +181,10 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
   with trace and span ids carried natively on every line. One summary line per request logs `ClientIp` (after
   `ForwardedHeaders` trust is applied), `RequestHost`, `RequestScheme`, method, path, status, elapsed, the
   matched endpoint and `ConsumerKeyName` (the API key's configured `Name`, never the key itself) once
-  authenticated; health probes log at Verbose (dropped by default).
+  authenticated; health probes log at Verbose (dropped by default). The default minimum level is Warning (like
+  GrifballWebApp), with `Surprenant.Grunt` and the request summary line raised to Information, so framework noise
+  such as the health check service's own "Health check ... completed" line (otherwise printed on every kubelet
+  probe) is dropped without an explicit override for it.
 
 ### Scale and storage
 
@@ -191,6 +195,10 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
   distributed cache (Redis) is the scale-out option.
 - Token storage is pluggable: register another `IOAuthTokenStore` (a database row, or a Kubernetes Secret through the API)
   to replace the file store. That also lifts the single-replica limit, once refresh is coordinated (a lease or leader election).
+- The ASP.NET Core Data Protection key ring (admin OIDC session cookie, antiforgery tokens, OAuth sign-in state) is
+  persisted next to the OAuth token (`Gateway:DataProtection:KeysPath`, default `<TokenPath's directory>/data-protection-keys`)
+  instead of the framework default, which the read-only root filesystem can't write to. Keys are unencrypted at rest on the
+  PVC; acceptable for this single-tenant internal service today. Add `ProtectKeysWithCertificate` if that needs to change.
 
 ### Docker
 

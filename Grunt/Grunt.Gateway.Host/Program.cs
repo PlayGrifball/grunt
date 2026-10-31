@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -60,6 +61,16 @@ namespace Surprenant.Grunt.Gateway.Host
             var gatewaySection = configuration.GetSection(GatewayOptions.SectionName);
             services.Configure<GatewayOptions>(gatewaySection);
             services.TryAddSingletonTimeProvider();
+
+            // Data Protection key ring, persisted next to the OAuth token (same persistent volume). Without this, the
+            // chiseled image's read-only root filesystem makes the framework default (~/.aspnet/DataProtection-Keys under
+            // HOME=/home/app) fail with EROFS, silently falling back to ephemeral in-memory keys: the admin OIDC session
+            // cookie, antiforgery tokens and OAuth sign-in state all break on every restart.
+            var dataProtectionKeysPath = ResolveDataProtectionKeysPath(gatewaySection);
+            Directory.CreateDirectory(dataProtectionKeysPath);
+            services.AddDataProtection()
+                .SetApplicationName("halo-gateway")
+                .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
 
             // Halo account: token store (pluggable IOAuthStorage), no file-based code reading, sign-in/refresh service.
             services.AddSingleton<IOAuthTokenStore, FileOAuthTokenStore>();
@@ -146,6 +157,25 @@ namespace Surprenant.Grunt.Gateway.Host
 
         public static bool IsInfrastructurePath(PathString path)
             => path.StartsWithSegments(HealthPath);
+
+        /// <summary>
+        /// <see cref="GatewayDataProtectionOptions.KeysPath"/> (<c>Gateway:DataProtection:KeysPath</c>) when set, else
+        /// <see cref="HaloAuthOptions.TokenPath"/>'s directory (<c>Gateway:Auth:TokenPath</c>) plus
+        /// <c>data-protection-keys</c>. <paramref name="gatewaySection"/> is the <c>Gateway</c> configuration section (or
+        /// an equivalent root in tests).
+        /// </summary>
+        public static string ResolveDataProtectionKeysPath(IConfiguration gatewaySection)
+        {
+            var configured = gatewaySection["DataProtection:KeysPath"];
+            if (!string.IsNullOrWhiteSpace(configured))
+                return configured;
+
+            var tokenPath = gatewaySection["Auth:TokenPath"];
+            if (string.IsNullOrWhiteSpace(tokenPath))
+                tokenPath = new HaloAuthOptions().TokenPath;
+            var directory = Path.GetDirectoryName(Path.GetFullPath(tokenPath))!;
+            return Path.Combine(directory, "data-protection-keys");
+        }
 
         public static void Configure(WebApplication app)
         {
