@@ -22,7 +22,14 @@ public class HaloRequestPolicyTests
         {
             Calls++;
             var next = _script.Count > 1 ? _script.Dequeue() : _script.Peek();
-            return Task.FromResult(next());
+            try
+            {
+                return Task.FromResult(next());
+            }
+            catch (Deferred deferred)
+            {
+                return deferred.Response;
+            }
         }
     }
 
@@ -43,17 +50,29 @@ public class HaloRequestPolicyTests
 
     private static Func<HttpResponseMessage> Throw() => () => throw new HttpRequestException("connection reset");
 
+    /// <summary>A script step whose response comes later (or never), not as soon as it is asked for.</summary>
+    private sealed class Deferred(Task<HttpResponseMessage> response) : Exception
+    {
+        public Task<HttpResponseMessage> Response => response;
+    }
+
+    private static Func<HttpResponseMessage> Hang() => () => throw new Deferred(new TaskCompletionSource<HttpResponseMessage>().Task);
+
+    private static Func<HttpResponseMessage> Late(TimeSpan after) => () => throw new Deferred(Task.Delay(after).ContinueWith(_ => Ok()()));
+
     private sealed class Harness
     {
         public List<TimeSpan> Delays { get; } = new();
         public List<bool> ClientRequests { get; } = new();
+        public List<TimeSpan> AttemptTimeouts { get; } = new();
         public ScriptedHandler Handler { get; }
         public HaloRequestPolicy Policy { get; }
 
         public Harness(HaloRetryOptions options, params Func<HttpResponseMessage>[] script)
         {
             Handler = new ScriptedHandler(script);
-            Policy = new HaloRequestPolicy(options, delay: d => { Delays.Add(d); return Task.CompletedTask; }, random: () => 0.5);
+            Policy = new HaloRequestPolicy(options, delay: d => { Delays.Add(d); return Task.CompletedTask; }, random: () => 0.5,
+                attemptTimer: d => { AttemptTimeouts.Add(d); return Task.Delay(50); });
         }
 
         public Task<HaloApiResultContainer<User, HaloApiErrorContainer>> Run() => Policy.ExecuteAsync(
@@ -205,6 +224,47 @@ public class HaloRequestPolicyTests
 
         Assert.That(result.Error.Code, Is.EqualTo(503));
         Assert.That(h.Handler.Calls, Is.EqualTo(2));
+    }
+
+    [Test]
+    public async Task HungAttemptIsGivenUpOnAndRetried()
+    {
+        var options = NoJitter();
+        options.AttemptTimeout = TimeSpan.FromSeconds(5);
+        var h = new Harness(options, Hang(), Ok());
+
+        var result = await h.Run();
+
+        Assert.That(result.Error.Code, Is.EqualTo(200));
+        Assert.That(h.Handler.Calls, Is.EqualTo(2));
+        Assert.That(h.AttemptTimeouts, Is.EqualTo(new[] { TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5) }));
+        Assert.That(h.Delays, Is.EqualTo(new[] { TimeSpan.FromMilliseconds(100) }));
+    }
+
+    [Test]
+    public async Task LastAttemptIsWaitedOutWhenEveryOtherHangs()
+    {
+        var options = NoJitter(maxAttempts: 3);
+        options.AttemptTimeout = TimeSpan.FromSeconds(5);
+        var h = new Harness(options, Hang(), Hang(), Late(TimeSpan.FromMilliseconds(300)));
+
+        var result = await h.Run();
+
+        Assert.That(result.Error.Code, Is.EqualTo(200));
+        Assert.That(h.Handler.Calls, Is.EqualTo(3));
+        Assert.That(h.AttemptTimeouts, Has.Count.EqualTo(2), "the last attempt has no timeout");
+        Assert.That(h.Delays, Is.EqualTo(new[] { TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(200) }));
+    }
+
+    [Test]
+    public async Task NoAttemptTimeoutByDefault()
+    {
+        var h = new Harness(NoJitter(), Late(TimeSpan.FromMilliseconds(100)));
+
+        var result = await h.Run();
+
+        Assert.That(result.Error.Code, Is.EqualTo(200));
+        Assert.That(h.AttemptTimeouts, Is.Empty);
     }
 
     [Test]

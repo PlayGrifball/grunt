@@ -34,6 +34,7 @@ public sealed class HaloRequestPolicy
     private readonly ILogger _logger;
     private readonly Func<TimeSpan, Task> _delay;
     private readonly Func<double> _random;
+    private readonly Func<TimeSpan, Task> _attemptTimer;
 
     /// <summary>
     /// Creates a policy.
@@ -42,12 +43,15 @@ public sealed class HaloRequestPolicy
     /// <param name="logger">Logger; null means no logging.</param>
     /// <param name="delay">Waits between attempts; defaults to <see cref="Task.Delay(TimeSpan)"/>. Tests pass a recorder.</param>
     /// <param name="random">Source of jitter in [0, 1); defaults to <see cref="Random.Shared"/>.</param>
-    public HaloRequestPolicy(HaloRetryOptions? options = null, ILogger? logger = null, Func<TimeSpan, Task>? delay = null, Func<double>? random = null)
+    /// <param name="attemptTimer">Completes when an attempt has had <see cref="HaloRetryOptions.AttemptTimeout"/>; defaults to
+    /// <see cref="Task.Delay(TimeSpan)"/>. Tests pass one that completes when they say.</param>
+    public HaloRequestPolicy(HaloRetryOptions? options = null, ILogger? logger = null, Func<TimeSpan, Task>? delay = null, Func<double>? random = null, Func<TimeSpan, Task>? attemptTimer = null)
     {
         _options = options ?? new HaloRetryOptions();
         _logger = logger ?? NullLogger.Instance;
         _delay = delay ?? (d => Task.Delay(d));
         _random = random ?? (() => Random.Shared.NextDouble());
+        _attemptTimer = attemptTimer ?? (d => Task.Delay(d));
     }
 
     /// <summary>
@@ -77,7 +81,21 @@ public sealed class HaloRequestPolicy
             {
                 var client = await clientProvider(forceNewClient).ConfigureAwait(false);
                 forceNewClient = false;
-                response = await call(client).ConfigureAwait(false);
+                var pending = call(client);
+                if (_options.AttemptTimeout is { } limit && limit > TimeSpan.Zero && transientAttempt < maxAttempts
+                    && await Task.WhenAny(pending, _attemptTimer(limit)).ConfigureAwait(false) != pending)
+                {
+                    // Given up on (it can't be cancelled): left to finish on its own, its failure observed
+                    _ = pending.ContinueWith(t => _ = t.Exception, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                    var wait = ComputeDelay(_options, transientAttempt, null, _random);
+                    _logger.LogWarning("{Operation}: no answer within {Timeout} on attempt {Attempt}/{MaxAttempts}, retrying in {Delay}",
+                        operation, limit, transientAttempt, maxAttempts, wait);
+                    CountRetry(operation, "timeout", 0);
+                    transientAttempt++;
+                    await _delay(wait).ConfigureAwait(false);
+                    continue;
+                }
+                response = await pending.ConfigureAwait(false);
             }
             catch (Exception ex) when (_options.RetryOnNetworkErrors && IsTransientException(ex) && transientAttempt < maxAttempts)
             {

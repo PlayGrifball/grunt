@@ -81,6 +81,7 @@ Configure it under `ClientConfiguration:Retry`:
 | `BaseDelay` | 500 ms |
 | `MaxDelay` | 20 s |
 | `MaxRetryAfter` | 60 s (a longer `Retry-After` is returned instead of waited out) |
+| `AttemptTimeout` | none (when set, an attempt unanswered this long is retried as a timeout; never the last attempt) |
 | `UseJitter` | true |
 | `RetryOnNetworkErrors` | true |
 | `RetryStatusCodes` | the defaults listed above |

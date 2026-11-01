@@ -40,6 +40,15 @@ public class HaloRetryOptions
     public bool UseJitter { get; set; } = true;
 
     /// <summary>
+    /// How long an attempt may go unanswered before it is given up on and retried, as a timed-out network error. Every attempt
+    /// but the last: the last runs to its end, so a slow call (a large blob) is never cut off, only retried sooner. Halo's
+    /// services can sit on a cold request until their own front end answers 504 after 30 seconds, then answer the same
+    /// request at once when it is repeated (its result cached by then): a few seconds here turn 30 seconds per attempt into
+    /// those few. Null (the default) waits each attempt out (HttpClient's own timeout).
+    /// </summary>
+    public TimeSpan? AttemptTimeout { get; set; }
+
+    /// <summary>
     /// Whether network failures (<see cref="System.Net.Http.HttpRequestException"/>, timeouts) are retried.
     /// </summary>
     public bool RetryOnNetworkErrors { get; set; } = true;

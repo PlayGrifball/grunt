@@ -76,6 +76,10 @@ spec:
               value: {{ .Values.retry.maxDelay | quote }}
             - name: ClientConfiguration__Retry__MaxRetryAfter
               value: {{ .Values.retry.maxRetryAfter | quote }}
+            {{- with .Values.retry.attemptTimeout }}
+            - name: ClientConfiguration__Retry__AttemptTimeout
+              value: {{ . | quote }}
+            {{- end }}
             {{- with .Values.admin.existingSecret }}
             - name: Gateway__AdminKey
               valueFrom:

@@ -120,7 +120,7 @@ Configuration (`appsettings.json`, environment variables such as `Gateway__Admin
 | Key | Purpose |
 |:----|:--------|
 | `ClientConfiguration:ClientId` / `ClientSecret` / `RedirectUrl` | Microsoft app (Azure "Mobile and desktop" or web app with secret). `RedirectUrl` = `https://<public gateway host>/oauth/callback`. |
-| `ClientConfiguration:Retry:*` | Factory backoff (`MaxAttempts`, `BaseDelay`, `MaxDelay`, `MaxRetryAfter`, `RetryStatusCodes`). |
+| `ClientConfiguration:Retry:*` | Factory backoff (`MaxAttempts`, `BaseDelay`, `MaxDelay`, `MaxRetryAfter`, `AttemptTimeout`, `RetryStatusCodes`). |
 | `Gateway:ApiKeys[]` | `Name`, `Key` (or `KeySha256`), `Environment`, `Priority` (0 = highest), `PermitsPerMinute`. |
 | `Gateway:GlobalQuota` | `PermitsPerMinute` for all keys together. `ReservedFraction` of it is kept for keys with `Priority <= ReservedPriority` (prod wins when budget is tight). |
 | `Gateway:AdminKey` | Separate key for `/admin/halo/*` (header `X-Admin-Key`). |
