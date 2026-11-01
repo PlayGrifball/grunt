@@ -71,6 +71,9 @@ retry:
   baseDelay: "00:00:00.500"
   maxDelay: "00:00:20"
   maxRetryAfter: "00:01:00"
+  # Give up on an unanswered attempt after this long and retry it (every attempt but the last). Halo's profile service
+  # can hold a cold lookup until its front end answers 504 at 30s, then answers the repeat at once. Empty = no limit.
+  attemptTimeout: ""
 
 # More Gateway/ClientConfiguration settings as nested keys, turned into Section__Key variables.
 config: {}
