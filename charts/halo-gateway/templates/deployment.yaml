@@ -122,6 +122,8 @@ spec:
               value: {{ .Values.cache.immutableTtl | quote }}
             - name: Gateway__Cache__MaxCachedBinaryBytes
               value: {{ .Values.cache.maxCachedBinaryBytes | int64 | quote }}
+            - name: Gateway__Cache__MaxCacheBytes
+              value: {{ .Values.cache.maxCacheBytes | int64 | quote }}
             {{- with .Values.oidc }}
             {{- if .enabled }}
             {{- if not .authority }}{{ fail "oidc.authority is required when oidc.enabled" }}{{ end }}

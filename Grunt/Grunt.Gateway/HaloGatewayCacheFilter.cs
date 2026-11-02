@@ -5,8 +5,10 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Surprenant.Grunt.Attributes;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 
 namespace Surprenant.Grunt.Gateway;
 
@@ -20,25 +22,40 @@ public sealed class HaloGatewayCacheOptions
 
     /// <summary>Binary results larger than this are not cached.</summary>
     public int MaxCachedBinaryBytes { get; set; } = 2 * 1024 * 1024;
+
+    /// <summary>
+    /// Total size of the cache, counted as the bytes of the cached responses (JSON measured serialized). The objects held in
+    /// memory take a few times that. When full, entries are compacted out, oldest and least-used first. Read at startup.
+    /// </summary>
+    public long MaxCacheBytes { get; set; } = 32 * 1024 * 1024;
 }
 
 /// <summary>
-/// Caches successful (HTTP 200) results of actions marked with <see cref="HaloGatewayCacheAttribute"/> in <see cref="IMemoryCache"/>,
-/// keyed by method, path and sorted query string, shared by all API keys. Runs before model binding, so hits skip the action and
-/// the factory entirely. In-process only: each replica has its own cache (a distributed cache is the scale-out option).
+/// Caches successful (HTTP 200) results of actions marked with <see cref="HaloGatewayCacheAttribute"/> in its own
+/// <see cref="MemoryCache"/>, keyed by method, path and sorted query string, shared by all API keys. Runs before model binding,
+/// so hits skip the action and the factory entirely. In-process only: each replica has its own cache (a distributed cache is
+/// the scale-out option).
 /// </summary>
-public sealed class HaloGatewayCacheFilter : IAsyncResourceFilter
+public sealed class HaloGatewayCacheFilter : IAsyncResourceFilter, IDisposable
 {
     public const string CacheHeader = "X-Grunt-Cache";
 
-    private readonly IMemoryCache _cache;
+    private readonly MemoryCache _cache;
     private readonly IOptionsMonitor<HaloGatewayCacheOptions> _options;
+    private readonly PostEvictionCallbackRegistration _evicted = new() { EvictionCallback = RecordEviction };
 
-    public HaloGatewayCacheFilter(IMemoryCache cache, IOptionsMonitor<HaloGatewayCacheOptions> options)
+    public HaloGatewayCacheFilter(IOptionsMonitor<HaloGatewayCacheOptions> options, IMeterFactory meterFactory)
     {
-        _cache = cache;
         _options = options;
+        _cache = new MemoryCache(new MemoryCacheOptions { SizeLimit = options.CurrentValue.MaxCacheBytes, TrackStatistics = true });
+        var meter = meterFactory.Create(HaloGatewayMetrics.MeterName);
+        meter.CreateObservableGauge("grunt.gateway.cache.size", () => _cache.GetCurrentStatistics()?.CurrentEstimatedSize ?? 0,
+            unit: "By", description: "Response cache size, as the bytes of the cached responses");
+        meter.CreateObservableGauge("grunt.gateway.cache.entries", () => _cache.GetCurrentStatistics()?.CurrentEntryCount ?? 0,
+            description: "Responses in the cache");
     }
+
+    public void Dispose() => _cache.Dispose();
 
     private sealed record Entry(IActionResult Result, string UpstreamStatus);
 
@@ -80,17 +97,28 @@ public sealed class HaloGatewayCacheFilter : IAsyncResourceFilter
             return;
 
         var result = executed.Result;
-        var cacheable = result switch
+        long? size = result switch
         {
-            JsonResult json => json.StatusCode is null or StatusCodes.Status200OK,
-            FileContentResult file => file.FileContents.Length <= options.MaxCachedBinaryBytes,
-            _ => false,
+            JsonResult json when json.StatusCode is null or StatusCodes.Status200OK => JsonSize(json),
+            FileContentResult file when file.FileContents.Length <= options.MaxCachedBinaryBytes => file.FileContents.Length,
+            _ => null,
         };
-        if (cacheable && http.Response.Headers.TryGetValue(HaloGatewayProtocol.UpstreamStatusHeader, out var upstream))
+        if (size is not null && http.Response.Headers.TryGetValue(HaloGatewayProtocol.UpstreamStatusHeader, out var upstream))
         {
-            _cache.Set(key, new Entry(result!, upstream.ToString()), ttl);
+            var entry = new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl, Size = size.Value + key.Length * sizeof(char) };
+            entry.PostEvictionCallbacks.Add(_evicted);
+            _cache.Set(key, new Entry(result!, upstream.ToString()), entry);
         }
     }
+
+    // A second serialization on a miss only: the response itself is written by the JsonResult later.
+    private static long JsonSize(JsonResult json)
+        => json.Value is null
+            ? 4
+            : JsonSerializer.SerializeToUtf8Bytes(json.Value, json.Value.GetType(), json.SerializerSettings as JsonSerializerOptions ?? HaloGatewayProtocol.JsonOptions).LongLength;
+
+    private static void RecordEviction(object key, object? value, EvictionReason reason, object? state)
+        => HaloGatewayMetrics.CacheEvictions.Add(1, new KeyValuePair<string, object?>("reason", reason.ToString()));
 
     private static void Record(HttpContext http, string action, string outcome, TimeSpan ttl)
     {

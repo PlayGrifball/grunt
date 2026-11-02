@@ -125,7 +125,7 @@ Configuration (`appsettings.json`, environment variables such as `Gateway__Admin
 | `Gateway:GlobalQuota` | `PermitsPerMinute` for all keys together. `ReservedFraction` of it is kept for keys with `Priority <= ReservedPriority` (prod wins when budget is tight). |
 | `Gateway:AdminKey` | Separate key for `/admin/halo/*` (header `X-Admin-Key`). |
 | `Gateway:Oidc` | Browser admin page `/admin`: `Authority`, `ClientId`, `ClientSecret`, `AllowedGroups[]`, `GroupClaim` (default `groups`), `Scopes[]`, `SessionLifetime`. Off (404) until `Authority` and `ClientId` are set. Redirect URI: `https://<public gateway host>/admin/signin-oidc`. |
-| `Gateway:Cache` | `Enabled`, `ImmutableTtl`, `MaxCachedBinaryBytes`. |
+| `Gateway:Cache` | `Enabled`, `ImmutableTtl`, `MaxCachedBinaryBytes` (per binary response), `MaxCacheBytes` (the whole cache, as response bytes; default 32 MiB, read at startup). |
 | `Gateway:Auth` | `TokenPath` (on a volume), `RefreshInterval`, `SignInStateLifetime`, `UseInstanceLock`. |
 | `Gateway:DataProtection:KeysPath` | Where the ASP.NET Core Data Protection key ring is persisted. Default: `TokenPath`'s directory plus `data-protection-keys` (the same volume, no chart change needed). |
 | `ForwardedHeaders:KnownIPNetworks[]` / `KnownProxies[]` | CIDRs/addresses whose immediate requests may set the client address, scheme and host (X-Forwarded-\*). Unset: the ASP.NET Core default of loopback only, i.e. nothing coming through a real proxy is trusted. |
@@ -182,6 +182,8 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
   - `grunt_gateway_upstream_failures_total`
   - `grunt_halo_retries_total{operation,reason,status}`
   - `grunt_gateway_cache_lookups_total{action,result}`
+  - `grunt_gateway_cache_size_bytes`, `grunt_gateway_cache_entries`
+  - `grunt_gateway_cache_evictions_total{reason}`
   - `grunt_gateway_halo_reauth_required`
   - `grunt_gateway_halo_token_expiry_seconds{token}`
   - `grunt_gateway_halo_token_refreshes_total{result}`
@@ -202,7 +204,7 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
 - Run **one replica**. The file token store is single-writer, and refresh-token rotation must not race. The host holds
   `.gateway.lock` next to the token file and refuses to start if another instance on the same volume holds it. Use a
   `Recreate` rollout.
-- The response cache is in-process `IMemoryCache`. Each replica would have its own copy and it's lost on restart. A
+- The response cache is an in-process `MemoryCache` capped at `Gateway:Cache:MaxCacheBytes`. Each replica would have its own copy and it's lost on restart. A
   distributed cache (Redis) is the scale-out option.
 - Token storage is pluggable: register another `IOAuthTokenStore` (a database row, or a Kubernetes Secret through the API)
   to replace the file store. That also lifts the single-replica limit, once refresh is coordinated (a lease or leader election).
