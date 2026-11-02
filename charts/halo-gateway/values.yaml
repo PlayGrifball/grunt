@@ -50,6 +50,8 @@ cache:
   enabled: true
   immutableTtl: "1.00:00:00"
   maxCachedBinaryBytes: 2097152
+  # The whole cache, as response bytes (the objects in memory take a few times that).
+  maxCacheBytes: 33554432
 
 auth:
   refreshInterval: "00:30:00"

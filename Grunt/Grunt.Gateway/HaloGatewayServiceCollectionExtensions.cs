@@ -13,7 +13,7 @@ public static class HaloGatewayServiceCollectionExtensions
     /// </summary>
     public static IMvcBuilder AddHaloGateway(this IServiceCollection services, IConfiguration? cacheSection = null)
     {
-        services.AddMemoryCache();
+        services.AddMetrics();
         var options = services.AddOptions<HaloGatewayCacheOptions>();
         if (cacheSection is not null)
             options.Bind(cacheSection);

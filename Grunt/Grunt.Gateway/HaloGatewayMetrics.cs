@@ -19,4 +19,7 @@ public static class HaloGatewayMetrics
 
     /// <summary>Response cache lookups, tagged with action and result (hit/miss).</summary>
     public static readonly Counter<long> CacheLookups = Meter.CreateCounter<long>("grunt.gateway.cache.lookups", description: "Response cache lookups by result");
+
+    /// <summary>Responses leaving the cache, tagged with reason (Expired, Capacity, Replaced, Removed).</summary>
+    public static readonly Counter<long> CacheEvictions = Meter.CreateCounter<long>("grunt.gateway.cache.evictions", description: "Response cache evictions by reason");
 }

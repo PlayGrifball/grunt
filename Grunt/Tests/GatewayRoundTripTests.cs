@@ -124,6 +124,26 @@ public class GatewayRoundTripTests
     }
 
     [Test]
+    public async Task ResponsesLargerThanTheWholeCacheAreNotKept()
+    {
+        _factory.Halo.UserByGamertag("Grunt").Returns(_ => Container(Grunt(), 200));
+        using var small = _factory.WithWebHostBuilder(b => b.UseSetting("Gateway:Cache:MaxCacheBytes", "16"));
+        var http = small.CreateClient();
+        http.DefaultRequestHeaders.Add("X-Api-Key", ProdKey);
+
+        var first = await http.GetAsync("halo/v1/users/by-gamertag/Grunt");
+        var second = await http.GetAsync("halo/v1/users/by-gamertag/Grunt");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(first.Headers.GetValues(HaloGatewayCacheFilter.CacheHeader).Single(), Is.EqualTo("miss"));
+            Assert.That(second.Headers.GetValues(HaloGatewayCacheFilter.CacheHeader).Single(), Is.EqualTo("miss"));
+        });
+        await _factory.Halo.Received(2).UserByGamertag("Grunt");
+    }
+
+    [Test]
     public async Task QueryAndEnumParametersBind()
     {
         _factory.Halo.StatsGetMatchHistory("xuid(123)", 25, 10, MatchType.Custom)
