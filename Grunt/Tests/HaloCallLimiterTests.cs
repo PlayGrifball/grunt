@@ -179,7 +179,7 @@ public class HaloCallLimiterTests
     [Test]
     public async Task ThePolicyTellsTheLimiterHowEachAttemptWent()
     {
-        using var limiter = Limiter("Paged", new HaloCallLimit { PerSecond = 50, Adaptive = true, IncreasePerSuccess = 1 });
+        using var limiter = Limiter("Paged", new HaloCallLimit { PerSecond = 50, Adaptive = true, IncreasePerSuccess = 1, MaxPerSecond = 100 });
         var policy = new HaloRequestPolicy(new HaloRetryOptions { UseJitter = false }, limiter: limiter, delay: _ => Task.CompletedTask);
         var attempts = 0;
 
