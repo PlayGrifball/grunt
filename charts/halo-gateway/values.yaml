@@ -77,6 +77,16 @@ retry:
   # can hold a cold lookup until its front end answers 504 at 30s, then answers the repeat at once. Empty = no limit.
   attemptTimeout: ""
 
+# Limits on particular Halo operations' calls, by operation name (ClientConfiguration:Limits): a call waits its turn
+# rather than being answered 429. perSecond: calls a second, spread evenly; concurrency: at once; maxWait: the longest a
+# call waits, after which it goes anyway. Halo answers 429 to the player match history at a few calls a second while
+# match stats take hundreds a minute. These override the image's defaults (the same).
+limits:
+  StatsGetMatchHistory:
+    perSecond: 2
+    concurrency: 2
+    # maxWait: "00:00:30"
+
 # More Gateway/ClientConfiguration settings as nested keys, turned into Section__Key variables.
 config: {}
 

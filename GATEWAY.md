@@ -99,6 +99,11 @@ Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInf
 - Retries happen in one place per hop. The factory retries Halo calls (401/403 once with fresh tokens; 429/5xx/network with
   exponential backoff and jitter, honouring `Retry-After`; `ClientConfiguration:Retry`). The controller never retries.
   The client retries only its own transport: gateway unreachable, or 429/5xx *without* `X-Halo-Upstream-Status`.
+- Some Halo endpoints are limited on their own: the player match history answers 429 at a few calls a second while match
+  stats take hundreds a minute, and its `Retry-After: 1` is no help while calls keep coming. The factory paces such
+  operations (`ClientConfiguration:Limits`, by operation name: `PerSecond`, `Concurrency`, `MaxWait`; the chart's `limits`),
+  for every key at once: a call waits its turn instead of being answered 429, and past `MaxWait` goes anyway. The image
+  limits `StatsGetMatchHistory` to 2 a second, 2 at once. Waits are the `grunt.halo.limit.wait` histogram.
 - `byte[]` is still buffered once in memory, because `HaloInfiniteClient` returns `byte[]`. True streaming needs a
   Stream-returning client method, which is a follow-up.
 

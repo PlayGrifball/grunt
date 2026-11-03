@@ -294,3 +294,27 @@ tests:
     asserts:
       - failedTemplate:
           errorMessage: "prometheusRule needs telemetry.enabled: the gateway's metrics reach Prometheus only by OTLP push"
+
+  - it: passes each operation's limit on (ClientConfiguration:Limits), the player match history's by default
+    template: templates/deployment.yaml
+    set:
+      limits:
+        StatsGetMatchHistory: { perSecond: 2, concurrency: 2 }
+        StatsGetMatchStats: { perSecond: 10, maxWait: "00:00:05" }
+    asserts:
+      - contains:
+          path: "spec.template.spec.containers[0].env"
+          content: { name: ClientConfiguration__Limits__StatsGetMatchHistory__PerSecond, value: "2" }
+      - contains:
+          path: "spec.template.spec.containers[0].env"
+          content: { name: ClientConfiguration__Limits__StatsGetMatchHistory__Concurrency, value: "2" }
+      - contains:
+          path: "spec.template.spec.containers[0].env"
+          content: { name: ClientConfiguration__Limits__StatsGetMatchStats__PerSecond, value: "10" }
+      - contains:
+          path: "spec.template.spec.containers[0].env"
+          content: { name: ClientConfiguration__Limits__StatsGetMatchStats__MaxWait, value: "00:00:05" }
+      - notContains:
+          path: "spec.template.spec.containers[0].env"
+          content: { name: ClientConfiguration__Limits__StatsGetMatchStats__Concurrency }
+          any: true
