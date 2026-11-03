@@ -108,6 +108,19 @@ public class HaloRequestPolicyTests
     }
 
     [Test]
+    public async Task Repeated429sWaitLongerThanTheRetryAfterThatWasntEnough()
+    {
+        // Halo answers Retry-After: 1 to every 429, and a second later is often still too soon
+        var h = new Harness(NoJitter(maxAttempts: 4), Status(HttpStatusCode.TooManyRequests, TimeSpan.FromSeconds(1)),
+            Status(HttpStatusCode.TooManyRequests, TimeSpan.FromSeconds(1)), Status(HttpStatusCode.TooManyRequests, TimeSpan.FromSeconds(1)), Ok());
+
+        var result = await h.Run();
+
+        Assert.That(result.Error.Code, Is.EqualTo(200));
+        Assert.That(h.Delays, Is.EqualTo(new[] { TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(4) }));
+    }
+
+    [Test]
     public async Task Transient5xxBacksOffExponentiallyAndStopsAtMaxAttempts()
     {
         var h = new Harness(NoJitter(maxAttempts: 4), Status(HttpStatusCode.ServiceUnavailable));
@@ -283,6 +296,12 @@ public class HaloRequestPolicyTests
             // Retry-After wins over backoff and is capped at MaxRetryAfter.
             Assert.That(HaloRequestPolicy.ComputeDelay(options, 1, TimeSpan.FromSeconds(7)), Is.EqualTo(TimeSpan.FromSeconds(7)));
             Assert.That(HaloRequestPolicy.ComputeDelay(options, 1, TimeSpan.FromHours(1)), Is.EqualTo(options.MaxRetryAfter));
+            // Asked again: Retry-After doubled each time, jittered between half and all of it but never under Retry-After.
+            Assert.That(HaloRequestPolicy.ComputeDelay(options, 2, TimeSpan.FromSeconds(1), () => 0.0), Is.EqualTo(TimeSpan.FromSeconds(1)));
+            Assert.That(HaloRequestPolicy.ComputeDelay(options, 2, TimeSpan.FromSeconds(1), () => 0.999999).TotalMilliseconds, Is.EqualTo(2000).Within(1));
+            Assert.That(HaloRequestPolicy.ComputeDelay(options, 3, TimeSpan.FromSeconds(1), () => 0.5), Is.EqualTo(TimeSpan.FromSeconds(3)));
+            Assert.That(HaloRequestPolicy.ComputeDelay(options, 10, TimeSpan.FromSeconds(1), () => 0.5), Is.EqualTo(options.MaxRetryAfter));
+            Assert.That(HaloRequestPolicy.ComputeDelay(new HaloRetryOptions { UseJitter = false }, 3, TimeSpan.FromSeconds(1)), Is.EqualTo(TimeSpan.FromSeconds(4)));
         });
     }
 

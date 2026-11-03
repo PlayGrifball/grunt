@@ -71,7 +71,7 @@ public Task<HaloApiResultContainer<MatchStats, HaloApiErrorContainer>> StatsGetM
 `ExecuteWithPolicyAsync` (hand-written half) runs the call under `HaloRequestPolicy`:
 
 - **401/403**: rebuild the client with fresh tokens and retry once (same as before). This doesn't count against the retry budget.
-- **429, 408, 500, 502, 503, 504 and network errors** (`HttpRequestException`, timeouts): retry with exponential backoff and equal jitter, honouring `Retry-After` (captured on `HaloApiErrorContainer.RetryAfter`).
+- **429, 408, 500, 502, 503, 504 and network errors** (`HttpRequestException`, timeouts): retry with exponential backoff and equal jitter, honouring `Retry-After` (captured on `HaloApiErrorContainer.RetryAfter`): that on the first retry, then doubled on each repeat (with equal jitter, never under it), since Halo answers `Retry-After: 1` to every 429 and a second later is often still too soon.
 
 Configure it under `ClientConfiguration:Retry`:
 
