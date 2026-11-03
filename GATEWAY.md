@@ -102,8 +102,11 @@ Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInf
 - Some Halo endpoints are limited on their own: the player match history answers 429 at a few calls a second while match
   stats take hundreds a minute, and its `Retry-After: 1` is no help while calls keep coming. The factory paces such
   operations (`ClientConfiguration:Limits`, by operation name: `PerSecond`, `Concurrency`, `MaxWait`; the chart's `limits`),
-  for every key at once: a call waits its turn instead of being answered 429, and past `MaxWait` goes anyway. The image
-  limits `StatsGetMatchHistory` to 2 a second, 2 at once. Waits are the `grunt.halo.limit.wait` histogram.
+  for every key at once: a call waits its turn instead of being answered 429, and past `MaxWait` goes anyway. An
+  `Adaptive` limit finds the pace itself: halved when Halo answers 429 (once for the calls sent together), up by
+  `IncreasePerSuccess` with each answer, between `MinPerSecond` and `MaxPerSecond`. The image limits
+  `StatsGetMatchHistory` to 2 at once, adaptive from 2 a second (0.5 to 10). The wait is the `grunt.halo.limit.wait`
+  histogram, the pace now `grunt.halo.limit.rate`.
 - `byte[]` is still buffered once in memory, because `HaloInfiniteClient` returns `byte[]`. True streaming needs a
   Stream-returning client method, which is a follow-up.
 

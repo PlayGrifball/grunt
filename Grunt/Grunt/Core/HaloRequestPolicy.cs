@@ -132,6 +132,8 @@ public sealed class HaloRequestPolicy
 
             var errorContainer = error(response);
             var code = errorContainer?.Code ?? 0;
+            // An adaptive limit learns its pace from it
+            _limiter?.Report(operation, code);
 
             if (code == 401 || code == 403)
             {

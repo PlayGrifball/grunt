@@ -127,6 +127,70 @@ public class HaloCallLimiterTests
         Assert.That((result.Result, attempts, turnFreeWhileWaiting), Is.EqualTo(("ok", 2, true)));
     }
 
+    [Test]
+    public void AnAdaptivePace_HalvesOnA429_OnceForCallsSentTogether_AndCreepsBackUp()
+    {
+        using var limiter = Limiter("StatsGetMatchHistory", new HaloCallLimit
+        {
+            PerSecond = 4, Adaptive = true, MinPerSecond = 0.5, MaxPerSecond = 4.2, IncreasePerSuccess = 0.1,
+        });
+
+        limiter.Report("StatsGetMatchHistory", 429);
+        Assert.That(limiter.PerSecond("StatsGetMatchHistory"), Is.EqualTo(2));
+        // The others sent at the old pace answer 429 too: no further slowdown within a second
+        limiter.Report("StatsGetMatchHistory", 429);
+        limiter.Report("StatsGetMatchHistory", 429);
+        Assert.That(limiter.PerSecond("StatsGetMatchHistory"), Is.EqualTo(2));
+
+        limiter.Report("StatsGetMatchHistory", 200);
+        limiter.Report("StatsGetMatchHistory", 404);
+        Assert.That(limiter.PerSecond("StatsGetMatchHistory"), Is.EqualTo(2.2).Within(1e-9), "Any answer but a 429");
+        limiter.Report("StatsGetMatchHistory", 0);
+        Assert.That(limiter.PerSecond("StatsGetMatchHistory"), Is.EqualTo(2.2).Within(1e-9), "No answer tells nothing");
+
+        for (var i = 0; i < 100; i++)
+            limiter.Report("StatsGetMatchHistory", 200);
+        Assert.That(limiter.PerSecond("StatsGetMatchHistory"), Is.EqualTo(4.2).Within(1e-9), "Up to MaxPerSecond");
+    }
+
+    [Test]
+    public async Task AnAdaptivePace_NeverGoesUnderItsMinimum()
+    {
+        using var limiter = Limiter("StatsGetMatchHistory", new HaloCallLimit { PerSecond = 2, Adaptive = true, MinPerSecond = 1.5 });
+
+        limiter.Report("StatsGetMatchHistory", 429);
+        Assert.That(limiter.PerSecond("StatsGetMatchHistory"), Is.EqualTo(1.5));
+        await Task.Delay(1100);
+        limiter.Report("StatsGetMatchHistory", 429);
+        Assert.That(limiter.PerSecond("StatsGetMatchHistory"), Is.EqualTo(1.5));
+    }
+
+    [Test]
+    public void AFixedPaceAndAnUnlimitedOperation_AreLeftAsTheyAre()
+    {
+        using var limiter = Limiter("StatsGetMatchHistory", new HaloCallLimit { PerSecond = 2 });
+
+        limiter.Report("StatsGetMatchHistory", 429);
+        limiter.Report("StatsGetMatchStats", 429);
+
+        Assert.That((limiter.PerSecond("StatsGetMatchHistory"), limiter.PerSecond("StatsGetMatchStats")), Is.EqualTo((2d, 0d)));
+    }
+
+    [Test]
+    public async Task ThePolicyTellsTheLimiterHowEachAttemptWent()
+    {
+        using var limiter = Limiter("Paged", new HaloCallLimit { PerSecond = 50, Adaptive = true, IncreasePerSuccess = 1 });
+        var policy = new HaloRequestPolicy(new HaloRetryOptions { UseJitter = false }, limiter: limiter, delay: _ => Task.CompletedTask);
+        var attempts = 0;
+
+        var result = await policy.ExecuteAsync("Paged", _ => Task.FromResult(new object()), _ => Task.FromResult(++attempts == 1
+            ? new HaloApiResultContainer<string, HaloApiErrorContainer>(null!, new HaloApiErrorContainer { Code = 429 })
+            : new HaloApiResultContainer<string, HaloApiErrorContainer>("ok", new HaloApiErrorContainer { Code = 200 })), r => r.Error);
+
+        // Halved on the 429 (25), up by one on the answer (26)
+        Assert.That((result.Result, attempts, limiter.PerSecond("Paged")), Is.EqualTo(("ok", 2, 26d)));
+    }
+
     private static void InterlockedMax(ref int target, int value)
     {
         int seen;
