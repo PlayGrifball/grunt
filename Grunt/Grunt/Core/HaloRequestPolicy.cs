@@ -157,27 +157,18 @@ public sealed class HaloRequestPolicy
     }
 
     /// <summary>
-    /// Delay before retry number <paramref name="attempt"/> (1-based). With <c>Retry-After</c>: that on the first retry, and
-    /// on each further one (the server still said no after waiting what it asked) twice the one before, with equal jitter
-    /// but never under <c>Retry-After</c>: Halo answers <c>Retry-After: 1</c> to every 429, and a second later is often still
-    /// too soon, more so for requests turned away together that came back together. Capped at
-    /// <see cref="HaloRetryOptions.MaxRetryAfter"/>. Without it, <c>BaseDelay * 2^(attempt-1)</c> capped at
+    /// Delay before retry number <paramref name="attempt"/> (1-based): <c>Retry-After</c> when given (capped at
+    /// <see cref="HaloRetryOptions.MaxRetryAfter"/>), otherwise <c>BaseDelay * 2^(attempt-1)</c> capped at
     /// <see cref="HaloRetryOptions.MaxDelay"/>, with "equal jitter" (a random value between half and all of it).
     /// </summary>
     public static TimeSpan ComputeDelay(HaloRetryOptions options, int attempt, TimeSpan? retryAfter, Func<double>? random = null)
     {
-        var exponent = Math.Min(Math.Max(attempt - 1, 0), 30);
         if (retryAfter is { } ra && ra >= TimeSpan.Zero)
         {
-            var grown = ra.TotalMilliseconds * Math.Pow(2, exponent);
-            if (exponent > 0 && options.UseJitter)
-            {
-                var jitter = (random ?? (() => Random.Shared.NextDouble()))();
-                grown = Math.Max(ra.TotalMilliseconds, grown / 2 + grown / 2 * jitter);
-            }
-            return TimeSpan.FromMilliseconds(Math.Min(grown, options.MaxRetryAfter.TotalMilliseconds));
+            return ra > options.MaxRetryAfter ? options.MaxRetryAfter : ra;
         }
 
+        var exponent = Math.Min(Math.Max(attempt - 1, 0), 30);
         var ms = options.BaseDelay.TotalMilliseconds * Math.Pow(2, exponent);
         ms = Math.Min(ms, options.MaxDelay.TotalMilliseconds);
         if (options.UseJitter)
