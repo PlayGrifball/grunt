@@ -24,6 +24,9 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
     private readonly IAccountAuthorization _accountAuthorization;
     private readonly IOAuthStorage _oAuthStorage;
 
+    // One for every call with this account, so its limits hold across callers (ClientConfiguration:Limits)
+    private readonly HaloCallLimiter _limiter;
+
     // Semaphore to we only modify _cachedTokens with one thread at a time
     private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
     private Tokens? _cachedTokens;
@@ -41,6 +44,7 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
         _httpClientFactory = httpClientFactory;
         _accountAuthorization = accountAuthorization;
         _oAuthStorage = oAuthStorage;
+        _limiter = new HaloCallLimiter(optionsMonitor.CurrentValue?.Limits, _logger);
     }
 
     /// <inheritdoc/> 
@@ -225,12 +229,12 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
     /// <summary>
     /// Used by every generated <see cref="IHaloInfiniteClient"/> method: runs <paramref name="call"/> on a cached or new client
     /// under <see cref="HaloRequestPolicy"/> (auth retry on 401/403, backoff on 429/5xx/network errors), configured from
-    /// <c>ClientConfiguration:Retry</c>.
+    /// <c>ClientConfiguration:Retry</c>, its operation paced by <c>ClientConfiguration:Limits</c> (<see cref="HaloCallLimiter"/>).
     /// </summary>
     private Task<TResponse> ExecuteWithPolicyAsync<TResponse>(string operation, Func<IHaloInfiniteClient, Task<TResponse>> call,
         Func<TResponse, HaloApiErrorContainer?> error)
     {
-        var policy = new HaloRequestPolicy(_options.CurrentValue?.Retry, _logger);
+        var policy = new HaloRequestPolicy(_options.CurrentValue?.Retry, _logger, limiter: _limiter);
         return policy.ExecuteAsync(operation, GetOrCreateClient, call, error);
     }
 

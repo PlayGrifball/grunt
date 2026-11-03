@@ -15,6 +15,7 @@ namespace Surprenant.Grunt.Core;
 /// <item>401/403: rebuild the client (fresh tokens) and retry once. A second 401/403 is logged as critical and returned.</item>
 /// <item>Transient status codes (429, 5xx, 408 by default) and network errors: retry with exponential backoff and jitter,
 /// honouring <c>Retry-After</c> (<see cref="HaloApiErrorContainer.RetryAfter"/>), up to <see cref="HaloRetryOptions.MaxAttempts"/>.</item>
+/// <item>An operation with a limit (<see cref="HaloCallLimiter"/>): each attempt waits its turn first.</item>
 /// </list>
 /// </summary>
 public sealed class HaloRequestPolicy
@@ -22,7 +23,7 @@ public sealed class HaloRequestPolicy
     /// <summary>Meter for Grunt client metrics; export with OpenTelemetry <c>AddMeter(HaloRequestPolicy.MeterName)</c>.</summary>
     public const string MeterName = "Surprenant.Grunt";
 
-    private static readonly System.Diagnostics.Metrics.Meter Meter = new(MeterName);
+    internal static readonly System.Diagnostics.Metrics.Meter Meter = new(MeterName);
 
     private static readonly System.Diagnostics.Metrics.Counter<long> Retries = Meter.CreateCounter<long>(
         "grunt.halo.retries", description: "Halo request retries by reason (auth, status code, network)");
@@ -36,6 +37,7 @@ public sealed class HaloRequestPolicy
     private readonly Func<TimeSpan, Task> _delay;
     private readonly Func<double> _random;
     private readonly Func<TimeSpan, Task> _attemptTimer;
+    private readonly HaloCallLimiter? _limiter;
 
     /// <summary>
     /// Creates a policy.
@@ -46,8 +48,11 @@ public sealed class HaloRequestPolicy
     /// <param name="random">Source of jitter in [0, 1); defaults to <see cref="Random.Shared"/>.</param>
     /// <param name="attemptTimer">Completes when an attempt has had <see cref="HaloRetryOptions.AttemptTimeout"/>; defaults to
     /// <see cref="Task.Delay(TimeSpan)"/>. Tests pass one that completes when they say.</param>
-    public HaloRequestPolicy(HaloRetryOptions? options = null, ILogger? logger = null, Func<TimeSpan, Task>? delay = null, Func<double>? random = null, Func<TimeSpan, Task>? attemptTimer = null)
+    /// <param name="limiter">Paces the operations it has a limit for; each attempt waits its turn. Null: none paced.</param>
+    public HaloRequestPolicy(HaloRetryOptions? options = null, ILogger? logger = null, Func<TimeSpan, Task>? delay = null, Func<double>? random = null, Func<TimeSpan, Task>? attemptTimer = null,
+        HaloCallLimiter? limiter = null)
     {
+        _limiter = limiter;
         _options = options ?? new HaloRetryOptions();
         _logger = logger ?? NullLogger.Instance;
         _delay = delay ?? (d => Task.Delay(d));
@@ -78,16 +83,25 @@ public sealed class HaloRequestPolicy
         while (true)
         {
             TResponse response;
+            // This attempt's turn under its operation's limit, given back when the attempt ends
+            IDisposable? turn = null;
             try
             {
                 var client = await clientProvider(forceNewClient).ConfigureAwait(false);
                 forceNewClient = false;
+                if (_limiter is not null)
+                    turn = await _limiter.AcquireAsync(operation).ConfigureAwait(false);
                 var pending = call(client);
                 if (_options.AttemptTimeout is { } limit && limit > TimeSpan.Zero && transientAttempt < maxAttempts
                     && await Task.WhenAny(pending, _attemptTimer(limit)).ConfigureAwait(false) != pending)
                 {
                     // Given up on (it can't be cancelled): left to finish on its own, its failure observed
                     _ = pending.ContinueWith(t => _ = t.Exception, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                    // Its turn is given back once it does end: it's still a call Halo is answering
+                    var abandoned = turn;
+                    turn = null;
+                    if (abandoned is not null)
+                        _ = pending.ContinueWith(_ => abandoned.Dispose(), CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
                     var wait = ComputeDelay(_options, transientAttempt, null, _random);
                     _logger.LogWarning("{Operation}: no answer within {Timeout} on attempt {Attempt}/{MaxAttempts}, retrying in {Delay}",
                         operation, limit, transientAttempt, maxAttempts, wait);
@@ -100,6 +114,9 @@ public sealed class HaloRequestPolicy
             }
             catch (Exception ex) when (_options.RetryOnNetworkErrors && IsTransientException(ex) && transientAttempt < maxAttempts)
             {
+                // Given back before the wait, not after it
+                turn?.Dispose();
+                turn = null;
                 var wait = ComputeDelay(_options, transientAttempt, null, _random);
                 _logger.LogWarning(ex, "{Operation}: transient error on attempt {Attempt}/{MaxAttempts}, retrying in {Delay}",
                     operation, transientAttempt, maxAttempts, wait);
@@ -108,9 +125,15 @@ public sealed class HaloRequestPolicy
                 await _delay(wait).ConfigureAwait(false);
                 continue;
             }
+            finally
+            {
+                turn?.Dispose();
+            }
 
             var errorContainer = error(response);
             var code = errorContainer?.Code ?? 0;
+            // An adaptive limit learns its pace from it
+            _limiter?.Report(operation, code);
 
             if (code == 401 || code == 403)
             {
@@ -157,27 +180,18 @@ public sealed class HaloRequestPolicy
     }
 
     /// <summary>
-    /// Delay before retry number <paramref name="attempt"/> (1-based). With <c>Retry-After</c>: that on the first retry, and
-    /// on each further one (the server still said no after waiting what it asked) twice the one before, with equal jitter
-    /// but never under <c>Retry-After</c>: Halo answers <c>Retry-After: 1</c> to every 429, and a second later is often still
-    /// too soon, more so for requests turned away together that came back together. Capped at
-    /// <see cref="HaloRetryOptions.MaxRetryAfter"/>. Without it, <c>BaseDelay * 2^(attempt-1)</c> capped at
+    /// Delay before retry number <paramref name="attempt"/> (1-based): <c>Retry-After</c> when given (capped at
+    /// <see cref="HaloRetryOptions.MaxRetryAfter"/>), otherwise <c>BaseDelay * 2^(attempt-1)</c> capped at
     /// <see cref="HaloRetryOptions.MaxDelay"/>, with "equal jitter" (a random value between half and all of it).
     /// </summary>
     public static TimeSpan ComputeDelay(HaloRetryOptions options, int attempt, TimeSpan? retryAfter, Func<double>? random = null)
     {
-        var exponent = Math.Min(Math.Max(attempt - 1, 0), 30);
         if (retryAfter is { } ra && ra >= TimeSpan.Zero)
         {
-            var grown = ra.TotalMilliseconds * Math.Pow(2, exponent);
-            if (exponent > 0 && options.UseJitter)
-            {
-                var jitter = (random ?? (() => Random.Shared.NextDouble()))();
-                grown = Math.Max(ra.TotalMilliseconds, grown / 2 + grown / 2 * jitter);
-            }
-            return TimeSpan.FromMilliseconds(Math.Min(grown, options.MaxRetryAfter.TotalMilliseconds));
+            return ra > options.MaxRetryAfter ? options.MaxRetryAfter : ra;
         }
 
+        var exponent = Math.Min(Math.Max(attempt - 1, 0), 30);
         var ms = options.BaseDelay.TotalMilliseconds * Math.Pow(2, exponent);
         ms = Math.Min(ms, options.MaxDelay.TotalMilliseconds);
         if (options.UseJitter)

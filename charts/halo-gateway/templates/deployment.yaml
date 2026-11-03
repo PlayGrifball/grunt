@@ -80,6 +80,36 @@ spec:
             - name: ClientConfiguration__Retry__AttemptTimeout
               value: {{ . | quote }}
             {{- end }}
+            {{- range $operation, $limit := .Values.limits }}
+            {{- with $limit.perSecond }}
+            - name: ClientConfiguration__Limits__{{ $operation }}__PerSecond
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with $limit.concurrency }}
+            - name: ClientConfiguration__Limits__{{ $operation }}__Concurrency
+              value: {{ . | int64 | quote }}
+            {{- end }}
+            {{- with $limit.maxWait }}
+            - name: ClientConfiguration__Limits__{{ $operation }}__MaxWait
+              value: {{ . | quote }}
+            {{- end }}
+            {{- if hasKey $limit "adaptive" }}
+            - name: ClientConfiguration__Limits__{{ $operation }}__Adaptive
+              value: {{ $limit.adaptive | toString | quote }}
+            {{- end }}
+            {{- with $limit.minPerSecond }}
+            - name: ClientConfiguration__Limits__{{ $operation }}__MinPerSecond
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with $limit.maxPerSecond }}
+            - name: ClientConfiguration__Limits__{{ $operation }}__MaxPerSecond
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with $limit.increasePerSuccess }}
+            - name: ClientConfiguration__Limits__{{ $operation }}__IncreasePerSuccess
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
             {{- with .Values.admin.existingSecret }}
             - name: Gateway__AdminKey
               valueFrom:
