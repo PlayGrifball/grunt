@@ -12,10 +12,16 @@ namespace Surprenant.Grunt.Core;
 /// <summary>
 /// The request policy behind every generated <see cref="HaloInfiniteClientFactory"/> method:
 /// <list type="bullet">
+/// <item>An operation in a budget (<see cref="HaloBudgets"/>): each attempt takes room in it first, waiting up to the budget's
+/// <see cref="HaloBudget.MaxWait"/>; with none, the call is not sent and returns a 429 (<see cref="HaloApiErrorContainer.NotSent"/>)
+/// with the time until there would be room as its <see cref="HaloApiErrorContainer.RetryAfter"/>.</item>
+/// <item>429 from Halo, for an operation in a budget: locks the budget (<see cref="HaloBudgets.Throttled"/>). Retried only when the
+/// lockout ends within the budget's <see cref="HaloBudget.MaxWait"/> (the next attempt waits it out); otherwise returned with the
+/// lockout's time left as its <see cref="HaloApiErrorContainer.RetryAfter"/>: retrying sooner only meets the same 429.</item>
 /// <item>401/403: rebuild the client (fresh tokens) and retry once. A second 401/403 is logged as critical and returned.</item>
-/// <item>Transient status codes (429, 5xx, 408 by default) and network errors: retry with exponential backoff and jitter,
-/// honouring <c>Retry-After</c> (<see cref="HaloApiErrorContainer.RetryAfter"/>), up to <see cref="HaloRetryOptions.MaxAttempts"/>.</item>
-/// <item>An operation with a limit (<see cref="HaloCallLimiter"/>): each attempt waits its turn first.</item>
+/// <item>Other transient status codes (5xx, 408, and 429 for an operation in no budget) and network errors: retry with
+/// exponential backoff and jitter, honouring <c>Retry-After</c> (<see cref="HaloApiErrorContainer.RetryAfter"/>), up to
+/// <see cref="HaloRetryOptions.MaxAttempts"/>.</item>
 /// </list>
 /// </summary>
 public sealed class HaloRequestPolicy
@@ -37,7 +43,7 @@ public sealed class HaloRequestPolicy
     private readonly Func<TimeSpan, Task> _delay;
     private readonly Func<double> _random;
     private readonly Func<TimeSpan, Task> _attemptTimer;
-    private readonly HaloCallLimiter? _limiter;
+    private readonly HaloBudgets? _budgets;
 
     /// <summary>
     /// Creates a policy.
@@ -48,11 +54,11 @@ public sealed class HaloRequestPolicy
     /// <param name="random">Source of jitter in [0, 1); defaults to <see cref="Random.Shared"/>.</param>
     /// <param name="attemptTimer">Completes when an attempt has had <see cref="HaloRetryOptions.AttemptTimeout"/>; defaults to
     /// <see cref="Task.Delay(TimeSpan)"/>. Tests pass one that completes when they say.</param>
-    /// <param name="limiter">Paces the operations it has a limit for; each attempt waits its turn. Null: none paced.</param>
+    /// <param name="budgets">The account's budgets; each attempt of an operation in one takes room in it first. Null: none.</param>
     public HaloRequestPolicy(HaloRetryOptions? options = null, ILogger? logger = null, Func<TimeSpan, Task>? delay = null, Func<double>? random = null, Func<TimeSpan, Task>? attemptTimer = null,
-        HaloCallLimiter? limiter = null)
+        HaloBudgets? budgets = null)
     {
-        _limiter = limiter;
+        _budgets = budgets;
         _options = options ?? new HaloRetryOptions();
         _logger = logger ?? NullLogger.Instance;
         _delay = delay ?? (d => Task.Delay(d));
@@ -64,8 +70,9 @@ public sealed class HaloRequestPolicy
     /// Runs <paramref name="call"/> against a client from <paramref name="clientProvider"/> under the policy.
     /// </summary>
     /// <typeparam name="TClient">The client type.</typeparam>
-    /// <typeparam name="TResponse">The response type, normally <c>HaloApiResultContainer&lt;T, HaloApiErrorContainer&gt;</c>.</typeparam>
-    /// <param name="operation">Name used in logs.</param>
+    /// <typeparam name="TResponse">The response type: <c>HaloApiResultContainer&lt;T, HaloApiErrorContainer&gt;</c> when the operation is
+    /// in a budget (a call turned away returns one with no result), otherwise any.</typeparam>
+    /// <param name="operation">The operation's name: its budget, logs and metrics.</param>
     /// <param name="clientProvider">Returns a client; the argument is true when the client must be rebuilt (after a 401/403).</param>
     /// <param name="call">The API call.</param>
     /// <param name="error">Reads the error container (status code, Retry-After) from a response.</param>
@@ -82,26 +89,25 @@ public sealed class HaloRequestPolicy
 
         while (true)
         {
+            // Room in the operation's budget first (waiting up to its MaxWait), or not sent at all
+            if (_budgets is not null)
+            {
+                var turn = await _budgets.AcquireAsync(operation).ConfigureAwait(false);
+                if (!turn.Allowed)
+                    return NotSent<TResponse>(operation, turn);
+            }
+
             TResponse response;
-            // This attempt's turn under its operation's limit, given back when the attempt ends
-            IDisposable? turn = null;
             try
             {
                 var client = await clientProvider(forceNewClient).ConfigureAwait(false);
                 forceNewClient = false;
-                if (_limiter is not null)
-                    turn = await _limiter.AcquireAsync(operation).ConfigureAwait(false);
                 var pending = call(client);
                 if (_options.AttemptTimeout is { } limit && limit > TimeSpan.Zero && transientAttempt < maxAttempts
                     && await Task.WhenAny(pending, _attemptTimer(limit)).ConfigureAwait(false) != pending)
                 {
                     // Given up on (it can't be cancelled): left to finish on its own, its failure observed
                     _ = pending.ContinueWith(t => _ = t.Exception, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-                    // Its turn is given back once it does end: it's still a call Halo is answering
-                    var abandoned = turn;
-                    turn = null;
-                    if (abandoned is not null)
-                        _ = pending.ContinueWith(_ => abandoned.Dispose(), CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
                     var wait = ComputeDelay(_options, transientAttempt, null, _random);
                     _logger.LogWarning("{Operation}: no answer within {Timeout} on attempt {Attempt}/{MaxAttempts}, retrying in {Delay}",
                         operation, limit, transientAttempt, maxAttempts, wait);
@@ -114,9 +120,6 @@ public sealed class HaloRequestPolicy
             }
             catch (Exception ex) when (_options.RetryOnNetworkErrors && IsTransientException(ex) && transientAttempt < maxAttempts)
             {
-                // Given back before the wait, not after it
-                turn?.Dispose();
-                turn = null;
                 var wait = ComputeDelay(_options, transientAttempt, null, _random);
                 _logger.LogWarning(ex, "{Operation}: transient error on attempt {Attempt}/{MaxAttempts}, retrying in {Delay}",
                     operation, transientAttempt, maxAttempts, wait);
@@ -125,15 +128,28 @@ public sealed class HaloRequestPolicy
                 await _delay(wait).ConfigureAwait(false);
                 continue;
             }
-            finally
-            {
-                turn?.Dispose();
-            }
 
             var errorContainer = error(response);
             var code = errorContainer?.Code ?? 0;
-            // An adaptive limit learns its pace from it
-            _limiter?.Report(operation, code);
+
+            if (code == 429 && _budgets?.BudgetOf(operation) is { } budget)
+            {
+                // Halo locks the whole budget for a while: waiting it out here only helps when it is short (MaxWait)
+                var locked = _budgets.Throttled(operation, errorContainer?.RetryAfter);
+                if (locked <= _budgets.MaxWait(operation) && transientAttempt < maxAttempts)
+                {
+                    _logger.LogWarning("{Operation}: status 429 on attempt {Attempt}/{MaxAttempts}, budget {Budget} locked for {Locked}; retrying after it",
+                        operation, transientAttempt, maxAttempts, budget, locked);
+                    CountRetry(operation, "status", code);
+                    transientAttempt++;
+                    continue;
+                }
+                _logger.LogError("{Operation}: status 429, budget {Budget} locked for {Locked}; not retrying", operation, budget, locked);
+                // The caller's Retry-After: the lockout's time left (Halo sends none on some services)
+                if (errorContainer is not null && locked > TimeSpan.Zero)
+                    errorContainer.RetryAfter = locked;
+                return response;
+            }
 
             if (code == 401 || code == 403)
             {
@@ -177,6 +193,26 @@ public sealed class HaloRequestPolicy
             }
             return response;
         }
+    }
+
+    /// <summary>
+    /// The answer for a call its budget turned away: a <c>HaloApiResultContainer</c> with no result and a 429 that was never sent
+    /// (<see cref="HaloApiErrorContainer.NotSent"/>), its <see cref="HaloApiErrorContainer.RetryAfter"/> the time until there is room.
+    /// </summary>
+    private static TResponse NotSent<TResponse>(string operation, HaloBudgetTurn turn)
+    {
+        var type = typeof(TResponse);
+        if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(HaloApiResultContainer<,>) || type.GetGenericArguments()[1] != typeof(HaloApiErrorContainer))
+            throw new InvalidOperationException($"{operation} is in budget {turn.Budget}, but returns {type.Name}, not a HaloApiResultContainer");
+        var resultType = type.GetGenericArguments()[0];
+        var error = new HaloApiErrorContainer
+        {
+            Code = 429,
+            RetryAfter = turn.RetryAfter,
+            NotSent = true,
+            Message = $"Not sent to Halo: budget {turn.Budget} has no room ({turn.Reason}) for {Math.Ceiling(turn.RetryAfter.TotalSeconds)}s",
+        };
+        return (TResponse)Activator.CreateInstance(type, resultType.IsValueType ? Activator.CreateInstance(resultType) : null, error)!;
     }
 
     /// <summary>

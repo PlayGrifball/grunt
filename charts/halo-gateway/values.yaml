@@ -77,20 +77,19 @@ retry:
   # can hold a cold lookup until its front end answers 504 at 30s, then answers the repeat at once. Empty = no limit.
   attemptTimeout: ""
 
-# Limits on particular Halo operations' calls, by operation name (ClientConfiguration:Limits): a call waits its turn
-# rather than being answered 429. perSecond: calls a second, spread evenly; concurrency: at once; maxWait: the longest a
-# call waits, after which it goes anyway; adaptive: find the pace (perSecond the start): halved on a 429, up by
-# increasePerSuccess with each answer, between minPerSecond and maxPerSecond. Halo answers 429 to the player match
-# history at a few calls a second while match stats take hundreds a minute. These override the image's defaults (the same).
-limits:
-  StatsGetMatchHistory:
-    perSecond: 2
-    concurrency: 2
-    adaptive: true
-    minPerSecond: 0.5
-    maxPerSecond: 10
-    # increasePerSuccess: 0.05
-    # maxWait: "00:00:30"
+# The account's budgets with Halo (ClientConfiguration:Budgets), by name: each a group of operations sharing a limit of
+# `limit` calls in any `window`, a `lockout` after Halo answers 429 (its own Retry-After when longer), and `maxWait`, how
+# long a call waits for room before it is answered 429 with the time until there is room, never sent to Halo. Empty: the
+# image's (appsettings.json, measured on 2026-11-15): profile (UserByGamertag, Users) 15 a minute, locked 5 minutes,
+# no wait; matchHistory 2 a second, locked 1 second, waits up to 2; matchStats 480 a minute. A budget set here overrides
+# the image's field by field; `operations` replaces its list by index.
+budgets: {}
+#  profile:
+#    operations: [UserByGamertag, Users]
+#    limit: 15
+#    window: "00:01:00"
+#    lockout: "00:05:00"
+#    maxWait: "00:00:00"
 
 # More Gateway/ClientConfiguration settings as nested keys, turned into Section__Key variables.
 config: {}
