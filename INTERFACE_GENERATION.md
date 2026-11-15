@@ -86,7 +86,8 @@ Configure it under `ClientConfiguration:Retry`:
 | `RetryOnNetworkErrors` | true |
 | `RetryStatusCodes` | the defaults listed above |
 
-Retries are counted in the `grunt.halo.retries` metric (meter `Surprenant.Grunt`).
+Retries are counted in the `grunt.halo.retries` metric, and every request sent to Halo (each attempt) in `grunt.halo.requests`
+(by operation, host and status; meter `Surprenant.Grunt`).
 
 ## Gateway generation
 

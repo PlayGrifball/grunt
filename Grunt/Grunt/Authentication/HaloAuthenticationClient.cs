@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Surprenant.Grunt.Core;
 using Surprenant.Grunt.Endpoints;
 using Surprenant.Grunt.Models;
 using Surprenant.Grunt.Util;
@@ -53,7 +54,7 @@ public class HaloAuthenticationClient
 
         request.Headers.Add("User-Agent", GlobalConstants.HALO_WAYPOINT_USER_AGENT);
 
-        var response = await client.SendAsync(request);
+        var response = await HaloRequestMetrics.SendAsync(client, request, nameof(GetSpartanToken));
 
         return response.IsSuccessStatusCode
             ? JsonSerializer.Deserialize<SpartanToken>(response.Content.ReadAsStringAsync().Result)
