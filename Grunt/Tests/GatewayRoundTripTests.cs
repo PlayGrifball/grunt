@@ -107,6 +107,38 @@ public class GatewayRoundTripTests
         await _factory.Halo.Received(1).UserByGamertag("Grunt Lord");
     }
 
+    [TestCase("Bowdery(1)(G)")]
+    [TestCase("Dr:Who")]
+    [TestCase("ABCDEFGHIJKLMNOP")]
+    public async Task ImpossibleGamertagIsAnswered400WithoutAskingHalo(string gamertag)
+    {
+        var http = _factory.CreateClient();
+        http.DefaultRequestHeaders.Add("X-Api-Key", ProdKey);
+
+        var raw = await http.GetAsync($"halo/v1/users/by-gamertag/{Uri.EscapeDataString(gamertag)}");
+        var viaClient = await _factory.CreateGatewayClient(maxAttempts: 3).UserByGamertag(gamertag);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(raw.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(raw.Headers.Contains(HaloGatewayProtocol.UpstreamStatusHeader), Is.False, "the gateway's answer, not Halo's");
+            Assert.That(viaClient.Error.Code, Is.EqualTo(400));
+            Assert.That(viaClient.Result, Is.Null);
+        });
+        await _factory.Halo.DidNotReceiveWithAnyArgs().UserByGamertag(default!);
+    }
+
+    [Test]
+    public async Task PossibleGamertagWithASuffixIsStillAskedAbout()
+    {
+        _factory.Halo.UserByGamertag("Major Nelson#881").Returns(_ => Container(Grunt(), 200));
+
+        var result = await _factory.CreateGatewayClient().UserByGamertag("Major Nelson#881");
+
+        Assert.That(result.Error.Code, Is.EqualTo(200));
+        await _factory.Halo.Received(1).UserByGamertag("Major Nelson#881");
+    }
+
     [Test]
     public async Task CacheHitIsMarkedOnTheResponse()
     {

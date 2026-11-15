@@ -95,7 +95,9 @@ Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInf
 - `X-Halo-Upstream-Status` carries Halo's status code. `0` means Halo gave no response.
 - HTTP status: 2xx → 200, other 4xx (e.g. 404) passed through, 401/403 → 502 (the gateway's own Halo credentials failed),
   429 → 503 with `Retry-After`, 5xx or no response → 502. The gateway's own errors don't carry `X-Halo-Upstream-Status`:
-  401 (bad API key) and 429 (quota).
+  401 (bad API key), 429 (quota), and 400 for a `{gamertag}` that can't be a gamertag (`Gamertag.IsPossible`: Xbox's reserved
+  symbols such as `( ) : _ .`, over 15 characters, or a bad `#suffix`), answered before the cache and Halo, which would answer
+  400 too and count the call against its rate limit.
 - Retries happen in one place per hop. The factory retries Halo calls (401/403 once with fresh tokens; 429/5xx/network with
   exponential backoff and jitter, honouring `Retry-After`; `ClientConfiguration:Retry`). The controller never retries.
   The client retries only its own transport: gateway unreachable, or 429/5xx *without* `X-Halo-Upstream-Status`.

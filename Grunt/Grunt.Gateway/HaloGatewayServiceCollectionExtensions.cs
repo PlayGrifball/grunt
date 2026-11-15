@@ -7,7 +7,8 @@ namespace Surprenant.Grunt.Gateway;
 public static class HaloGatewayServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the generated <see cref="HaloInfiniteController"/> (from this assembly) and the response cache filter.
+    /// Adds the generated <see cref="HaloInfiniteController"/> (from this assembly), the response cache filter, and before it
+    /// the filter that answers 400 to a gamertag that can't be one (<see cref="HaloGatewayGamertagFilter"/>).
     /// The host must register <see cref="IHaloInfiniteClient"/> as <see cref="HaloInfiniteClientFactory"/> (singleton), so every
     /// action goes through the factory's auth retry and backoff.
     /// </summary>
@@ -18,7 +19,11 @@ public static class HaloGatewayServiceCollectionExtensions
         if (cacheSection is not null)
             options.Bind(cacheSection);
         services.AddSingleton<HaloGatewayCacheFilter>();
-        return services.AddControllers(o => o.Filters.AddService<HaloGatewayCacheFilter>())
+        return services.AddControllers(o =>
+            {
+                o.Filters.Add<HaloGatewayGamertagFilter>(HaloGatewayGamertagFilter.Order);
+                o.Filters.AddService<HaloGatewayCacheFilter>();
+            })
             .AddApplicationPart(typeof(HaloInfiniteController).Assembly);
     }
 }
