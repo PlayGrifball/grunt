@@ -65,7 +65,7 @@ _In development_
 | [`Grunt.Librarian`](https://github.com/dend/grunt/tree/main/Grunt/Grunt.Librarian) | Tool used to auto-generate code stubs for Halo Infinite API endpoints. It's a very "brute"-ish way to produce the code, but it works for now. |
 | [`Grunt.Gateway`](https://github.com/PlayGrifball/grunt/tree/main/Grunt/Grunt.Gateway) | Generated ASP.NET Core controller exposing `[GatewayExposed]` client methods over HTTP. See [GATEWAY.md](GATEWAY.md). |
 | [`Grunt.Gateway.Client`](https://github.com/PlayGrifball/grunt/tree/main/Grunt/Grunt.Gateway.Client) | `IHaloInfiniteClient` that calls a gateway instead of Halo (NuGet `Surprenant.Grunt.Gateway.Client`). |
-| [`Grunt.Gateway.Host`](https://github.com/PlayGrifball/grunt/tree/main/Grunt/Grunt.Gateway.Host) | The gateway service: API keys, quotas, caching, Halo account sign-in and refresh, health, OpenTelemetry. |
+| [`Grunt.Gateway.Host`](https://github.com/PlayGrifball/grunt/tree/main/Grunt/Grunt.Gateway.Host) | The gateway service: API keys, budgets per Halo service, caching, Halo account sign-in and refresh, health, OpenTelemetry. |
 
 ## Setup & usage
 
