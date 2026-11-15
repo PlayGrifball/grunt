@@ -21,7 +21,7 @@ public static class HaloGatewayServiceCollectionExtensions
         services.AddSingleton<HaloGatewayCacheFilter>();
         return services.AddControllers(o =>
             {
-                o.Filters.Add(new HaloGatewayGamertagFilter(), HaloGatewayGamertagFilter.Order);
+                o.Filters.Add<HaloGatewayGamertagFilter>(HaloGatewayGamertagFilter.Order);
                 o.Filters.AddService<HaloGatewayCacheFilter>();
             })
             .AddApplicationPart(typeof(HaloInfiniteController).Assembly);
