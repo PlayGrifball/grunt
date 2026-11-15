@@ -1,7 +1,7 @@
 apiVersion: v2
 name: halo-gateway
 description: >-
-  Grunt Halo gateway: one Halo Infinite account behind an HTTP API with API keys, per-key quotas,
+  Grunt Halo gateway: one Halo Infinite account behind an HTTP API with API keys, budgets that keep it within Halo's limits,
   response caching, token refresh and an OAuth callback for signing the account in.
 type: application
 # The publish workflow replaces the patch number with the run number.

@@ -13,7 +13,6 @@ public static class GatewayAuth
     public const string AdminScheme = "AdminKey";
     public const string AdminPolicy = "HaloGatewayAdmin";
     public const string EnvironmentClaim = "grunt:environment";
-    public const string PriorityClaim = "grunt:priority";
     public const string ConsumerRole = "consumer";
     public const string AdminRole = "admin";
 
@@ -87,7 +86,6 @@ public sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeySc
                 new Claim(ClaimTypes.Name, key.Name),
                 new Claim(ClaimTypes.Role, GatewayAuth.ConsumerRole),
                 new Claim(GatewayAuth.EnvironmentClaim, key.Environment),
-                new Claim(GatewayAuth.PriorityClaim, key.Priority.ToString(System.Globalization.CultureInfo.InvariantCulture)),
             };
         }
 

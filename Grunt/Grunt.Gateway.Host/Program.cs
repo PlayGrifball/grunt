@@ -13,7 +13,6 @@ using Surprenant.Grunt.Gateway;
 using Surprenant.Grunt.Gateway.Host;
 using Surprenant.Grunt.Gateway.Host.Auth;
 using Surprenant.Grunt.Gateway.Host.HaloAccount;
-using Surprenant.Grunt.Gateway.Host.Quotas;
 using Surprenant.Grunt.Gateway.Host.Telemetry;
 using Surprenant.Grunt.Util;
 
@@ -110,7 +109,6 @@ namespace Surprenant.Grunt.Gateway.Host
                     .RequireAuthenticatedUser()
                     .RequireRole(GatewayAuth.AdminRole));
 
-            services.AddSingleton<QuotaGate>();
             services.AddSingleton<GatewayHostGauges>();
 
             services.AddHealthChecks()
@@ -132,8 +130,8 @@ namespace Surprenant.Grunt.Gateway.Host
         }
 
         /// <summary>
-        /// OpenTelemetry traces (incoming requests minus health probes, outgoing Halo/Microsoft HttpClient calls, cache/quota tags)
-        /// and metrics (ASP.NET Core, HttpClient, runtime, Grunt retries, gateway upstream/cache/quota/token meters). OTLP export
+        /// OpenTelemetry traces (incoming requests minus health probes, outgoing Halo/Microsoft HttpClient calls, cache and API key tags)
+        /// and metrics (ASP.NET Core, HttpClient, runtime, Grunt retries, Grunt budgets, gateway upstream/cache/token meters). OTLP export
         /// is the only export, like GrifballWebApp: the standard OTEL_* variables configure it (on when OTEL_EXPORTER_OTLP_ENDPOINT
         /// is set), and nothing is served for scraping (no /metrics). Logs go through Serilog (<see cref="Telemetry.LoggingExtensions"/>) instead of the OTel SDK's
         /// own logging bridge, but still carry the same trace/span ids (Serilog reads them from Activity.Current natively).
@@ -202,7 +200,7 @@ namespace Surprenant.Grunt.Gateway.Host
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseMiddleware<QuotaMiddleware>();
+            app.UseMiddleware<ConsumerRequestsMiddleware>();
 
             // /health/live runs no checks (a Halo outage or missing sign-in never restarts the pod); /health/ready and /health run
             // the Halo account check, which is at worst Degraded (still 200). Status words only, no details.

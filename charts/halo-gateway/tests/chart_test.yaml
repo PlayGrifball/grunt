@@ -39,14 +39,17 @@ tests:
           path: "spec.template.spec.containers[0].readinessProbe.httpGet.path"
           value: /health/ready
 
-  - it: wires consumer keys from secrets or hashes, with priority 0 kept
+  - it: wires consumer keys from secrets or hashes, with no per-key quota or priority (first come, first served)
     template: templates/deployment.yaml
     asserts:
-      - contains:
+      - notContains:
           path: spec.template.spec.containers[0].env
-          content:
-            name: Gateway__ApiKeys__0__Priority
-            value: "0"
+          content: { name: Gateway__ApiKeys__0__PermitsPerMinute }
+          any: true
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content: { name: Gateway__GlobalQuota__PermitsPerMinute }
+          any: true
       - contains:
           path: spec.template.spec.containers[0].env
           content:
@@ -264,18 +267,21 @@ tests:
     asserts:
       - lengthEqual:
           path: "spec.groups[0].rules"
-          count: 5
+          count: 4
       - equal:
           path: spec.groups[0].rules[0].expr
           value: max(grunt_gateway_halo_reauth_required{k8s_namespace_name="halo-gateway", job=~"(.+/)?halo-gateway"}) == 1
       - equal:
-          path: spec.groups[0].rules[4].alert
+          path: spec.groups[0].rules[2].expr
+          value: sum(rate(grunt_halo_requests_total{k8s_namespace_name="halo-gateway", job=~"(.+/)?halo-gateway",status="429"}[10m]) or vector(0)) > 0.05
+      - equal:
+          path: spec.groups[0].rules[3].alert
           value: HaloGatewayMetricsAbsent
       - equal:
-          path: spec.groups[0].rules[4].expr
+          path: spec.groups[0].rules[3].expr
           value: absent(grunt_gateway_halo_reauth_required{k8s_namespace_name="halo-gateway", job=~"(.+/)?halo-gateway"})
       - equal:
-          path: spec.groups[0].rules[4].for
+          path: spec.groups[0].rules[3].for
           value: 10m
 
   - it: takes a custom selector for other pipelines

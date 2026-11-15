@@ -115,10 +115,6 @@ spec:
               value: {{ $k.name | quote }}
             - name: Gateway__ApiKeys__{{ $i }}__Environment
               value: {{ $k.environment | default "unknown" | quote }}
-            - name: Gateway__ApiKeys__{{ $i }}__Priority
-              value: {{ hasKey $k "priority" | ternary $k.priority 1 | quote }}
-            - name: Gateway__ApiKeys__{{ $i }}__PermitsPerMinute
-              value: {{ hasKey $k "permitsPerMinute" | ternary $k.permitsPerMinute 600 | int64 | quote }}
             {{- if $k.secretName }}
             - name: Gateway__ApiKeys__{{ $i }}__Key
               valueFrom:
@@ -132,12 +128,6 @@ spec:
             {{- fail (printf "apiKeys[%d] (%s) needs secretName or keySha256" $i $k.name) }}
             {{- end }}
             {{- end }}
-            - name: Gateway__GlobalQuota__PermitsPerMinute
-              value: {{ .Values.globalQuota.permitsPerMinute | int64 | quote }}
-            - name: Gateway__GlobalQuota__ReservedFraction
-              value: {{ .Values.globalQuota.reservedFraction | quote }}
-            - name: Gateway__GlobalQuota__ReservedPriority
-              value: {{ .Values.globalQuota.reservedPriority | quote }}
             - name: Gateway__Cache__Enabled
               value: {{ .Values.cache.enabled | quote }}
             - name: Gateway__Cache__ImmutableTtl

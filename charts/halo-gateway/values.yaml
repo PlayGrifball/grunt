@@ -27,24 +27,14 @@ admin:
 
 # Consumer API keys, one or more per environment. Each key comes from a Secret (secretName/secretKey) or as a
 # SHA-256 hex hash (keySha256) so the clear key never reaches the gateway's config.
-# priority: 0 is highest; keys with priority <= globalQuota.reservedPriority may use the reserved share.
 apiKeys: []
 # - name: grif-prod
 #   environment: prod
-#   priority: 0
-#   permitsPerMinute: 600
 #   secretName: halo-gateway-keys
 #   secretKey: grif-prod
 # - name: grif-preview
 #   environment: preview
-#   priority: 2
-#   permitsPerMinute: 120
 #   keySha256: "<hex sha256 of the key>"
-
-globalQuota:
-  permitsPerMinute: 1200
-  reservedFraction: 0.25
-  reservedPriority: 0
 
 cache:
   enabled: true

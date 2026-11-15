@@ -6,12 +6,11 @@ using NSubstitute.ExceptionExtensions;
 using Surprenant.Grunt.Gateway.Host;
 using Surprenant.Grunt.Gateway.Host.Auth;
 using Surprenant.Grunt.Gateway.Host.HaloAccount;
-using Surprenant.Grunt.Gateway.Host.Quotas;
 using Surprenant.Grunt.Models;
 
 namespace Tests;
 
-/// <summary>Halo account status/refresh/health logic, quotas and API key matching, with fakes.</summary>
+/// <summary>Halo account status/refresh/health logic and API key matching, with fakes.</summary>
 public class GatewayHostUnitTests
 {
     private sealed class ManualTime : TimeProvider
@@ -239,45 +238,6 @@ public class GatewayHostUnitTests
         using var first = InstanceLock.Acquire(path);
 
         Assert.Throws<InvalidOperationException>(() => InstanceLock.Acquire(path));
-    }
-
-    // ---- Quotas ----
-
-    private static QuotaGate Gate(int globalPerMinute, double reserved = 0.5)
-        => new(new Monitor<GatewayOptions>(new GatewayOptions
-        {
-            GlobalQuota = new GlobalQuotaOptions { PermitsPerMinute = globalPerMinute, ReservedFraction = reserved, ReservedPriority = 0 },
-        }));
-
-    [Test]
-    public void LowPriorityKeysCannotUseTheReservedShare()
-    {
-        using var gate = Gate(globalPerMinute: 4, reserved: 0.5);
-        var prod = new ApiKeyOptions { Name = "prod", Priority = 0, PermitsPerMinute = 0 };
-        var preview = new ApiKeyOptions { Name = "preview", Priority = 2, PermitsPerMinute = 0 };
-
-        var previewResults = Enumerable.Range(0, 3).Select(_ => gate.TryAcquire(preview)).ToList();
-        var prodResults = Enumerable.Range(0, 3).Select(_ => gate.TryAcquire(prod)).ToList();
-
-        Assert.That(previewResults.Select(r => r.Allowed), Is.EqualTo(new[] { true, true, false }));
-        Assert.That(previewResults[2].Reason, Is.EqualTo("global-reserved"));
-        Assert.That(prodResults.Select(r => r.Allowed), Is.EqualTo(new[] { true, true, false }));
-        Assert.That(prodResults[2].Reason, Is.EqualTo("global"));
-        Assert.That(prodResults[2].RetryAfter, Is.Not.Null);
-    }
-
-    [Test]
-    public void PerKeyBucketsAreIndependent()
-    {
-        using var gate = Gate(globalPerMinute: 0);
-        var a = new ApiKeyOptions { Name = "a", PermitsPerMinute = 2 };
-        var b = new ApiKeyOptions { Name = "b", PermitsPerMinute = 2 };
-
-        Assert.That(gate.TryAcquire(a).Allowed, Is.True);
-        Assert.That(gate.TryAcquire(a).Allowed, Is.True);
-        Assert.That(gate.TryAcquire(a), Is.EqualTo(new QuotaDecision(false, "key", TimeSpan.FromSeconds(30))));
-        Assert.That(gate.TryAcquire(b).Allowed, Is.True);
-        Assert.That(gate.Remaining().Single(r => r.Key == "a").Available, Is.EqualTo(0));
     }
 
     // ---- API keys ----

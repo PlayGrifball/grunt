@@ -41,14 +41,9 @@ public class GatewayRoundTripTests
             builder.UseSetting("Gateway:ApiKeys:0:Name", "grif-prod");
             builder.UseSetting("Gateway:ApiKeys:0:Key", ProdKey);
             builder.UseSetting("Gateway:ApiKeys:0:Environment", "prod");
-            builder.UseSetting("Gateway:ApiKeys:0:Priority", "0");
-            builder.UseSetting("Gateway:ApiKeys:0:PermitsPerMinute", "1000");
             builder.UseSetting("Gateway:ApiKeys:1:Name", "grif-preview");
             builder.UseSetting("Gateway:ApiKeys:1:Key", PreviewKey);
             builder.UseSetting("Gateway:ApiKeys:1:Environment", "preview");
-            builder.UseSetting("Gateway:ApiKeys:1:Priority", "2");
-            builder.UseSetting("Gateway:ApiKeys:1:PermitsPerMinute", "2");
-            builder.UseSetting("Gateway:GlobalQuota:PermitsPerMinute", "0");
             builder.UseSetting("Gateway:Auth:UseInstanceLock", "false");
             builder.UseSetting("Gateway:Auth:InitialDelay", "01:00:00");
             builder.UseSetting("Gateway:Auth:TokenPath", Path.Combine(TokenDirectory, "tokens.json"));
@@ -329,20 +324,17 @@ public class GatewayRoundTripTests
     }
 
     [Test]
-    public async Task PerKeyQuotaReturns429()
+    public async Task NoKeyIsLimitedOnItsOwn_FirstComeFirstServed()
     {
         _factory.Halo.StatsGetMatchCount(Arg.Any<string>()).Returns(_ => Container(new PlayerMatchCount(), 200));
-        var client = _factory.CreateGatewayClient(apiKey: PreviewKey);
+        var preview = _factory.CreateGatewayClient(apiKey: PreviewKey);
 
-        var first = await client.StatsGetMatchCount("xuid(1)");
-        var second = await client.StatsGetMatchCount("xuid(2)");
-        var third = await client.StatsGetMatchCount("xuid(3)");
+        var codes = new List<int>();
+        for (var i = 0; i < 30; i++)
+            codes.Add((await preview.StatsGetMatchCount($"xuid({i})")).Error.Code);
 
-        Assert.That(new[] { first.Error.Code, second.Error.Code }, Has.All.EqualTo(200));
-        Assert.That(third.Error.Code, Is.EqualTo(429));
-        Assert.That(third.Error.RetryAfter, Is.Not.Null);
-        // The prod key has its own bucket.
-        Assert.That((await _factory.CreateGatewayClient().StatsGetMatchCount("xuid(4)")).Error.Code, Is.EqualTo(200));
+        // Only the account's budgets with Halo limit calls (HaloBudgets), whoever makes them
+        Assert.That(codes, Has.All.EqualTo(200));
     }
 
     [Test]
