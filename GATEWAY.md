@@ -188,6 +188,10 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
   - `grunt_gateway_quota_remaining{key}`
   - `grunt_gateway_upstream_responses_total{action,status}`
   - `grunt_gateway_upstream_failures_total`
+  - `grunt_halo_requests_total{operation,host,status,error}`: every HTTP request sent to Halo, one per attempt (retries,
+    auth retries and timed-out attempts included), by the client method (`UserByGamertag`, `StatsGetMatchHistory`, ...);
+    `status` 0 means no response, and `error` then names the exception. `GetSpartanToken` counts the Spartan token calls.
+    This is what Halo's rate limits see: `sum by (operation) (rate(grunt_halo_requests_total[1m]))`.
   - `grunt_halo_retries_total{operation,reason,status}`
   - `grunt_gateway_cache_lookups_total{action,result}`
   - `grunt_gateway_cache_size_bytes`, `grunt_gateway_cache_entries`

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -2476,8 +2477,9 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// <param name="userAgent">User agent to be used for the request.</param>
     /// <param name="content">If the request contains data to be sent to the Halo Waypoint service, include it here. Expected format is JSON.</param>
     /// <param name="contentType">Content type for POST requests. By default it's `application/json`.</param>
+    /// <param name="operation">The calling method; names the request in the <c>grunt.halo.requests</c> metric.</param>
     /// <returns>Response string in case of a successful request. Null if request failed.</returns>
-    private async Task<HaloApiResultContainer<T, HaloApiErrorContainer>> ExecuteAPIRequest<T>(string endpoint, HttpMethod method, bool useSpartanToken, bool useClearance, string userAgent, string content = "", ApiContentType contentType = ApiContentType.Json)
+    private async Task<HaloApiResultContainer<T, HaloApiErrorContainer>> ExecuteAPIRequest<T>(string endpoint, HttpMethod method, bool useSpartanToken, bool useClearance, string userAgent, string content = "", ApiContentType contentType = ApiContentType.Json, [CallerMemberName] string operation = "")
     {
         HaloApiResultContainer<T, HaloApiErrorContainer> resultContainer = new(default, new HaloApiErrorContainer());
 
@@ -2512,7 +2514,17 @@ public class HaloInfiniteClient : IHaloInfiniteClient
         request.Headers.Add("Accept", "application/json");
         request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
 
-        var response = await _httpClient.SendAsync(request);
+        HttpResponseMessage response;
+        try
+        {
+            response = await _httpClient.SendAsync(request);
+        }
+        catch (Exception ex)
+        {
+            HaloRequestMetrics.Count(operation, request.RequestUri, 0, ex);
+            throw;
+        }
+        HaloRequestMetrics.Count(operation, request.RequestUri, (int)response.StatusCode);
 
         resultContainer.Error.Code = Convert.ToInt32(response.StatusCode);
         if (response.Headers.RetryAfter is { } retryAfter)
