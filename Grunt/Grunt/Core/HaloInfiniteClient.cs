@@ -2514,17 +2514,7 @@ public class HaloInfiniteClient : IHaloInfiniteClient
         request.Headers.Add("Accept", "application/json");
         request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
 
-        HttpResponseMessage response;
-        try
-        {
-            response = await _httpClient.SendAsync(request);
-        }
-        catch (Exception ex)
-        {
-            HaloRequestMetrics.Count(operation, request.RequestUri, 0, ex);
-            throw;
-        }
-        HaloRequestMetrics.Count(operation, request.RequestUri, (int)response.StatusCode);
+        var response = await HaloRequestMetrics.SendAsync(_httpClient, request, operation);
 
         resultContainer.Error.Code = Convert.ToInt32(response.StatusCode);
         if (response.Headers.RetryAfter is { } retryAfter)

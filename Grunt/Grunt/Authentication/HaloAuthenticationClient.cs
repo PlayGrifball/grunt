@@ -54,17 +54,7 @@ public class HaloAuthenticationClient
 
         request.Headers.Add("User-Agent", GlobalConstants.HALO_WAYPOINT_USER_AGENT);
 
-        HttpResponseMessage response;
-        try
-        {
-            response = await client.SendAsync(request);
-        }
-        catch (Exception ex)
-        {
-            HaloRequestMetrics.Count(nameof(GetSpartanToken), request.RequestUri, 0, ex);
-            throw;
-        }
-        HaloRequestMetrics.Count(nameof(GetSpartanToken), request.RequestUri, (int)response.StatusCode);
+        var response = await HaloRequestMetrics.SendAsync(client, request, nameof(GetSpartanToken));
 
         return response.IsSuccessStatusCode
             ? JsonSerializer.Deserialize<SpartanToken>(response.Content.ReadAsStringAsync().Result)

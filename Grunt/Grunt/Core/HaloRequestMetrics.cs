@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Surprenant.Grunt.Core;
 
@@ -15,8 +17,25 @@ internal static class HaloRequestMetrics
     private static readonly Counter<long> Requests = HaloRequestPolicy.Meter.CreateCounter<long>(
         "grunt.halo.requests", description: "HTTP requests sent to Halo, one per attempt (retries included), by operation, host and status");
 
+    /// <summary>Sends <paramref name="request"/> to Halo and counts it, answered or not.</summary>
+    public static async Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request, string operation)
+    {
+        HttpResponseMessage response;
+        try
+        {
+            response = await client.SendAsync(request).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Count(operation, request.RequestUri, 0, ex);
+            throw;
+        }
+        Count(operation, request.RequestUri, (int)response.StatusCode);
+        return response;
+    }
+
     /// <summary>Records one request. <paramref name="status"/> is 0 when Halo gave no response; <paramref name="error"/> then says why.</summary>
-    public static void Count(string operation, Uri? uri, int status, Exception? error = null)
+    private static void Count(string operation, Uri? uri, int status, Exception? error = null)
     {
         var tags = new TagList
         {
