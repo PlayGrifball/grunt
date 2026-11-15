@@ -59,6 +59,15 @@ public static class HaloGatewayResults
 
     private static int Annotate(HaloApiErrorContainer error, HttpContext context)
     {
+        if (error.NotSent)
+        {
+            // The account's budget turned the call away: Halo never saw it, so this is the gateway's own 429 (no upstream status),
+            // with the time until there is room
+            if (error.RetryAfter is { } wait)
+                context.Response.Headers.RetryAfter = Math.Max(1, (int)Math.Ceiling(wait.TotalSeconds)).ToString(CultureInfo.InvariantCulture);
+            Activity.Current?.SetTag("grunt.not_sent", true);
+            return StatusCodes.Status429TooManyRequests;
+        }
         var upstream = error.Code;
         var status = HaloGatewayProtocol.MapStatus(upstream);
         context.Response.Headers[HaloGatewayProtocol.UpstreamStatusHeader] = upstream.ToString(CultureInfo.InvariantCulture);

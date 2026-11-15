@@ -15,7 +15,8 @@ namespace Surprenant.Grunt.Gateway.Client;
 /// </summary>
 /// <remarks>
 /// A response with <see cref="HaloGatewayProtocol.UpstreamStatusHeader"/> is a Halo result the gateway already retried, so it is
-/// returned as is whatever its HTTP status. Without the header (gateway quota 429, gateway restarting, ingress errors) 429/5xx are
+/// returned as is whatever its HTTP status. Without the header (the gateway's budget 429, marked <see cref="HaloApiErrorContainer.NotSent"/>;
+/// the gateway restarting; ingress errors) 429/5xx are
 /// retried; anything else becomes a container whose <see cref="HaloApiErrorContainer.Code"/> is the gateway's HTTP status
 /// (e.g. 401 for a bad API key). Network errors are rethrown after the last attempt, like <see cref="HaloInfiniteClient"/>.
 /// </remarks>
@@ -132,6 +133,8 @@ public sealed class HaloGatewayTransport
             Code = (int)response.StatusCode,
             Message = string.IsNullOrEmpty(text) ? $"Gateway answered {(int)response.StatusCode} {response.ReasonPhrase}" : text,
             RetryAfter = RetryAfter(response),
+            // The gateway's own 429: the account's budget had no room, so Halo never saw the call
+            NotSent = response.StatusCode == System.Net.HttpStatusCode.TooManyRequests,
         });
     }
 

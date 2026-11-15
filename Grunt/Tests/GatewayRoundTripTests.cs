@@ -140,6 +140,44 @@ public class GatewayRoundTripTests
     }
 
     [Test]
+    public async Task ACallItsBudgetTurnedAway_IsTheGateways429_WithRetryAfter_AndNoUpstreamStatus()
+    {
+        _factory.Halo.UserByGamertag(Arg.Any<string>()).Returns(_ => Task.FromResult(new HaloApiResultContainer<User, HaloApiErrorContainer>(null!,
+            new HaloApiErrorContainer { Code = 429, NotSent = true, RetryAfter = TimeSpan.FromSeconds(41.2) })));
+        var http = _factory.CreateClient();
+        http.DefaultRequestHeaders.Add("X-Api-Key", ProdKey);
+
+        var raw = await http.GetAsync("halo/v1/users/by-gamertag/Grunt");
+        var viaClient = await _factory.CreateGatewayClient(maxAttempts: 1).UserByGamertag("Grunt");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(raw.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+            Assert.That(raw.Headers.RetryAfter?.Delta, Is.EqualTo(TimeSpan.FromSeconds(42)), "rounded up");
+            Assert.That(raw.Headers.Contains(HaloGatewayProtocol.UpstreamStatusHeader), Is.False, "Halo never saw it");
+            Assert.That((viaClient.Error.Code, viaClient.Error.NotSent, viaClient.Error.RetryAfter), Is.EqualTo((429, true, (TimeSpan?)TimeSpan.FromSeconds(42))));
+        });
+    }
+
+    [Test]
+    public async Task HalosOwn429_StaysA503WithItsUpstreamStatus_AndTheLockoutAsRetryAfter()
+    {
+        _factory.Halo.Users(Arg.Any<IEnumerable<string>>()).Returns(_ => Task.FromResult(new HaloApiResultContainer<List<User>, HaloApiErrorContainer>(null!,
+            new HaloApiErrorContainer { Code = 429, RetryAfter = TimeSpan.FromMinutes(5) })));
+        var http = _factory.CreateClient();
+        http.DefaultRequestHeaders.Add("X-Api-Key", ProdKey);
+
+        var raw = await http.GetAsync("halo/v1/users?xuids=1");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(raw.StatusCode, Is.EqualTo(HttpStatusCode.ServiceUnavailable));
+            Assert.That(raw.Headers.GetValues(HaloGatewayProtocol.UpstreamStatusHeader).Single(), Is.EqualTo("429"));
+            Assert.That(raw.Headers.RetryAfter?.Delta, Is.EqualTo(TimeSpan.FromMinutes(5)));
+        });
+    }
+
+    [Test]
     public async Task CacheHitIsMarkedOnTheResponse()
     {
         _factory.Halo.UserByGamertag("Grunt").Returns(_ => Container(Grunt(), 200));
