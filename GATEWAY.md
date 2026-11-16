@@ -227,6 +227,8 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
   - `grunt_gateway_halo_token_expiry_seconds{token}`
   - `grunt_gateway_halo_token_refreshes_total{result}`
   - ASP.NET Core, HttpClient and runtime metrics
+- The chart's Grafana dashboard (`grafanaDashboard`) shows these series: Halo requests per endpoint and status, the
+  budgets, callers and the cache, and the sign-in.
 - Traces cover incoming requests (health probes excluded) and outgoing Halo/Microsoft calls, with
   `grunt.cache`, `grunt.api_key` and `halo.upstream.status` tags.
 - Logs go through Serilog: compact JSON on the console (what `kubectl logs` and the cluster's log collector see),

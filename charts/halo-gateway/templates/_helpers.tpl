@@ -53,3 +53,13 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 {{- end }}
 {{- end -}}
+
+{{/*
+PromQL label matchers selecting the gateway's pushed series, for its alerts and dashboard: prometheusRule.selector, else
+k8s_namespace_name="<release namespace>", job=~"(.+/)?<telemetry.serviceName or release name>" (the labels an OpenTelemetry
+Collector promotes from the resource attributes the chart sets).
+*/}}
+{{- define "halo-gateway.metricsSelector" -}}
+{{- $svc := .Values.telemetry.serviceName | default .Release.Name -}}
+{{- .Values.prometheusRule.selector | default (printf "k8s_namespace_name=%q, job=~%q" .Release.Namespace (printf "(.+/)?%s" (regexQuoteMeta $svc))) -}}
+{{- end }}

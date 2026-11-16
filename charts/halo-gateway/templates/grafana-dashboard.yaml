@@ -1,0 +1,20 @@
+{{- $d := .Values.grafanaDashboard -}}
+{{- if $d.enabled }}
+{{- if not .Values.telemetry.enabled }}{{ fail "grafanaDashboard needs telemetry.enabled: the gateway's metrics reach Prometheus only by OTLP push" }}{{ end }}
+{{- /* The dashboard (dashboards/halo-gateway.json) with its hidden `sel` variable set to the gateway's series selector. */}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "halo-gateway.fullname" . }}-dashboard
+  namespace: {{ $d.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "halo-gateway.labels" . | nindent 4 }}
+    {{- toYaml $d.labels | nindent 4 }}
+  {{- with $d.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  halo-gateway.json: |-
+    {{- .Files.Get "dashboards/halo-gateway.json" | replace "\"__SELECTOR__\"" (include "halo-gateway.metricsSelector" . | toJson) | nindent 4 }}
+{{- end }}

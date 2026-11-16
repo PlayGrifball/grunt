@@ -220,7 +220,7 @@ ingressRoute:
 prometheusRule:
   enabled: false
   labels: {}
-  # PromQL label matchers selecting the gateway's series. Empty: k8s_namespace_name="<release namespace>",
+  # PromQL label matchers selecting the gateway's series (the dashboard's too). Empty: k8s_namespace_name="<release namespace>",
   # job=~"(.+/)?<telemetry.serviceName or release name>".
   selector: ""
   # How long without any pushed series before HaloGatewayMetricsAbsent fires.
@@ -229,6 +229,20 @@ prometheusRule:
   upstreamErrorRatio: 0.2
   # Sustained Halo 429 rate (per second) before alerting.
   upstreamThrottleRate: 0.05
+
+# A Grafana dashboard (dashboards/halo-gateway.json) in a ConfigMap, for Grafana's dashboard sidecar: Halo requests per
+# endpoint and status, the budgets (room, lockouts, calls turned away, waits), callers and the cache, and health. Needs
+# telemetry (the same series as prometheusRule, picked by prometheusRule.selector).
+grafanaDashboard:
+  enabled: false
+  # Where the ConfigMap goes: the sidecar's namespace when it doesn't search others (kube-prometheus-stack's default).
+  # Empty: the release's.
+  namespace: ""
+  # What the sidecar looks for (kube-prometheus-stack: grafana_dashboard "1").
+  labels:
+    grafana_dashboard: "1"
+  # E.g. grafana_folder, with the sidecar's folderAnnotation.
+  annotations: {}
 
 # Browser sign-in for the admin page (/admin): OpenID Connect, Authorization Code + PKCE, against an external provider
 # (Authentik, ...). Register <host>/admin/signin-oidc as the redirect URI. Only members of allowedGroups may use the page;

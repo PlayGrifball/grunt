@@ -62,6 +62,10 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
     Pushed series are selected by `k8s_namespace_name="<namespace>"` and `job=~"(.+/)?<service name>"`, the labels an
     OpenTelemetry Collector gives them when its Prometheus exporter (or remote write) promotes resource attributes
     (`resource_to_telemetry_conversion`). `prometheusRule.selector` replaces that matcher for other pipelines.
+  - A Grafana dashboard (`grafanaDashboard.enabled`), a ConfigMap labelled for Grafana's dashboard sidecar
+    (`grafanaDashboard.labels`, default `grafana_dashboard: "1"`) in `grafanaDashboard.namespace` (the sidecar's, when it
+    searches only its own): Halo requests per endpoint and status, the budgets (room left, lockouts, calls turned away,
+    waits), callers and the cache, and health. Its queries use the same selector as the alerts.
 ## Homelab values
 
 ```yaml
