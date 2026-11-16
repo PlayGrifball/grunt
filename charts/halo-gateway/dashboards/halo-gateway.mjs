@@ -51,8 +51,8 @@ panels.push(ts('Gateway requests by key', 'Requests to the gateway API per minut
   [[`sum by (key) (rate(grunt_gateway_requests_total{${S}}[${R}])) * 60`, '{{key}}']], 'reqpm'));
 panels.push(ts('Gateway requests by action', 'The same requests by gateway action.',
   [[`sum by (action) (rate(grunt_gateway_requests_total{${S}}[${R}])) * 60`, '{{action}}']], 'reqpm'));
-panels.push(ts('Cache hit ratio', 'Share of cacheable requests answered from the gateway\'s cache, by action: those never reach Halo nor count against a budget.',
-  [[`sum by (action) (rate(grunt_gateway_cache_lookups_total{${S}, result="hit"}[${R}])) / sum by (action) (rate(grunt_gateway_cache_lookups_total{${S}}[${R}]))`, '{{action}}']], 'percentunit', 12, { defaults: { min: 0, max: 1 } }));
+panels.push(ts('Cache hit ratio', 'Share of cacheable requests answered from the gateway\'s cache, by action: those never reach Halo nor count against a budget. 0 while nothing was a hit.',
+  [[`(sum by (action) (rate(grunt_gateway_cache_lookups_total{${S}, result="hit"}[${R}])) or sum by (action) (rate(grunt_gateway_cache_lookups_total{${S}}[${R}])) * 0) / sum by (action) (rate(grunt_gateway_cache_lookups_total{${S}}[${R}]))`, '{{action}}']], 'percentunit', 12, { defaults: { min: 0, max: 1 } }));
 panels.push(ts('Cache size', 'The response cache: bytes (left) and entries (right).',
   [[`max(grunt_gateway_cache_size_bytes{${S}})`, 'bytes'], [`max(grunt_gateway_cache_entries{${S}})`, 'entries']], 'bytes', 12,
   { overrides: [{ matcher: { id: 'byName', options: 'entries' }, properties: [{ id: 'unit', value: 'short' }, { id: 'custom.axisPlacement', value: 'right' }] }] }));
