@@ -17,8 +17,6 @@ public sealed class GatewayOptions
     /// <summary>Header carrying the admin key.</summary>
     public string AdminKeyHeader { get; set; } = "X-Admin-Key";
 
-    public GlobalQuotaOptions GlobalQuota { get; set; } = new();
-
     public HaloAuthOptions Auth { get; set; } = new();
 
     /// <summary>Browser sign-in for the /admin page (OpenID Connect); off until <see cref="OidcOptions.Authority"/> and <see cref="OidcOptions.ClientId"/> are set.</summary>
@@ -42,28 +40,6 @@ public sealed class ApiKeyOptions
 
     /// <summary>Environment label (prod, test, preview, ...), added to metrics.</summary>
     public string Environment { get; set; } = "unknown";
-
-    /// <summary>0 is the highest priority. Keys above <see cref="GlobalQuotaOptions.ReservedPriority"/> cannot use the reserved share of the global budget.</summary>
-    public int Priority { get; set; } = 1;
-
-    /// <summary>Per-key request budget per minute (token bucket, bursts up to the same amount). 0 means unlimited.</summary>
-    public int PermitsPerMinute { get; set; } = 600;
-}
-
-/// <summary>Budget shared by all keys, protecting Halo (and the gateway's single Halo account) from bursts.</summary>
-public sealed class GlobalQuotaOptions
-{
-    /// <summary>Requests per minute across all keys. 0 means unlimited.</summary>
-    public int PermitsPerMinute { get; set; } = 1200;
-
-    /// <summary>
-    /// Share (0-1) of the global budget held back for keys with priority &lt;= <see cref="ReservedPriority"/>: when fewer permits than
-    /// this remain, lower-priority keys get 429 while prod keys keep going.
-    /// </summary>
-    public double ReservedFraction { get; set; } = 0.25;
-
-    /// <summary>Highest priority number that may use the reserved share (default 0: prod keys only).</summary>
-    public int ReservedPriority { get; set; }
 }
 
 /// <summary>Halo account sign-in and token refresh (section <c>Gateway:Auth</c>).</summary>

@@ -16,7 +16,7 @@ public sealed class HaloGatewayClientOptions
     public string ApiKeyHeader { get; set; } = HaloGatewayProtocol.DefaultApiKeyHeader;
 
     /// <summary>
-    /// Transport retries only: the gateway unreachable, or 429/5xx answered by the gateway itself (quotas, restarts, ingress) rather
+    /// Transport retries only: the gateway unreachable, or 429/5xx answered by the gateway itself (its budgets, restarts, ingress) rather
     /// than a Halo result, which the gateway has already retried. 401/403 are never retried here.
     /// </summary>
     public HaloRetryOptions Retry { get; set; } = new() { MaxAttempts = 3 };

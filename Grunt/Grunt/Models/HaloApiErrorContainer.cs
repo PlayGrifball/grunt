@@ -26,4 +26,11 @@ public class HaloApiErrorContainer
     /// Gets or sets how long the API asked callers to wait before retrying (the <c>Retry-After</c> response header), if it sent one.
     /// </summary>
     public System.TimeSpan? RetryAfter { get; set; }
+
+    /// <summary>
+    /// True when the call was never sent to Halo: its account's budget (<see cref="Surprenant.Grunt.Core.HaloBudgets"/>) had no room
+    /// for it, or Halo had locked the budget out. <see cref="Code"/> is then 429 and <see cref="RetryAfter"/> says when there would
+    /// be room.
+    /// </summary>
+    public bool NotSent { get; set; }
 }

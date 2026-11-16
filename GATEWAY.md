@@ -5,21 +5,22 @@ The gateway runs one Halo/Xbox account behind an HTTP API. Apps (for example eac
 
 ```
 app ── HaloGatewayClient ──HTTP + X-Api-Key──▶ Grunt.Gateway.Host
-                                                 ├─ API key auth, per-key quotas, response cache
+                                                 ├─ API key auth, response cache
                                                  └─ generated HaloInfiniteController
                                                       └─ IHaloInfiniteClient = HaloInfiniteClientFactory
-                                                           (tokens, 401/403 auth retry, 429/5xx backoff) ──▶ Halo
+                                                           (tokens, budgets per Halo service, 401/403 auth retry,
+                                                            5xx backoff) ──▶ Halo
 ```
 
 ## Projects
 
 | Project | Package / output | Role |
 |:--------|:-----------------|:-----|
-| `Grunt/Grunt` | `Surprenant.Grunt` | Core library. Holds `[GatewayExposed]`, the assembly markers, `HaloRequestPolicy` (retry/backoff) and `HaloGatewayProtocol` (wire contract). The gateway adds no ASP.NET Core dependency here. |
+| `Grunt/Grunt` | `Surprenant.Grunt` | Core library. Holds `[GatewayExposed]`, the assembly markers, `HaloRequestPolicy` (retry/backoff), `HaloBudgets` (limits per Halo service) and `HaloGatewayProtocol` (wire contract). The gateway adds no ASP.NET Core dependency here. |
 | `Grunt/Grunt.SourceGenerator` | analyzer | `InterfaceGenerator` (interface + factory) and `GatewayGenerator` (controller + client). |
 | `Grunt/Grunt.Gateway` | `Surprenant.Grunt.Gateway` (not packed yet) | ASP.NET Core library: the generated `HaloInfiniteController`, result mapping, cache filter, metrics. |
 | `Grunt/Grunt.Gateway.Client` | `Surprenant.Grunt.Gateway.Client` | Generated `HaloGatewayClient` plus its HTTP transport. |
-| `Grunt/Grunt.Gateway.Host` | Docker image | The service: auth, quotas, caching, Halo account sign-in and refresh, health, OpenTelemetry. |
+| `Grunt/Grunt.Gateway.Host` | Docker image | The service: auth, caching, Halo account sign-in and refresh, health, OpenTelemetry. |
 
 ## How the generator picks its output
 
@@ -94,23 +95,45 @@ Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInf
   (`application/octet-stream`) instead.
 - `X-Halo-Upstream-Status` carries Halo's status code. `0` means Halo gave no response.
 - HTTP status: 2xx → 200, other 4xx (e.g. 404) passed through, 401/403 → 502 (the gateway's own Halo credentials failed),
-  429 → 503 with `Retry-After`, 5xx or no response → 502. The gateway's own errors don't carry `X-Halo-Upstream-Status`:
-  401 (bad API key), 429 (quota), and 400 for a `{gamertag}` that can't be a gamertag (`Gamertag.IsPossible`: Xbox's reserved
-  symbols such as `( ) : _ .`, over 15 characters, or a bad `#suffix`), answered before the cache and Halo, which would answer
-  400 too and count the call against its rate limit.
-- Retries happen in one place per hop. The factory retries Halo calls (401/403 once with fresh tokens; 429/5xx/network with
-  exponential backoff and jitter, honouring `Retry-After`; `ClientConfiguration:Retry`). The controller never retries.
-  The client retries only its own transport: gateway unreachable, or 429/5xx *without* `X-Halo-Upstream-Status`.
-- Some Halo endpoints are limited on their own: the player match history answers 429 at a few calls a second while match
-  stats take hundreds a minute, and its `Retry-After: 1` is no help while calls keep coming. The factory paces such
-  operations (`ClientConfiguration:Limits`, by operation name: `PerSecond`, `Concurrency`, `MaxWait`; the chart's `limits`),
-  for every key at once: a call waits its turn instead of being answered 429, and past `MaxWait` goes anyway. An
-  `Adaptive` limit finds the pace itself: halved when Halo answers 429 (once for the calls sent together), up by
-  `IncreasePerSuccess` with each answer, between `MinPerSecond` and `MaxPerSecond`. The image limits
-  `StatsGetMatchHistory` to 2 at once, adaptive from 2 a second (0.5 to 10). The wait is the `grunt.halo.limit.wait`
-  histogram, the pace now `grunt.halo.limit.rate`.
+  429 → 503 with `Retry-After` (Halo's, or the time left on the budget's lockout: Halo sends none on some services), 5xx
+  or no response → 502. The gateway's own errors don't carry `X-Halo-Upstream-Status`: 401 (bad API key), 429 with
+  `Retry-After` (a call the account's budget turned away, never sent to Halo: see below), and 400 for a `{gamertag}` that
+  can't be a gamertag (`Gamertag.IsPossible`: Xbox's reserved symbols such as `( ) : _ .`, over 15 characters, or a bad
+  `#suffix`), answered before the cache and Halo, which would answer 400 too and count the call against its rate limit.
+- Retries happen in one place per hop. The factory retries Halo calls (401/403 once with fresh tokens; 5xx/network, and
+  429 from an operation in no budget, with exponential backoff and jitter, honouring `Retry-After`;
+  `ClientConfiguration:Retry`). The controller never retries. The client retries only its own transport: gateway
+  unreachable, or 429/5xx *without* `X-Halo-Upstream-Status`, within its `Retry:MaxRetryAfter`; the gateway's 429 then
+  comes back with `Error.NotSent` set.
+- **Budgets** (`ClientConfiguration:Budgets`, `HaloBudgets`; the chart's `budgets`): Halo limits each service, per account
+  (not per IP), very differently (see "Halo's limits"). A budget is a group of operations sharing one count: `Limit` calls
+  in any sliding `Window`, a `Lockout` after Halo answers one of them 429, and `MaxWait`. Every call made with the account,
+  retries included, takes room in its operation's budget first, whichever API key it came from (first come, first
+  served): within `MaxWait` it waits for room, past it the call is not sent and the caller gets a 429 with the exact time
+  until there is room. A 429 Halo sends anyway locks the budget for its `Lockout` (or Halo's longer `Retry-After`); it is
+  retried only when that ends within `MaxWait`, otherwise returned with the time left as `Retry-After`. Only calls that
+  reach Halo count, so a cache hit takes nothing. Operations in no budget are not limited. The image's budgets
+  (`appsettings.json`): `profile` (`UserByGamertag`, `Users`) 15 a minute, locked 5 minutes, no wait; `matchHistory` 2 a
+  second, locked 1 second, waits up to 2 seconds; `matchStats` 480 a minute. Metrics: `grunt.halo.budget.remaining`,
+  `.lockout`, `.wait` and `.rejections` (by budget and reason, `window` or `lockout`).
 - `byte[]` is still buffered once in memory, because `HaloInfiniteClient` returns `byte[]`. True streaming needs a
   Stream-returning client method, which is a follow-up.
+
+## Halo's limits
+
+Measured on 2026-11-15 through the gateway with one account (homelab's `halo-probe`: distinct inputs, so no cache hits,
+and every attempt counted by `grunt_halo_requests_total`). They are per **account**: the profile limit tripped from one
+IP stayed tripped for the same account from another (through a VPN), so more accounts add capacity and more IPs don't.
+
+| Service (operations) | Limit | Over it |
+|:---------------------|:------|:--------|
+| profile (`UserByGamertag`, `Users`: one shared count) | 15 a minute held for 10 minutes; tripped at 20 to 30 calls in a minute | **every** profile call answered 429 for 4 to 5 minutes, even with nothing sent meanwhile; no `Retry-After` |
+| halostats match history (`StatsGetMatchHistory`) | 2 to 3 a second answered | the excess answered 429 with `Retry-After: 1`; answered again at once (no lockout) |
+| halostats match stats (`StatsGetMatchStats`) | no 429 up to 480 a minute (the most sent) | not seen |
+| skill (`SkillGetMatchPlayerResult`) | no 429 up to 480 a minute (all answered 404: custom games have no skill data) | not seen |
+
+Tripping one service never touched another: profile locked out, match stats, match history and skill still answered.
+The image's budgets keep under these; re-measure before raising them.
 
 ## Using the client
 
@@ -131,8 +154,8 @@ Configuration (`appsettings.json`, environment variables such as `Gateway__Admin
 |:----|:--------|
 | `ClientConfiguration:ClientId` / `ClientSecret` / `RedirectUrl` | Microsoft app (Azure "Mobile and desktop" or web app with secret). `RedirectUrl` = `https://<public gateway host>/oauth/callback`. |
 | `ClientConfiguration:Retry:*` | Factory backoff (`MaxAttempts`, `BaseDelay`, `MaxDelay`, `MaxRetryAfter`, `AttemptTimeout`, `RetryStatusCodes`). |
-| `Gateway:ApiKeys[]` | `Name`, `Key` (or `KeySha256`), `Environment`, `Priority` (0 = highest), `PermitsPerMinute`. |
-| `Gateway:GlobalQuota` | `PermitsPerMinute` for all keys together. `ReservedFraction` of it is kept for keys with `Priority <= ReservedPriority` (prod wins when budget is tight). |
+| `ClientConfiguration:Budgets:<name>` | A budget: `Operations[]`, `Limit`, `Window`, `Lockout`, `MaxWait` (see "Budgets" above). Read at startup. |
+| `Gateway:ApiKeys[]` | `Name`, `Key` (or `KeySha256`), `Environment`. No key is limited on its own: all share the account's budgets. |
 | `Gateway:AdminKey` | Separate key for `/admin/halo/*` (header `X-Admin-Key`). |
 | `Gateway:Oidc` | Browser admin page `/admin`: `Authority`, `ClientId`, `ClientSecret`, `AllowedGroups[]`, `GroupClaim` (default `groups`), `Scopes[]`, `SessionLifetime`. Off (404) until `Authority` and `ClientId` are set. Redirect URI: `https://<public gateway host>/admin/signin-oidc`. |
 | `Gateway:Cache` | `Enabled`, `ImmutableTtl`, `MaxCachedBinaryBytes` (per binary response), `MaxCacheBytes` (the whole cache, as response bytes; default 32 MiB, read at startup). |
@@ -186,8 +209,6 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
   run `halo_auth` (Healthy, or Degraded, which still returns 200). Responses contain only the status word.
 - Metrics, pushed over OTLP only (no `/metrics`; through an OpenTelemetry Collector into Prometheus they get these names):
   - `grunt_gateway_requests_total{key,environment,action}`
-  - `grunt_gateway_quota_rejections_total{key,reason}`
-  - `grunt_gateway_quota_remaining{key}`
   - `grunt_gateway_upstream_responses_total{action,status}`
   - `grunt_gateway_upstream_failures_total`
   - `grunt_halo_requests_total{operation,host,status,error}`: every HTTP request sent to Halo, one per attempt (retries,
@@ -195,6 +216,10 @@ an Error is logged, and `grunt_gateway_halo_reauth_required` becomes 1. Repeat s
     `status` 0 means no response, and `error` then names the exception. `GetSpartanToken` counts the Spartan token calls.
     This is what Halo's rate limits see: `sum by (operation) (rate(grunt_halo_requests_total[1m]))`.
   - `grunt_halo_retries_total{operation,reason,status}`
+  - `grunt_halo_budget_remaining{budget}`, `grunt_halo_budget_lockout_seconds{budget}`: room left in each budget's window, and
+    time left on its lockout (0: none)
+  - `grunt_halo_budget_rejections_total{budget,reason}`: calls turned away, never sent (`window` or `lockout`)
+  - `grunt_halo_budget_wait_seconds{budget}`: how long calls waited for room
   - `grunt_gateway_cache_lookups_total{action,result}`
   - `grunt_gateway_cache_size_bytes`, `grunt_gateway_cache_entries`
   - `grunt_gateway_cache_evictions_total{reason}`

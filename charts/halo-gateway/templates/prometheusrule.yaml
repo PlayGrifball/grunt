@@ -50,21 +50,13 @@ spec:
             summary: Halo calls through the gateway keep failing
             description: More than {{ mulf $p.upstreamErrorRatio 100 }}% of Halo calls failed (5xx or no response) after retries for 15 minutes.
         - alert: HaloGatewayUpstreamThrottled
-          expr: sum(rate(grunt_halo_retries_total{ {{- $sel -}} ,status="429"}[10m]) or vector(0)) > {{ $p.upstreamThrottleRate }}
+          expr: sum(rate(grunt_halo_requests_total{ {{- $sel -}} ,status="429"}[10m]) or vector(0)) > {{ $p.upstreamThrottleRate }}
           for: 15m
           labels:
             severity: warning
           annotations:
             summary: Halo keeps rate-limiting the gateway
-            description: The gateway retried Halo 429s at more than {{ $p.upstreamThrottleRate }}/s for 15 minutes; lower quotas or raise cache TTLs.
-        - alert: HaloGatewayQuotaExhausted
-          expr: sum by (key, reason) (rate(grunt_gateway_quota_rejections_total{ {{- $sel -}} }[10m])) > 0
-          for: 10m
-          labels:
-            severity: info
-          annotations:
-            summary: "Gateway quota rejecting {{ "{{" }} $labels.key {{ "}}" }} ({{ "{{" }} $labels.reason {{ "}}" }})"
-            description: A consumer key has been hitting its quota (or the global budget) for 10 minutes.
+            description: Halo answered 429 at more than {{ $p.upstreamThrottleRate }}/s for 15 minutes although the budgets keep calls within its limits; a budget (ClientConfiguration:Budgets) lets more through than Halo takes, so lower it.
         # No `up` series for pushed metrics: the gauge below is reported on every export while the gateway runs, so its absence
         # means the gateway is down, or its pushes stopped reaching Prometheus.
         - alert: HaloGatewayMetricsAbsent

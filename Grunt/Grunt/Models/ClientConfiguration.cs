@@ -28,10 +28,10 @@ public class ClientConfiguration
     public Surprenant.Grunt.Core.HaloRetryOptions Retry { get; set; } = new();
 
     /// <summary>
-    /// Limits on the calls of particular Halo operations, by operation name (e.g. <c>StatsGetMatchHistory</c>), in
-    /// <see cref="Surprenant.Grunt.Core.HaloInfiniteClientFactory"/>: a call waits its turn rather than being answered 429
-    /// (<see cref="Surprenant.Grunt.Core.HaloCallLimiter"/>). Bound from <c>ClientConfiguration:Limits</c>; read at startup.
+    /// The account's budgets with Halo, by a name of their own (e.g. <c>profile</c>): each a group of operations sharing a limit,
+    /// a lockout after Halo answers 429, and how long a call waits for room (<see cref="Surprenant.Grunt.Core.HaloBudgets"/>).
+    /// Operations in none are not limited. Bound from <c>ClientConfiguration:Budgets</c>; read at startup.
     /// </summary>
-    [JsonPropertyName("limits")]
-    public System.Collections.Generic.Dictionary<string, Surprenant.Grunt.Core.HaloCallLimit> Limits { get; set; } = new();
+    [JsonPropertyName("budgets")]
+    public System.Collections.Generic.Dictionary<string, Surprenant.Grunt.Core.HaloBudget> Budgets { get; set; } = new();
 }

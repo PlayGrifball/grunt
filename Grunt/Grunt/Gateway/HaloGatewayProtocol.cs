@@ -38,8 +38,8 @@ public static class HaloGatewayProtocol
     /// <list type="bullet">
     /// <item>2xx → 200.</item>
     /// <item>401/403 → 502: the gateway's own Halo credentials failed after the auth retry, not the caller's.</item>
-    /// <item>429 → 503 (with Retry-After when Halo sent one): Halo is still throttling after the gateway's backoff. Plain 429 is
-    /// reserved for the gateway's own per-key quotas.</item>
+    /// <item>429 → 503 with Retry-After (Halo's, or the time left on the budget's lockout): Halo is throttling. Plain 429 is
+    /// reserved for a call the account's budget turned away, never sent (<see cref="Models.HaloApiErrorContainer.NotSent"/>).</item>
     /// <item>Other 4xx (404, 400, ...) → passed through.</item>
     /// <item>5xx, 0 (no response) and anything else → 502.</item>
     /// </list>

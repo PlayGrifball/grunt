@@ -57,7 +57,6 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
     - `HaloGatewayReauthRequired`
     - `HaloGatewayUpstreamErrors`
     - `HaloGatewayUpstreamThrottled`
-    - `HaloGatewayQuotaExhausted`
     - `HaloGatewayMetricsAbsent` (no pushed series for `absentFor`: down, or its export is broken; replaces an `up` alert)
 
     Pushed series are selected by `k8s_namespace_name="<namespace>"` and `job=~"(.+/)?<service name>"`, the labels an
@@ -74,12 +73,9 @@ oauth:
 admin:
   existingSecret: halo-gateway-admin        # key AdminKey
 apiKeys:
-  - { name: grif-prod,    environment: prod,    priority: 0, permitsPerMinute: 600, secretName: halo-gateway-keys, secretKey: grif-prod }
-  - { name: grif-test,    environment: test,    priority: 1, permitsPerMinute: 240, secretName: halo-gateway-keys, secretKey: grif-test }
-  - { name: grif-preview, environment: preview, priority: 2, permitsPerMinute: 120, secretName: halo-gateway-keys, secretKey: grif-preview }
-globalQuota:
-  permitsPerMinute: 1200
-  reservedFraction: 0.25      # the last 25% of the global budget is for priority-0 (prod) keys
+  - { name: grif-prod,    environment: prod,    secretName: halo-gateway-keys, secretKey: grif-prod }
+  - { name: grif-test,    environment: test,    secretName: halo-gateway-keys, secretKey: grif-test }
+  - { name: grif-preview, environment: preview, secretName: halo-gateway-keys, secretKey: grif-preview }
 telemetry:
   enabled: true
   endpoint: http://<otel collector>:4317
@@ -113,8 +109,9 @@ If the public host goes through Cloudflare, it needs the same origin setup as th
 ## Giving a grif environment a key
 
 1. Generate a key, e.g. `openssl rand -base64 32`.
-2. Add it to the `halo-gateway-keys` secret under the environment's name, and add an `apiKeys` entry with its priority
-   and quota. If you'd rather not keep the clear key in the gateway namespace, use `keySha256: <sha256 hex>` instead.
+2. Add it to the `halo-gateway-keys` secret under the environment's name, and add an `apiKeys` entry (keys are not limited one
+   by one: every caller shares the account's `budgets`, first come, first served). If you'd rather not keep the clear key
+   in the gateway namespace, use `keySha256: <sha256 hex>` instead.
 3. Give the environment the same key as `HaloGateway:ApiKey`, plus `HaloGateway:BaseAddress:
    http://halo-gateway.halo-gateway.svc:8080/`, and register `services.AddHaloGatewayClient(configuration.GetSection("HaloGateway"))`
    (package `Surprenant.Grunt.Gateway.Client`).
