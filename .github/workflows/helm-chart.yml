@@ -49,12 +49,16 @@ jobs:
           helm plugin install https://github.com/helm-unittest/helm-unittest $verify
           helm unittest "$CHART"
 
-      # The Grafana dashboard offline: generated JSON, uid, datasources, the metrics the gateway defines, PromQL syntax;
-      # and the alerts: promtool test rules (tests/alerts.promtool.yml) on the PrometheusRule as the chart renders it
+      # The Grafana dashboard offline: generated JSON, placeholders, datasources, the metrics the gateway defines, PromQL
+      # syntax, histogram buckets; the alerts: promtool test rules (tests/alerts.promtool.yml) on the PrometheusRule as the
+      # chart renders it; what helm package ships; dashboard-stack.sh with docker stubbed
       - name: Dashboard and alert tests
         run: |
           set -euo pipefail
-          curl --proto =https -fsSL https://github.com/prometheus/prometheus/releases/download/v3.15.1/prometheus-3.15.1.linux-amd64.tar.gz | tar xz
+          # promtool from the Prometheus release, checked against its sha256sums.txt entry before it runs
+          curl --proto =https -fsSLO https://github.com/prometheus/prometheus/releases/download/v3.15.1/prometheus-3.15.1.linux-amd64.tar.gz
+          echo "6a726885328ad9efebbf36e876ce2fb6225468a71fd1e7ce3ba666d5f4d97a84  prometheus-3.15.1.linux-amd64.tar.gz" | sha256sum -c -
+          tar xzf prometheus-3.15.1.linux-amd64.tar.gz
           PROMTOOL="$PWD/prometheus-3.15.1.linux-amd64/promtool" node --test "$CHART"/tests/*.test.mjs
 
       - name: Schema check
@@ -93,7 +97,8 @@ jobs:
 
   # The dashboard against the gateway itself: it pushes to a real Prometheus, which also evaluates the chart's alerts,
   # Grafana loads the dashboard the chart renders, every panel's query runs through Grafana's query API and every alert
-  # must evaluate cleanly (tests/dashboard-stack.sh); then a screenshot of the dashboard, as an artifact
+  # must evaluate cleanly, then the panels run in Grafana's own frontend, $sel interpolated by Grafana
+  # (tests/dashboard-stack.sh); and a screenshot of the dashboard, as an artifact
   dashboard:
     needs: [test, image]
     runs-on: ubuntu-latest
