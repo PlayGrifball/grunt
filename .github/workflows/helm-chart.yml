@@ -54,7 +54,7 @@ jobs:
       - name: Dashboard tests
         run: |
           set -euo pipefail
-          curl -fsSL https://github.com/prometheus/prometheus/releases/download/v3.15.1/prometheus-3.15.1.linux-amd64.tar.gz | tar xz
+          curl --proto =https -fsSL https://github.com/prometheus/prometheus/releases/download/v3.15.1/prometheus-3.15.1.linux-amd64.tar.gz | tar xz
           PROMTOOL="$PWD/prometheus-3.15.1.linux-amd64/promtool" node --test "$CHART"/tests/*.test.mjs
 
       - name: Schema check
