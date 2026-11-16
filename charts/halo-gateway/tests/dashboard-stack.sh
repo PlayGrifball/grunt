@@ -54,8 +54,8 @@ create() {
   docker create --name "$name" "$@" > /dev/null
   STARTED+=("$name")
 }
-# The host address a container's port is published on.
-address() { docker port "$PREFIX-$1" "$2/tcp" | head -n1; }
+# The host port a container's port is published on (on 127.0.0.1).
+port() { docker port "$PREFIX-$1" "$2/tcp" | head -n1 | sed 's/.*://'; }
 
 docker network create "$PREFIX" > /dev/null
 NETWORK="$PREFIX"
@@ -119,31 +119,31 @@ docker cp -q "$WORK/dashboards.yaml" "$PREFIX-grafana:/etc/grafana/provisioning/
 docker cp -q "$WORK/dashboards" "$PREFIX-grafana:/etc/grafana/dashboards"
 docker start "$PREFIX-grafana" > /dev/null
 
-GATEWAY="http://$(address gateway 8080)"
-GRAFANA="http://$(address grafana 3000)"
-PROMETHEUS="http://$(address prometheus 9090)"
+GATEWAY_PORT=$(port gateway 8080)
+GRAFANA_PORT=$(port grafana 3000)
+PROMETHEUS_PORT=$(port prometheus 9090)
 
 # Traffic once the gateway answers: lookups that fail without a Halo account (budget, cache, failure metrics)
 deadline=$((SECONDS + HEALTH_TIMEOUT))
-until curl -fs "$GATEWAY/health/live" > /dev/null; do
+until curl -fs "http://localhost:$GATEWAY_PORT/health/live" > /dev/null; do
   if (( SECONDS >= deadline )); then
-    echo "::error::The gateway never answered $GATEWAY/health/live in ${HEALTH_TIMEOUT}s"
+    echo "::error::The gateway never answered /health/live (port $GATEWAY_PORT) in ${HEALTH_TIMEOUT}s"
     exit 1
   fi
   sleep 2
 done
 for path in users/by-gamertag/Grunt users/by-gamertag/Major%20Nelson 'users?xuids=1' medals stats/matches/00000000-0000-0000-0000-000000000001; do
-  curl -s -o /dev/null -w "%{http_code} $path\n" -H 'X-Api-Key: dashboard-key' "$GATEWAY/halo/v1/$path"
+  curl -s -o /dev/null -w "%{http_code} $path\n" -H 'X-Api-Key: dashboard-key' "http://localhost:$GATEWAY_PORT/halo/v1/$path"
 done
 
-node "$DIR/dashboard-grafana.mjs" --url "$GRAFANA" --uid "$DASHBOARD" --timeout "${TIMEOUT:-180}" \
-  --prometheus "$PROMETHEUS" --rules "$WORK/rules.yml"
+node "$DIR/dashboard-grafana.mjs" --url "http://localhost:$GRAFANA_PORT" --uid "$DASHBOARD" --timeout "${TIMEOUT:-180}" \
+  --prometheus "http://localhost:$PROMETHEUS_PORT" --rules "$WORK/rules.yml"
 
 # The image has the browser but not the package: installed first, at the image's version, outside the checkout
-create browser --network host -e GRAFANA="$GRAFANA" -e DASHBOARD="$DASHBOARD" -e SELECTOR="$SELECTOR" \
+create browser --network host -e GRAFANA_PORT="$GRAFANA_PORT" -e DASHBOARD="$DASHBOARD" -e SELECTOR="$SELECTOR" \
   -e SCREENSHOT_ARGS="${SCREENSHOT:+--screenshot /out/dashboard.png}" "$PLAYWRIGHT_IMAGE" \
   sh -c "mkdir -p /pw /out && cd /pw && npm install --silent --no-audit --no-fund playwright@$PLAYWRIGHT_VERSION > /dev/null &&
-         node /tests/dashboard-browser.mjs --url \"\$GRAFANA\" --uid \"\$DASHBOARD\" --selector \"\$SELECTOR\" \$SCREENSHOT_ARGS"
+         node /tests/dashboard-browser.mjs --url \"http://localhost:\$GRAFANA_PORT\" --uid \"\$DASHBOARD\" --selector \"\$SELECTOR\" \$SCREENSHOT_ARGS"
 docker cp -q "$DIR" "$PREFIX-browser:/tests"
 docker start -a "$PREFIX-browser"
 if [[ -n "${SCREENSHOT:-}" ]]; then docker cp -q "$PREFIX-browser:/out/dashboard.png" "$SCREENSHOT"; fi
