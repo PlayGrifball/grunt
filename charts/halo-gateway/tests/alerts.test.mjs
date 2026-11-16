@@ -1,4 +1,4 @@
-// The chart's alerts (templates/prometheusrule.yaml), offline: node --test charts/halo-gateway/tests/
+// The chart's alerts (templates/prometheusrule.yaml), offline: node --test charts/halo-gateway/tests/*.test.mjs
 //   - every alert has a severity, a summary and a description (and a runbook_url, if it has one, is a URL)
 //   - alerts.promtool.yml has, for every alert, a case where it fires and one where it doesn't
 //   - the rules as the chart renders them pass promtool check rules and promtool test rules alerts.promtool.yml:
@@ -16,7 +16,7 @@ import { renderRules } from './prometheus-rules.mjs';
 const rules = renderRules();
 const unitTests = fs.readFileSync(path.join(import.meta.dirname, 'alerts.promtool.yml'), 'utf8');
 /** Each alert's text in the rules file, by name. */
-const alerts = new Map(rules.split(/^\s*- alert: /m).slice(1).map(a => [a.split('\n')[0].trim(), a]));
+const alerts = new Map(rules.split(/^ *- alert: /m).slice(1).map(a => [a.split('\n')[0].trim(), a]));
 
 test('the chart has its alerts', () => {
   assert.deepEqual([...alerts.keys()].sort(),
@@ -34,7 +34,7 @@ test('every alert has a severity, a summary and a description', () => {
 
 test('every alert has a case where it fires and one where it does not', () => {
   // Each `- eval_time:` entry: its alertname, and whether it expects alerts
-  const cases = unitTests.split(/^\s*- eval_time: /m).slice(1)
+  const cases = unitTests.split(/^ *- eval_time: /m).slice(1)
     .map(c => ({ alert: c.match(/alertname: (\S+)/)?.[1], fires: !/exp_alerts: \[\]/.test(c) }));
   for (const name of alerts.keys()) {
     assert.ok(cases.some(c => c.alert === name && c.fires), `${name}: no case where it fires`);

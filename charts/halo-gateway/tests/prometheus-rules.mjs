@@ -4,16 +4,17 @@
 //
 //   node charts/halo-gateway/tests/prometheus-rules.mjs > rules.yml
 //
-// Needs helm.
+// Needs helm: HELM, or helm from PATH.
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const chart = path.resolve(import.meta.dirname, '..');
+const helm = process.env.HELM || 'helm';
 
 /** The rules file (groups: ...), from the chart rendered as release halo-gateway in namespace halo-gateway. */
 export function renderRules() {
-  const manifest = execFileSync('helm', ['template', 'halo-gateway', chart, '-n', 'halo-gateway',
+  const manifest = execFileSync(helm, ['template', 'halo-gateway', chart, '-n', 'halo-gateway',
     '--set', 'oauth.redirectUrl=https://ci.invalid/oauth/callback', '--set', 'telemetry.enabled=true',
     '--set', 'telemetry.endpoint=http://otel-collector:4317', '--set', 'prometheusRule.enabled=true',
     '--show-only', 'templates/prometheusrule.yaml'], { encoding: 'utf8' });

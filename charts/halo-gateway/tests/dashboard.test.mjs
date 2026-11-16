@@ -1,4 +1,4 @@
-// The chart's Grafana dashboard (dashboards/halo-gateway.json), offline: node --test charts/halo-gateway/tests/
+// The chart's Grafana dashboard (dashboards/halo-gateway.json), offline: node --test charts/halo-gateway/tests/*.test.mjs
 //   - the JSON is what dashboards/halo-gateway.mjs makes (edit the script, then run it)
 //   - it has a uid, unique panel ids, panels inside the 24-column grid
 //   - every datasource it names is one of its own variables (a fixed uid would only work in one Grafana)

@@ -15,7 +15,7 @@ import fs from 'node:fs';
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, all) => (v.startsWith('--') ? [...a, [v.slice(2), all[i + 1]]] : a), []));
 const url = args.url ?? 'http://localhost:3000';
 const timeout = Number(args.timeout ?? 180) * 1000;
-const alertNames = args.rules ? [...fs.readFileSync(args.rules, 'utf8').matchAll(/^\s*- alert: (\S+)/gm)].map(m => m[1]) : [];
+const alertNames = args.rules ? [...fs.readFileSync(args.rules, 'utf8').matchAll(/^ *- alert: (\S+)/gm)].map(m => m[1]) : [];
 
 export const MAY_BE_EMPTY = new Set([
   // Halo itself: nothing is sent without a signed-in account
