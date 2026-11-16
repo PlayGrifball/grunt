@@ -1,0 +1,167 @@
+# promtool unit tests for the chart's alerts (templates/prometheusrule.yaml, default values): each alert fires when it
+# should, with its labels and annotations, and stays quiet below its threshold, before its `for:` has passed, and on
+# another namespace's gateway. alerts.test.mjs renders the rules next to this file as rules.yml and runs
+#   promtool test rules alerts.promtool.yml
+# Series are per minute; counters rise by the given amount each minute (e.g. 0+6x40: 6 a minute = 0.1/s).
+rule_files: [rules.yml]
+evaluation_interval: 1m
+
+tests:
+  # HaloGatewayReauthRequired
+  - name: signed out fires after 15 minutes
+    interval: 1m
+    input_series:
+      - series: 'grunt_gateway_halo_reauth_required{k8s_namespace_name="halo-gateway", job="halo-gateway"}'
+        values: '1x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HaloGatewayReauthRequired
+        exp_alerts: []
+      - eval_time: 16m
+        alertname: HaloGatewayReauthRequired
+        exp_alerts:
+          - exp_labels: { severity: warning }
+            exp_annotations:
+              summary: The Halo gateway's account must be signed in again
+              description: >-
+                The refresh token was rejected or no token is stored in halo-gateway. Sign in again from the admin page
+                (/admin) or with GET /admin/halo/signin (admin key); /admin or GET /admin/halo/status shows the reason.
+  - name: signed in, or another namespace's gateway signed out, is quiet
+    interval: 1m
+    input_series:
+      - series: 'grunt_gateway_halo_reauth_required{k8s_namespace_name="halo-gateway", job="halo-gateway"}'
+        values: '0x40'
+      - series: 'grunt_gateway_halo_reauth_required{k8s_namespace_name="other", job="halo-gateway"}'
+        values: '1x40'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: HaloGatewayReauthRequired
+        exp_alerts: []
+
+  # HaloGatewayUpstreamErrors (more than 20% of Halo calls failed)
+  - name: 30% without an answer (status 0) fires after 15 minutes
+    interval: 1m
+    input_series:
+      - series: 'grunt_gateway_upstream_responses_total{k8s_namespace_name="halo-gateway", job="halo-gateway", status="200"}'
+        values: '0+70x40'
+      - series: 'grunt_gateway_upstream_responses_total{k8s_namespace_name="halo-gateway", job="halo-gateway", status="0"}'
+        values: '0+30x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HaloGatewayUpstreamErrors
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: HaloGatewayUpstreamErrors
+        exp_alerts:
+          - exp_labels: { severity: warning }
+            exp_annotations: &errors
+              summary: Halo calls through the gateway keep failing
+              description: More than 20% of Halo calls failed (5xx or no response) after retries for 15 minutes.
+  - name: only failures and no responses at all fires (or vector(0) keeps the sum)
+    interval: 1m
+    input_series:
+      - series: 'grunt_gateway_upstream_failures_total{k8s_namespace_name="halo-gateway", job="halo-gateway"}'
+        values: '0+5x40'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: HaloGatewayUpstreamErrors
+        exp_alerts:
+          - exp_labels: { severity: warning }
+            exp_annotations: *errors
+  - name: 15% of 5xx is below the threshold
+    interval: 1m
+    input_series:
+      - series: 'grunt_gateway_upstream_responses_total{k8s_namespace_name="halo-gateway", job="halo-gateway", status="200"}'
+        values: '0+85x40'
+      - series: 'grunt_gateway_upstream_responses_total{k8s_namespace_name="halo-gateway", job="halo-gateway", status="503"}'
+        values: '0+15x40'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: HaloGatewayUpstreamErrors
+        exp_alerts: []
+  - name: 4xx are not failures, and no traffic is not 100% failures
+    interval: 1m
+    input_series:
+      - series: 'grunt_gateway_upstream_responses_total{k8s_namespace_name="halo-gateway", job="halo-gateway", status="200"}'
+        values: '0+50x20 50x20'
+      - series: 'grunt_gateway_upstream_responses_total{k8s_namespace_name="halo-gateway", job="halo-gateway", status="404"}'
+        values: '0+50x20 50x20'
+      - series: 'grunt_gateway_upstream_responses_total{k8s_namespace_name="other", job="halo-gateway", status="503"}'
+        values: '0+50x40'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: HaloGatewayUpstreamErrors
+        exp_alerts: []
+      - eval_time: 40m
+        alertname: HaloGatewayUpstreamErrors
+        exp_alerts: []
+
+  # HaloGatewayUpstreamThrottled (more than 0.05 429s a second)
+  # rate over [10m] of a counter that starts at 0 ramps up over those 10 minutes: past 0.05/s from minute 6, so
+  # firing from minute 21, not 16
+  - name: 429s at 0.1/s fire 15 minutes after the 10-minute rate passes 0.05/s
+    interval: 1m
+    input_series:
+      - series: 'grunt_halo_requests_total{k8s_namespace_name="halo-gateway", job="halo-gateway", operation="profile", status="429"}'
+        values: '0+6x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HaloGatewayUpstreamThrottled
+        exp_alerts: []
+      - eval_time: 22m
+        alertname: HaloGatewayUpstreamThrottled
+        exp_alerts:
+          - exp_labels: { severity: warning }
+            exp_annotations:
+              summary: Halo keeps rate-limiting the gateway
+              description: Halo answered 429 at more than 0.05/s for 15 minutes although the budgets keep calls within its limits; a budget (ClientConfiguration:Budgets) lets more through than Halo takes, so lower it.
+  - name: 429s at 0.033/s, 200s, or another namespace's 429s are quiet
+    interval: 1m
+    input_series:
+      - series: 'grunt_halo_requests_total{k8s_namespace_name="halo-gateway", job="halo-gateway", operation="profile", status="429"}'
+        values: '0+2x40'
+      - series: 'grunt_halo_requests_total{k8s_namespace_name="halo-gateway", job="halo-gateway", operation="profile", status="200"}'
+        values: '0+600x40'
+      - series: 'grunt_halo_requests_total{k8s_namespace_name="other", job="halo-gateway", operation="profile", status="429"}'
+        values: '0+60x40'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: HaloGatewayUpstreamThrottled
+        exp_alerts: []
+
+  # HaloGatewayMetricsAbsent (no series for 10m)
+  - name: no series from this namespace fires after 10 minutes, another namespace's don't count
+    interval: 1m
+    input_series:
+      - series: 'grunt_gateway_halo_reauth_required{k8s_namespace_name="other", job="halo-gateway"}'
+        values: '0x40'
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HaloGatewayMetricsAbsent
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: HaloGatewayMetricsAbsent
+        exp_alerts:
+          - exp_labels: { severity: warning, k8s_namespace_name: halo-gateway }
+            exp_annotations: &absent
+              summary: No metrics from the Halo gateway
+              description: >-
+                The gateway in halo-gateway has pushed no metrics for 10m: it is down, or its OTLP export
+                (telemetry.endpoint, the NetworkPolicy's telemetry egress, the collector) is broken.
+  - name: pushes that stop fire 10 minutes after the series goes stale
+    interval: 1m
+    input_series:
+      - series: 'grunt_gateway_halo_reauth_required{k8s_namespace_name="halo-gateway", job="grunt/halo-gateway"}'
+        values: '0x10 _x40'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HaloGatewayMetricsAbsent
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: HaloGatewayMetricsAbsent
+        exp_alerts: []
+      - eval_time: 30m
+        alertname: HaloGatewayMetricsAbsent
+        exp_alerts:
+          - exp_labels: { severity: warning, k8s_namespace_name: halo-gateway }
+            exp_annotations: *absent

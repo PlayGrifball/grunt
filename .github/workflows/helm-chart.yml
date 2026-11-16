@@ -49,9 +49,9 @@ jobs:
           helm plugin install https://github.com/helm-unittest/helm-unittest $verify
           helm unittest "$CHART"
 
-      # The Grafana dashboard offline: generated JSON, uid, datasources, the metrics the gateway defines, PromQL syntax
-      # (promtool at the Prometheus version homelab runs)
-      - name: Dashboard tests
+      # The Grafana dashboard offline: generated JSON, uid, datasources, the metrics the gateway defines, PromQL syntax;
+      # and the alerts: promtool test rules (tests/alerts.promtool.yml) on the PrometheusRule as the chart renders it
+      - name: Dashboard and alert tests
         run: |
           set -euo pipefail
           curl --proto =https -fsSL https://github.com/prometheus/prometheus/releases/download/v3.15.1/prometheus-3.15.1.linux-amd64.tar.gz | tar xz
@@ -91,8 +91,9 @@ jobs:
           path: ${{ runner.temp }}/halo-gateway.tar
           retention-days: 1
 
-  # The dashboard against the gateway itself: it pushes to a real Prometheus, Grafana (homelab's versions) loads the
-  # dashboard the chart renders, and every panel's query runs through Grafana's query API (tests/dashboard-stack.sh)
+  # The dashboard against the gateway itself: it pushes to a real Prometheus, which also evaluates the chart's alerts,
+  # Grafana loads the dashboard the chart renders, every panel's query runs through Grafana's query API and every alert
+  # must evaluate cleanly (tests/dashboard-stack.sh); then a screenshot of the dashboard, as an artifact
   dashboard:
     needs: [test, image]
     runs-on: ubuntu-latest
@@ -107,10 +108,16 @@ jobs:
       - name: Dashboard through Grafana
         env:
           GATEWAY_IMAGE: halo-gateway:e2e
+          SCREENSHOT: halo-gateway-dashboard.png
         run: |
           set -euo pipefail
           docker load -i "${{ runner.temp }}/halo-gateway.tar"
           "$CHART"/tests/dashboard-stack.sh
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: halo-gateway-dashboard
+          path: halo-gateway-dashboard.png
 
   e2e:
     needs: [test, image]

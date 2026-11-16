@@ -1,15 +1,21 @@
 // The chart's dashboard end to end: every panel's query through a real Grafana's query API (/api/ds/query), against a
 // Prometheus the gateway itself pushes its metrics to (dashboard-stack.sh starts them). So it covers the chart's
 // rendering ($sel filled in), Grafana loading the dashboard, every query running, and the metrics' real names and
-// labels, not only the file.
+// labels, not only the file. With --prometheus and --rules, also the chart's alerts (prometheus-rules.mjs) in that
+// Prometheus: every rule in the file loaded, evaluated, health ok and no error, and HaloGatewayMetricsAbsent inactive
+// (so its selector matches the series the gateway really pushes).
 //
-//   node charts/halo-gateway/tests/dashboard-grafana.mjs [--url http://localhost:3000] [--timeout 180]
+//   node charts/halo-gateway/tests/dashboard-grafana.mjs [--url http://localhost:3000] [--timeout 180] \
+//     [--prometheus http://localhost:9090 --rules rules.yml]
 //
 // Fails on a query Grafana or Prometheus rejects, and on a panel with no data unless it is in MAY_BE_EMPTY: those need
 // what CI can't make (a signed-in Halo account answering, Halo throttling, retries). Prints a table of rows per panel.
+import fs from 'node:fs';
+
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, all) => (v.startsWith('--') ? [...a, [v.slice(2), all[i + 1]]] : a), []));
 const url = args.url ?? 'http://localhost:3000';
 const timeout = Number(args.timeout ?? 180) * 1000;
+const alertNames = args.rules ? [...fs.readFileSync(args.rules, 'utf8').matchAll(/^\s*- alert: (\S+)/gm)].map(m => m[1]) : [];
 
 export const MAY_BE_EMPTY = new Set([
   // Halo itself: nothing is sent without a signed-in account
@@ -20,8 +26,8 @@ export const MAY_BE_EMPTY = new Set([
   'Token refreshes',
 ]);
 
-async function call(path, body) {
-  const response = await fetch(`${url}${path}`, {
+async function call(path, body, base = url) {
+  const response = await fetch(`${base}${path}`, {
     method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json' }, body: body && JSON.stringify(body),
     signal: AbortSignal.timeout(30000),
   });
@@ -59,7 +65,28 @@ async function check() {
     }
     if (count === 0 && !MAY_BE_EMPTY.has(panel.title)) failures.push(`${panel.title}: no data`);
   }
+  if (args.prometheus) failures.push(...await checkRules(report));
   return { failures, report, panels: panels.length };
+}
+
+/** The chart's alerts in Prometheus: each one loaded, evaluated without error. */
+async function checkRules(report) {
+  const failures = [];
+  const { ok, status, json } = await call('/api/v1/rules', undefined, args.prometheus);
+  if (!ok) return [`Prometheus /api/v1/rules: ${status} ${JSON.stringify(json)}`];
+  const rules = new Map(json.data.groups.flatMap(g => g.rules).map(r => [r.name, r]));
+  if (!alertNames.length) failures.push(`no alerts in ${args.rules}`);
+  report.push('', '| Alert | Health | State | Last evaluation |', '| --- | --- | --- | --- |');
+  for (const name of alertNames) {
+    const rule = rules.get(name);
+    if (!rule) { failures.push(`alert ${name}: not loaded in Prometheus`); continue; }
+    report.push(`| ${name} | ${rule.health} | ${rule.state} | ${rule.lastEvaluation} |`);
+    if (rule.lastEvaluation.startsWith('0001-')) failures.push(`alert ${name}: not evaluated yet`);
+    else if (rule.health !== 'ok' || rule.lastError) failures.push(`alert ${name}: health ${rule.health} ${rule.lastError ?? ''}`);
+  }
+  if (rules.get('HaloGatewayMetricsAbsent')?.state !== 'inactive')
+    failures.push('alert HaloGatewayMetricsAbsent is not inactive: its selector misses the series the gateway pushes');
+  return failures;
 }
 
 const deadline = Date.now() + timeout;
@@ -79,4 +106,4 @@ if (outcome.failures.length) {
   console.log(`\nFAILED:\n  ${outcome.failures.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`\nOK: ${outcome.panels} panels queried through Grafana, every one that can have data has some`);
+console.log(`\nOK: ${outcome.panels} panels queried through Grafana, every one that can have data has some${alertNames.length ? `; ${alertNames.length} alerts evaluated in Prometheus` : ''}`);

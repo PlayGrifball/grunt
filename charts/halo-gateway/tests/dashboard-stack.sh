@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # The chart's dashboard against a real gateway: Prometheus (its OTLP receiver), the gateway pushing its metrics to it,
 # and Grafana with the dashboard the chart renders provisioned; a few gateway calls for traffic (they fail without a
-# Halo account, which still makes request, cache, budget and failure metrics); then dashboard-grafana.mjs.
+# Halo account, which still makes request, cache, budget and failure metrics); then dashboard-grafana.mjs. Prometheus
+# also evaluates the chart's alerts (prometheus-rules.mjs) every 5 s, and the checker fails unless each one evaluates
+# cleanly. With SCREENSHOT=<file.png>, then a screenshot of the dashboard (dashboard-screenshot.mjs, in the Playwright
+# image).
 #
-#   GATEWAY_IMAGE=halo-gateway:e2e charts/halo-gateway/tests/dashboard-stack.sh
+#   GATEWAY_IMAGE=halo-gateway:e2e [SCREENSHOT=halo-gateway.png] charts/halo-gateway/tests/dashboard-stack.sh
 #
-# Needs docker, helm and node. Grafana and Prometheus are the versions homelab runs. Removes what it started.
+# Needs docker, helm and node. Grafana, Prometheus and Playwright are pinned by digest. Removes what it started.
 set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,6 +16,8 @@ CHART="$(dirname "$DIR")"
 GATEWAY_IMAGE="${GATEWAY_IMAGE:-halo-gateway:e2e}"
 PROMETHEUS_IMAGE=quay.io/prometheus/prometheus:v3.15.1-distroless@sha256:451a845bae1d51622b41af1780eb2ad911bbb79a9855bc8e9bb67fabbc03f934
 GRAFANA_IMAGE=docker.io/grafana/grafana:13.2.4-distroless@sha256:ae3d3add290adbe6a88412229f5d76fd7bb82743050881698642d3d62f277e35
+PLAYWRIGHT_VERSION=1.65.0
+PLAYWRIGHT_IMAGE=mcr.microsoft.com/playwright:v$PLAYWRIGHT_VERSION-noble@sha256:9beb546099e11f52d62e505537914870e01a67e0e6b00ae41da4775324e73dbe
 NET=grunt-dashboard
 WORK="$(mktemp -d)"
 
@@ -30,15 +35,19 @@ trap cleanup EXIT
 
 docker network create "$NET" > /dev/null
 
-# Prometheus takes OTLP and keeps the resource attribute the dashboard selects on (as homelab's collector does)
+# Prometheus takes OTLP and keeps the resource attribute the dashboard and alerts select on (as a collector promoting
+# resource attributes does), and evaluates the chart's alerts often enough for the checker to see them evaluated
+node "$DIR/prometheus-rules.mjs" > "$WORK/rules.yml"
 cat > "$WORK/prometheus.yml" <<'EOF'
 global:
   scrape_interval: 15s
+  evaluation_interval: 5s
+rule_files: [/etc/prometheus/rules.yml]
 otlp:
   promote_resource_attributes: [k8s.namespace.name]
 EOF
 docker run -d --name prometheus --network "$NET" -p 19090:9090 -v "$WORK/prometheus.yml:/etc/prometheus/prometheus.yml:ro" \
-  "$PROMETHEUS_IMAGE" --config.file=/etc/prometheus/prometheus.yml --web.enable-otlp-receiver > /dev/null
+  -v "$WORK/rules.yml:/etc/prometheus/rules.yml:ro" "$PROMETHEUS_IMAGE" --config.file=/etc/prometheus/prometheus.yml --web.enable-otlp-receiver > /dev/null
 
 docker run -d --name gateway --network "$NET" -p 18080:8080 \
   -e Gateway__ApiKeys__0__Name=ci -e Gateway__ApiKeys__0__Key=dashboard-key -e Gateway__ApiKeys__0__Environment=ci \
@@ -79,4 +88,14 @@ for path in users/by-gamertag/Grunt users/by-gamertag/Major%20Nelson 'users?xuid
   curl -s -o /dev/null -w "%{http_code} $path\n" -H 'X-Api-Key: dashboard-key' "http://localhost:18080/halo/v1/$path"
 done
 
-node "$DIR/dashboard-grafana.mjs" --url http://localhost:13000 --timeout "${TIMEOUT:-180}"
+node "$DIR/dashboard-grafana.mjs" --url http://localhost:13000 --timeout "${TIMEOUT:-180}" \
+  --prometheus http://localhost:19090 --rules "$WORK/rules.yml"
+
+# The image has the browser but not the package: installed first, at the image's version, outside the checkout
+if [[ -n "${SCREENSHOT:-}" ]]; then
+  mkdir -p "$WORK/screenshot"
+  docker run --rm --network host -v "$DIR:/tests:ro" -v "$WORK/screenshot:/out" "$PLAYWRIGHT_IMAGE" \
+    sh -c "mkdir -p /pw && cd /pw && npm install --silent --no-audit --no-fund playwright@$PLAYWRIGHT_VERSION > /dev/null &&
+           node /tests/dashboard-screenshot.mjs http://localhost:13000 /out/dashboard.png"
+  cp "$WORK/screenshot/dashboard.png" "$SCREENSHOT"
+fi
