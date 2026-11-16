@@ -1,3 +1,5 @@
+using System.Diagnostics.Metrics;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Time.Testing;
 using Surprenant.Grunt.Core;
 using Surprenant.Grunt.Models;
@@ -218,5 +220,28 @@ public class HaloBudgetsTests
             _ => ++sent < 3 ? Answer(429) : Answer(200), r => r.Error);
 
         Assert.That((result.Result, sent, delays.Count), Is.EqualTo(("ok", 3, 2)));
+    }
+
+    [Test]
+    public void TheWaitHistogram_HasBucketsInSeconds_ThatTellWaitsUpToMaxWaitApart()
+    {
+        // The OpenTelemetry SDK's default boundaries (0, 5, 10, ... 10000) are for milliseconds: every wait up to MaxWait
+        // (2 s) would land in (0, 5], and a p95 interpolated in that bucket could read above MaxWait
+        RuntimeHelpers.RunClassConstructor(typeof(HaloBudgets).TypeHandle);
+        Histogram<double>? waits = null;
+        using var listener = new MeterListener
+        {
+            InstrumentPublished = (instrument, _) =>
+            {
+                if (instrument.Meter.Name == HaloRequestPolicy.MeterName && instrument.Name == "grunt.halo.budget.wait")
+                    waits = instrument as Histogram<double>;
+            },
+        };
+        listener.Start();
+
+        Assert.That(waits, Is.Not.Null);
+        Assert.That(waits!.Unit, Is.EqualTo("s"));
+        Assert.That(waits.Advice?.HistogramBucketBoundaries, Is.EqualTo(new[] { 0, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10 }));
+        Assert.That(waits.Advice!.HistogramBucketBoundaries, Has.Some.EqualTo(MatchHistory.MaxWait.TotalSeconds));
     }
 }

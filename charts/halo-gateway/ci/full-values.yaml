@@ -51,6 +51,9 @@ ingressRoute:
     certResolver: letsencrypt
 prometheusRule:
   enabled: true
+grafanaDashboard:
+  enabled: true
+  namespace: monitoring
 oidc:
   enabled: true
   authority: https://auth.example.com/application/o/halo-gateway/

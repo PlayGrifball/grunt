@@ -1,0 +1,16 @@
+# Not shipped in the published chart: its tests (helm unittest, the node tests, the dashboard stack), the end-to-end
+# script, the CI values and the dashboard's generator (the template reads the generated dashboards/halo-gateway.json).
+# helm unittest still finds tests/: it reads them from the chart directory, not through the chart loader.
+.git/
+.DS_Store
+*.swp
+*.bak
+*.tmp
+*.orig
+*~
+.idea/
+.vscode/
+tests/
+e2e/
+ci/
+dashboards/*.mjs

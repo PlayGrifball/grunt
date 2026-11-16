@@ -53,3 +53,33 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 {{- end }}
 {{- end -}}
+
+{{/*
+PromQL label matchers selecting the gateway's pushed series, for its alerts and dashboard: prometheusRule.selector, else
+k8s_namespace_name="<release namespace>", job=~"(.+/)?<telemetry.serviceName or release name>" (the labels an OpenTelemetry
+Collector promotes from the resource attributes the chart sets). The service name's regex metacharacters are quoted as
+character classes (grunt[.]gateway), not with backslashes: Grafana doubles every backslash in a variable's value when it
+fills in the dashboard's $sel, and grunt\\.gateway then matches nothing.
+*/}}
+{{- define "halo-gateway.metricsSelector" -}}
+{{- $svc := .Values.telemetry.serviceName | default .Release.Name | toString -}}
+{{- if .Values.prometheusRule.selector -}}
+{{- .Values.prometheusRule.selector -}}
+{{- else -}}
+{{- if regexMatch "[\\\\^]" $svc }}{{ fail (printf "telemetry.serviceName %s: no ^ or \\ in it, which the alerts' and dashboard's job=~ matcher can only quote with a backslash (Grafana doubles those); or set prometheusRule.selector" $svc) }}{{ end -}}
+{{- printf "k8s_namespace_name=%q, job=~%q" .Release.Namespace (printf "(.+/)?%s" (regexReplaceAll "[.+*?()|{}\\[$]" $svc "[${0}]")) -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+The Grafana dashboard's uid: grafanaDashboard.uid, else <fullname>-<release namespace>, which Grafana takes up to 40
+characters of; a longer one is cut to 31 and ends in a hash of the whole.
+*/}}
+{{- define "halo-gateway.dashboardUid" -}}
+{{- $uid := .Values.grafanaDashboard.uid | default (printf "%s-%s" (include "halo-gateway.fullname" .) .Release.Namespace) -}}
+{{- if gt (len $uid) 40 -}}
+{{- printf "%s-%s" ($uid | trunc 31 | trimSuffix "-") (sha256sum $uid | trunc 8) -}}
+{{- else -}}
+{{- $uid -}}
+{{- end -}}
+{{- end }}

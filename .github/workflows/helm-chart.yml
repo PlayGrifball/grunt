@@ -49,6 +49,18 @@ jobs:
           helm plugin install https://github.com/helm-unittest/helm-unittest $verify
           helm unittest "$CHART"
 
+      # The Grafana dashboard offline: generated JSON, placeholders, datasources, the metrics the gateway defines, PromQL
+      # syntax, histogram buckets; the alerts: promtool test rules (tests/alerts.promtool.yml) on the PrometheusRule as the
+      # chart renders it; what helm package ships; dashboard-stack.sh with docker stubbed
+      - name: Dashboard and alert tests
+        run: |
+          set -euo pipefail
+          # promtool from the Prometheus release, checked against its sha256sums.txt entry before it runs
+          curl --proto =https -fsSLO https://github.com/prometheus/prometheus/releases/download/v3.15.1/prometheus-3.15.1.linux-amd64.tar.gz
+          echo "6a726885328ad9efebbf36e876ce2fb6225468a71fd1e7ce3ba666d5f4d97a84  prometheus-3.15.1.linux-amd64.tar.gz" | sha256sum -c -
+          tar xzf prometheus-3.15.1.linux-amd64.tar.gz
+          PROMTOOL="$PWD/prometheus-3.15.1.linux-amd64/promtool" node --test "$CHART"/tests/*.test.mjs
+
       - name: Schema check
         run: |
           set -euo pipefail
@@ -82,6 +94,35 @@ jobs:
           name: e2e-image
           path: ${{ runner.temp }}/halo-gateway.tar
           retention-days: 1
+
+  # The dashboard against the gateway itself: it pushes to a real Prometheus, which also evaluates the chart's alerts,
+  # Grafana loads the dashboard the chart renders, every panel's query runs through Grafana's query API and every alert
+  # must evaluate cleanly, then the panels run in Grafana's own frontend, $sel interpolated by Grafana
+  # (tests/dashboard-stack.sh); and a screenshot of the dashboard, as an artifact
+  dashboard:
+    needs: [test, image]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: e2e-image
+          path: ${{ runner.temp }}
+      - name: Dashboard through Grafana
+        env:
+          GATEWAY_IMAGE: halo-gateway:e2e
+          SCREENSHOT: halo-gateway-dashboard.png
+        run: |
+          set -euo pipefail
+          docker load -i "${{ runner.temp }}/halo-gateway.tar"
+          "$CHART"/tests/dashboard-stack.sh
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: halo-gateway-dashboard
+          path: halo-gateway-dashboard.png
 
   e2e:
     needs: [test, image]
@@ -123,7 +164,7 @@ jobs:
         run: ${{ env.CHART }}/e2e/run.sh
 
   publish:
-    needs: [test, e2e]
+    needs: [test, e2e, dashboard]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:

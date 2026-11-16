@@ -59,8 +59,12 @@ public readonly record struct HaloBudgetTurn(bool Allowed, TimeSpan RetryAfter, 
 /// </summary>
 public sealed class HaloBudgets
 {
+    // Boundaries in seconds, around the waits a budget allows (MaxWait: 2 s for matchHistory): the OpenTelemetry SDK's
+    // default ones (0, 5, 10, ... 10000) are for milliseconds and would put every wait in (0, 5]. 0 keeps the calls that
+    // didn't wait apart.
     private static readonly System.Diagnostics.Metrics.Histogram<double> Waits = HaloRequestPolicy.Meter.CreateHistogram<double>(
-        "grunt.halo.budget.wait", unit: "s", description: "Time a Halo call waited for room in its budget");
+        "grunt.halo.budget.wait", unit: "s", description: "Time a Halo call waited for room in its budget", tags: null,
+        advice: new System.Diagnostics.Metrics.InstrumentAdvice<double> { HistogramBucketBoundaries = [0, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10] });
 
     private static readonly System.Diagnostics.Metrics.Counter<long> TurnedAway = HaloRequestPolicy.Meter.CreateCounter<long>(
         "grunt.halo.budget.rejections", description: "Halo calls turned away, never sent, by budget and reason (window, lockout)");

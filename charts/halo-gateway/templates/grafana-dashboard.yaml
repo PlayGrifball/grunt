@@ -1,0 +1,37 @@
+{{- $d := .Values.grafanaDashboard -}}
+{{- if $d.enabled }}
+{{- if not .Values.telemetry.enabled }}{{ fail "grafanaDashboard needs telemetry.enabled: the gateway's metrics reach Prometheus only by OTLP push" }}{{ end }}
+{{- /*
+The dashboard (dashboards/halo-gateway.json) with the gateway's series selector (its hidden `sel` variable), a uid and title
+of its own and the rate panels' minimum interval filled in. Two releases may put theirs in one sidecar namespace (test and
+prod gateways both called halo-gateway, say): the ConfigMap's name and its file name (the sidecar writes every dashboard
+into one folder by its key) carry the release's namespace and the uid, so neither one replaces the other.
+*/}}
+{{- if contains "\\" .Values.prometheusRule.selector }}{{ fail "prometheusRule.selector has a backslash, which Grafana doubles when it fills in the dashboard's $sel: write a regex metacharacter as a class ([.]) instead" }}{{ end }}
+{{- $fullname := include "halo-gateway.fullname" . }}
+{{- $uid := include "halo-gateway.dashboardUid" . }}
+{{- $title := $d.title | default (ternary (printf "Halo gateway (%s)" .Release.Namespace) (printf "Halo gateway (%s, %s)" .Release.Namespace $fullname) (eq $fullname .Chart.Name)) }}
+{{- /* 4 pushes: rate() needs 2 in its window, and the SDK pushes every 60 s by default */}}
+{{- $pushMs := .Values.telemetry.metricExportInterval | default 60000 | int }}
+{{- $minInterval := printf "%ds" (max 1 (div (mul $pushMs 4) 1000)) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-%s-dashboard" $fullname .Release.Namespace | trunc 253 }}
+  namespace: {{ $d.namespace | default .Release.Namespace }}
+  labels:
+    {{- /* grafanaDashboard.labels over the chart's: null or {} adds none, a repeated key no duplicate */}}
+    {{- merge (deepCopy ($d.labels | default dict)) (include "halo-gateway.labels" . | fromYaml) | toYaml | nindent 4 }}
+  {{- with $d.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  {{ $uid }}.json: |-
+    {{- .Files.Get "dashboards/halo-gateway.json"
+        | replace "\"__SELECTOR__\"" (include "halo-gateway.metricsSelector" . | toJson)
+        | replace "\"__UID__\"" (toJson $uid)
+        | replace "\"__TITLE__\"" (toJson $title)
+        | replace "\"__RATE_INTERVAL_MIN__\"" (toJson $minInterval)
+        | nindent 4 }}
+{{- end }}

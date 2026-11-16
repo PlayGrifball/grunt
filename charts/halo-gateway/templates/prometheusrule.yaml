@@ -6,8 +6,7 @@ The gateway serves no /metrics: its metrics are pushed over OTLP to a collector,
 exporter, or remote write). With resource attributes promoted to labels, every pushed series carries k8s_namespace_name (the chart
 sets k8s.namespace.name) and job = "[<service.namespace>/]<service.name>". The `namespace` label, if any, is the collector's.
 */}}
-{{- $svc := .Values.telemetry.serviceName | default .Release.Name }}
-{{- $sel := $p.selector | default (printf "k8s_namespace_name=%q, job=~%q" .Release.Namespace (printf "(.+/)?%s" (regexQuoteMeta $svc))) }}
+{{- $sel := include "halo-gateway.metricsSelector" . }}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:

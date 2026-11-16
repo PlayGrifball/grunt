@@ -62,6 +62,13 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
     Pushed series are selected by `k8s_namespace_name="<namespace>"` and `job=~"(.+/)?<service name>"`, the labels an
     OpenTelemetry Collector gives them when its Prometheus exporter (or remote write) promotes resource attributes
     (`resource_to_telemetry_conversion`). `prometheusRule.selector` replaces that matcher for other pipelines.
+  - A Grafana dashboard (`grafanaDashboard.enabled`), a ConfigMap labelled for Grafana's dashboard sidecar
+    (`grafanaDashboard.labels`, default `grafana_dashboard: "1"`) in `grafanaDashboard.namespace` (the sidecar's, when it
+    searches only its own): Halo requests per endpoint and status, the budgets (room left, lockouts, calls turned away,
+    waits), callers and the cache, and health. Its queries use the same selector as the alerts. Its uid (and the
+    ConfigMap's name and file) is `<fullname>-<release namespace>` and its title `Halo gateway (<release namespace>)`
+    (`grafanaDashboard.uid`, `grafanaDashboard.title`), so two releases can share the sidecar's namespace. The rate
+    panels' minimum interval is 4 metric pushes (`telemetry.metricExportInterval`, the SDK's 60 s by default).
 ## Homelab values
 
 ```yaml
@@ -148,6 +155,10 @@ The gateway refreshes the token every 30 minutes. When Microsoft rejects the ref
 `helm-chart.yml` runs:
 
 - `helm lint --strict` and `helm unittest` (`tests/`).
+- `node --test tests/*.test.mjs`: the dashboard and alerts offline (promtool), what `helm package` ships (`.helmignore`
+  keeps the tests and the dashboard's generator out), and `tests/dashboard-stack.sh` with docker stubbed.
+- `tests/dashboard-stack.sh`: the dashboard and alerts against the gateway's own metrics, in a real Prometheus and Grafana;
+  the panels' queries also as Grafana's frontend sends them.
 - kubeconform against the oldest and newest supported Kubernetes versions.
 - `e2e/run.sh` on k3d with NetworkPolicies enforced. It covers readiness, API and admin keys, the 502 through the factory
   while not signed in, Degraded health, metrics, blocked namespaces, a token on the volume surviving a scale-down, egress
