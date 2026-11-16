@@ -18,10 +18,10 @@ WORK="$(mktemp -d)"
 
 cleanup() {
   local rc=$?
-  if [ "$rc" != 0 ]; then
+  if [[ "$rc" != 0 ]]; then
     for c in gateway grafana prometheus; do echo "::group::$c logs"; docker logs --tail 80 "$c" 2>&1 || true; echo "::endgroup::"; done
   fi
-  if [ "${KEEP:-}" != 1 ]; then
+  if [[ "${KEEP:-}" != 1 ]]; then
     docker rm -f grafana gateway prometheus > /dev/null 2>&1 || true
     docker network rm "$NET" > /dev/null 2>&1 || true
   fi
