@@ -1,20 +1,25 @@
 // The chart's dashboard end to end: every panel's query through a real Grafana's query API (/api/ds/query), against a
 // Prometheus the gateway itself pushes its metrics to (dashboard-stack.sh starts them). So it covers the chart's
-// rendering ($sel filled in), Grafana loading the dashboard, every query running, and the metrics' real names and
-// labels, not only the file. With --prometheus and --rules, also the chart's alerts (prometheus-rules.mjs) in that
+// rendering (the dashboard's uid and its $sel filled in), Grafana loading the dashboard, every query running, and the
+// metrics' real names and labels, not only the file. The query API does not interpolate dashboard variables (Grafana's
+// frontend does, before it sends a query), so this fills in $sel itself, with the value as the chart rendered it, and
+// sends each panel's minimum interval as the frontend would; dashboard-browser.mjs runs the same panels through
+// Grafana's own interpolation and escaping. This one is the wait for data and the alerts' check. With --prometheus and --rules, also the chart's alerts (prometheus-rules.mjs) in that
 // Prometheus: every rule in the file loaded, evaluated, health ok and no error, and HaloGatewayMetricsAbsent inactive
 // (so its selector matches the series the gateway really pushes).
 //
-//   node charts/halo-gateway/tests/dashboard-grafana.mjs [--url http://localhost:3000] [--timeout 180] \
+//   node charts/halo-gateway/tests/dashboard-grafana.mjs [--url http://localhost:3000] --uid <uid> [--timeout 180] \
 //     [--prometheus http://localhost:9090 --rules rules.yml]
 //
 // Fails on a query Grafana or Prometheus rejects, and on a panel with no data unless it is in MAY_BE_EMPTY: those need
 // what CI can't make (a signed-in Halo account answering, Halo throttling, retries). Prints a table of rows per panel.
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, all) => (v.startsWith('--') ? [...a, [v.slice(2), all[i + 1]]] : a), []));
 const url = args.url ?? 'http://localhost:3000';
 const timeout = Number(args.timeout ?? 180) * 1000;
+const uid = args.uid;
 const alertNames = args.rules ? [...fs.readFileSync(args.rules, 'utf8').matchAll(/^ *- alert: (\S+)/gm)].map(m => m[1]) : [];
 
 export const MAY_BE_EMPTY = new Set([
@@ -45,8 +50,8 @@ async function check() {
   const report = ['| Panel | Query | Rows |', '| --- | --- | ---: |'];
   const health = await call('/api/datasources/uid/prometheus/health');
   if (health.json.status !== 'OK') return { failures: [`datasource prometheus: ${JSON.stringify(health.json)}`], report };
-  const loaded = await call('/api/dashboards/uid/halo-gateway');
-  if (!loaded.ok) return { failures: [`dashboard halo-gateway not loaded: ${loaded.status} ${JSON.stringify(loaded.json)}`], report };
+  const loaded = await call(`/api/dashboards/uid/${uid}`);
+  if (!loaded.ok) return { failures: [`dashboard ${uid} not loaded: ${loaded.status} ${JSON.stringify(loaded.json)}`], report };
   const dashboard = loaded.json.dashboard;
   const sel = dashboard.templating.list.find(v => v.name === 'sel')?.query;
   if (!sel || sel.includes('__SELECTOR__')) failures.push(`the chart did not fill in $sel: ${sel}`);
@@ -54,7 +59,7 @@ async function check() {
   for (const panel of panels) {
     let count = 0;
     for (const target of panel.targets) {
-      const query = { ...target, datasource: { type: 'prometheus', uid: 'prometheus' }, expr: target.expr.replaceAll('$sel', sel), maxDataPoints: 100, intervalMs: 15000 };
+      const query = { ...target, datasource: { type: 'prometheus', uid: 'prometheus' }, expr: target.expr.replaceAll('$sel', sel), maxDataPoints: 100, intervalMs: 15000, ...(panel.interval && { interval: panel.interval }) };
       const { ok, status, json } = await call('/api/ds/query', { queries: [query], from: 'now-15m', to: 'now' });
       const result = json.results?.[target.refId];
       const error = result?.error ?? (!ok && `${status} ${json.message}`);
@@ -89,17 +94,19 @@ async function checkRules(report) {
   return failures;
 }
 
-const deadline = Date.now() + timeout;
-let outcome;
-while (true) {
-  try {
-    outcome = await check();
-  } catch (error) {
-    outcome = { failures: [`Grafana not answering: ${error.message}`], report: [] };
-  }
-  if (!outcome.failures.length || Date.now() > deadline) break;
-  console.log(`waiting on: ${outcome.failures.join('; ')}`);
-  await new Promise(r => setTimeout(r, 10000));
+async function main() {
+  if (!uid) throw new Error('--uid: the dashboard uid');
+  const deadline = Date.now() + timeout;
+  let outcome;
+  while (true) {
+    try {
+      outcome = await check();
+    } catch (error) {
+      outcome = { failures: [`Grafana not answering: ${error.message}`], report: [] };
+    }
+    if (!outcome.failures.length || Date.now() > deadline) break;
+    console.log(`waiting on: ${outcome.failures.join('; ')}`);
+    await new Promise(r => setTimeout(r, 10000));
 }
 console.log(outcome.report.join('\n'));
 if (outcome.failures.length) {
@@ -107,3 +114,6 @@ if (outcome.failures.length) {
   process.exit(1);
 }
 console.log(`\nOK: ${outcome.panels} panels queried through Grafana, every one that can have data has some${alertNames.length ? `; ${alertNames.length} alerts evaluated in Prometheus` : ''}`);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) await main();
