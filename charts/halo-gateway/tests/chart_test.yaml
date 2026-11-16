@@ -339,8 +339,10 @@ tests:
           content: { name: ClientConfiguration__Budgets__profile__Limit }
           any: true
 
-  - it: renders no dashboard by default
+  - it: renders no dashboard when grafanaDashboard is off
     template: templates/grafana-dashboard.yaml
+    set:
+      grafanaDashboard.enabled: false
     asserts:
       - hasDocuments:
           count: 0
@@ -360,23 +362,23 @@ tests:
           path: metadata.annotations.grafana_folder
           value: Halo
       - matchRegex:
-          path: data["halo-gateway.json"]
+          path: data["halo-gateway-halo-gateway.json"]
           pattern: '"query": "k8s_namespace_name=\\"halo-gateway\\", job=~\\"\(\.\+/\)\?halo-gateway\\""'
       - notMatchRegex:
-          path: data["halo-gateway.json"]
+          path: data["halo-gateway-halo-gateway.json"]
           pattern: __SELECTOR__
 
   - it: puts the dashboard in the release namespace without one, and uses a custom selector
     template: templates/grafana-dashboard.yaml
     set:
-      grafanaDashboard.enabled: true
+      grafanaDashboard: { enabled: true, namespace: "" }
       prometheusRule.selector: service_name="halo-gateway"
     asserts:
       - equal:
           path: metadata.namespace
           value: halo-gateway
       - matchRegex:
-          path: data["halo-gateway.json"]
+          path: data["halo-gateway-halo-gateway.json"]
           pattern: '"query": "service_name=\\"halo-gateway\\""'
 
   - it: the dashboard needs telemetry
@@ -388,3 +390,180 @@ tests:
     asserts:
       - failedTemplate:
           errorMessage: "grafanaDashboard needs telemetry.enabled: the gateway's metrics reach Prometheus only by OTLP push"
+
+  - it: ci/full-values.yaml renders the dashboard, so lint and kubeconform check it
+    template: templates/grafana-dashboard.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: takes grafanaDashboard.labels {} (Helm keeps the default label under it)
+    template: templates/grafana-dashboard.yaml
+    set:
+      grafanaDashboard: { enabled: true, labels: {} }
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: halo-gateway
+
+  - it: takes grafanaDashboard.labels null (no sidecar label, for a sidecar matching something else) and keeps the chart's
+    template: templates/grafana-dashboard.yaml
+    set:
+      grafanaDashboard: { enabled: true, labels: null }
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.labels["app.kubernetes.io/instance"]
+          value: halo-gateway
+      - notExists:
+          path: metadata.labels.grafana_dashboard
+
+  - it: takes a grafanaDashboard label that repeats a chart label (no duplicate key; the value given wins)
+    template: templates/grafana-dashboard.yaml
+    set:
+      grafanaDashboard: { enabled: true, labels: { app.kubernetes.io/name: gateway-dashboard } }
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: gateway-dashboard
+      - equal:
+          path: metadata.labels.grafana_dashboard
+          value: "1"
+
+  - it: names the dashboard after its release, so one sidecar namespace holds the test gateway's ...
+    template: templates/grafana-dashboard.yaml
+    release:
+      name: halo-gateway
+      namespace: grif-test
+    set:
+      grafanaDashboard: { enabled: true, namespace: monitoring }
+    asserts:
+      - equal:
+          path: metadata.name
+          value: halo-gateway-grif-test-dashboard
+      - exists:
+          path: data["halo-gateway-grif-test.json"]
+      - matchRegex:
+          path: data["halo-gateway-grif-test.json"]
+          pattern: '"uid": "halo-gateway-grif-test",'
+      - matchRegex:
+          path: data["halo-gateway-grif-test.json"]
+          pattern: '"title": "Halo gateway \(grif-test\)",'
+
+  - it: ... and the prod gateway's, apart
+    template: templates/grafana-dashboard.yaml
+    release:
+      name: halo-gateway
+      namespace: grif-prod
+    set:
+      grafanaDashboard: { enabled: true, namespace: monitoring }
+    asserts:
+      - equal:
+          path: metadata.name
+          value: halo-gateway-grif-prod-dashboard
+      - matchRegex:
+          path: data["halo-gateway-grif-prod.json"]
+          pattern: '"uid": "halo-gateway-grif-prod",'
+      - matchRegex:
+          path: data["halo-gateway-grif-prod.json"]
+          pattern: '"title": "Halo gateway \(grif-prod\)",'
+
+  - it: tells two releases in one namespace apart by their name too, and keeps a long uid within Grafana's 40 characters
+    template: templates/grafana-dashboard.yaml
+    release:
+      name: second-gateway-with-a-long-release-name
+      namespace: a-namespace-with-a-long-name
+    set:
+      grafanaDashboard: { enabled: true }
+    asserts:
+      - equal:
+          path: metadata.name
+          value: second-gateway-with-a-long-release-name-halo-gateway-a-namespace-with-a-long-name-dashboard
+      - matchRegex:
+          path: metadata.name
+          pattern: '^[a-z0-9.-]+$'
+      - matchRegex:
+          path: data["second-gateway-with-a-long-rele-af002857.json"]
+          pattern: '"uid": "second-gateway-with-a-long-rele-af002857",'
+      - matchRegex:
+          path: data["second-gateway-with-a-long-rele-af002857.json"]
+          pattern: '"title": "Halo gateway \(a-namespace-with-a-long-name, second-gateway-with-a-long-release-name-halo-gateway\)",'
+
+  - it: takes a uid and title from the values
+    template: templates/grafana-dashboard.yaml
+    set:
+      grafanaDashboard: { enabled: true, uid: gateway, title: Gateway }
+    asserts:
+      - matchRegex:
+          path: data["gateway.json"]
+          pattern: '"uid": "gateway",'
+      - matchRegex:
+          path: data["gateway.json"]
+          pattern: '"title": "Gateway",'
+
+  - it: gives the rate panels a minimum interval of 4 pushes, the SDK's 60 s by default
+    template: templates/grafana-dashboard.yaml
+    set:
+      telemetry.metricExportInterval: ""
+    asserts:
+      - matchRegex:
+          path: data["halo-gateway-halo-gateway.json"]
+          pattern: '"interval": "240s",'
+      - notMatchRegex:
+          path: data["halo-gateway-halo-gateway.json"]
+          pattern: __RATE_INTERVAL_MIN__
+
+  - it: gives the rate panels a minimum interval of 4 pushes at telemetry.metricExportInterval
+    template: templates/grafana-dashboard.yaml
+    set:
+      telemetry.metricExportInterval: 15000
+    asserts:
+      - matchRegex:
+          path: data["halo-gateway-halo-gateway.json"]
+          pattern: '"interval": "60s",'
+      - notMatchRegex:
+          path: data["halo-gateway-halo-gateway.json"]
+          pattern: '"interval": "240s"'
+
+  # Grafana's Prometheus datasource doubles every backslash in a variable's value when it fills one in (Grafana 13:
+  # job=~"(.+/)?grunt\\.gateway" was sent as job=~"(.+/)?grunt\\\\.gateway", which matched nothing), so the selector
+  # quotes regex metacharacters as character classes instead
+  - it: quotes a dotted service name without backslashes, in the alerts ...
+    template: templates/prometheusrule.yaml
+    set:
+      telemetry.serviceName: grunt.gateway
+    asserts:
+      - equal:
+          path: spec.groups[0].rules[0].expr
+          value: max(grunt_gateway_halo_reauth_required{k8s_namespace_name="halo-gateway", job=~"(.+/)?grunt[.]gateway"}) == 1
+
+  - it: ... and in the dashboard's $sel
+    template: templates/grafana-dashboard.yaml
+    set:
+      telemetry.serviceName: grunt.gateway+(x)
+    asserts:
+      - matchRegex:
+          path: data["halo-gateway-halo-gateway.json"]
+          pattern: '"query": "k8s_namespace_name=\\"halo-gateway\\", job=~\\"\(\.\+/\)\?grunt\[\.\]gateway\[\+\]\[\(\]x\[\)\]\\""'
+
+  - it: refuses a service name only a backslash could quote
+    template: templates/grafana-dashboard.yaml
+    set:
+      telemetry.serviceName: grunt^gateway
+      prometheusRule.enabled: false
+    asserts:
+      - failedTemplate:
+          errorMessage: "telemetry.serviceName grunt^gateway: no ^ or \\ in it, which the alerts' and dashboard's job=~ matcher can only quote with a backslash (Grafana doubles those); or set prometheusRule.selector"
+
+  - it: refuses a custom selector with a backslash for the dashboard (Grafana would double it)
+    template: templates/grafana-dashboard.yaml
+    set:
+      prometheusRule.selector: job=~"grunt\\.gateway"
+    asserts:
+      - failedTemplate:
+          errorMessage: "prometheusRule.selector has a backslash, which Grafana doubles when it fills in the dashboard's $sel: write a regex metacharacter as a class ([.]) instead"

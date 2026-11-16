@@ -160,6 +160,8 @@ telemetry:
   # deployment.environment.name. Empty: not set.
   environment: ""
   resourceAttributes: {}
+  # OTEL_METRIC_EXPORT_INTERVAL, in milliseconds. Empty: the SDK's 60000. The dashboard's rate panels take 4 of these as
+  # their minimum interval.
   metricExportInterval: ""
 
 networkPolicy:
@@ -221,7 +223,8 @@ prometheusRule:
   enabled: false
   labels: {}
   # PromQL label matchers selecting the gateway's series (the dashboard's too). Empty: k8s_namespace_name="<release namespace>",
-  # job=~"(.+/)?<telemetry.serviceName or release name>".
+  # job=~"(.+/)?<telemetry.serviceName or release name>" (its regex metacharacters as classes: grunt[.]gateway). No
+  # backslashes with grafanaDashboard: Grafana doubles them when it fills in the dashboard's selector.
   selector: ""
   # How long without any pushed series before HaloGatewayMetricsAbsent fires.
   absentFor: 10m
@@ -243,6 +246,11 @@ grafanaDashboard:
     grafana_dashboard: "1"
   # E.g. grafana_folder, with the sidecar's folderAnnotation.
   annotations: {}
+  # The dashboard's uid (40 characters at most). Empty: <fullname>-<release namespace>, so two releases sharing the
+  # sidecar's namespace keep apart.
+  uid: ""
+  # Empty: "Halo gateway (<release namespace>)", plus the fullname when it isn't halo-gateway.
+  title: ""
 
 # Browser sign-in for the admin page (/admin): OpenID Connect, Authorization Code + PKCE, against an external provider
 # (Authentik, ...). Register <host>/admin/signin-oidc as the redirect URI. Only members of allowedGroups may use the page;

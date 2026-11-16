@@ -1,6 +1,6 @@
 {
-  "title": "Halo gateway",
-  "uid": "halo-gateway",
+  "title": "__TITLE__",
+  "uid": "__UID__",
   "tags": [
     "halo-gateway",
     "grunt"
@@ -345,6 +345,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "reqpm",
@@ -400,6 +401,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "reqpm",
@@ -596,6 +598,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "reqpm",
@@ -651,6 +654,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "s",
@@ -719,6 +723,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "reqpm",
@@ -774,6 +779,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "reqpm",
@@ -829,6 +835,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "percentunit",
@@ -981,6 +988,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "reqpm",
@@ -1052,6 +1060,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "reqpm",
@@ -1107,6 +1116,7 @@
           "range": true
         }
       ],
+      "interval": "__RATE_INTERVAL_MIN__",
       "fieldConfig": {
         "defaults": {
           "unit": "reqpm",

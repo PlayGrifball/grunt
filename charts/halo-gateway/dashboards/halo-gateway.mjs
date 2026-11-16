@@ -1,7 +1,8 @@
 // Generates halo-gateway.json, the chart's Grafana dashboard: node charts/halo-gateway/dashboards/halo-gateway.mjs
 // Built here rather than hand-edited, so its panels share one shape; tests/dashboard.test.mjs fails if the JSON and
 // this script disagree. Its queries select the gateway's series with $sel, a hidden constant the chart fills in
-// (templates/grafana-dashboard.yaml, from the alerts' selector).
+// (templates/grafana-dashboard.yaml, from the alerts' selector), as it does the uid and title (one per release) and the rate
+// panels' minimum interval (__RATE_INTERVAL_MIN__: 4 of the gateway's pushes, so each rate window holds at least two).
 import { writeFileSync } from 'node:fs';
 
 const ds = { type: 'prometheus', uid: '${datasource}' };
@@ -15,6 +16,7 @@ const endRow = () => { y += rowH; x = 0; rowH = 0; };
 const targets = list => list.map(([expr, legend], i) => ({ refId: String.fromCodePoint(65 + i), datasource: ds, expr, legendFormat: legend, range: true }));
 const row = title => { const p = { id: ++id, type: 'row', title, collapsed: false, gridPos: { h: 1, w: 24, x: 0, y }, panels: [] }; y += 1; return p; };
 const ts = (title, description, list, unit = 'short', w = 12, extra = {}) => ({ id: ++id, type: 'timeseries', title, description, datasource: ds, gridPos: place(w, 8), targets: targets(list),
+  ...(list.some(([expr]) => expr.includes(R)) && { interval: '__RATE_INTERVAL_MIN__' }),
   fieldConfig: { defaults: { unit, custom: { drawStyle: 'line', lineWidth: 1, fillOpacity: 10, showPoints: 'never', spanNulls: true }, ...(extra.defaults || {}) }, overrides: extra.overrides || [] },
   options: { legend: { displayMode: 'table', placement: 'right', calcs: ['max', 'lastNotNull'] }, tooltip: { mode: 'multi', sort: 'desc' } } });
 const stat = (title, description, expr, unit, extra = {}) => ({ id: ++id, type: 'stat', title, description, datasource: ds, gridPos: place(6, 4), targets: targets([[expr, '']]),
@@ -69,7 +71,7 @@ panels.push(ts('Token refreshes', 'Halo sign-in refreshes per hour, by result.',
 endRow();
 
 const dashboard = {
-  title: 'Halo gateway', uid: 'halo-gateway', tags: ['halo-gateway', 'grunt'], timezone: 'browser', schemaVersion: 39, version: 1, editable: true,
+  title: '__TITLE__', uid: '__UID__', tags: ['halo-gateway', 'grunt'], timezone: 'browser', schemaVersion: 39, version: 1, editable: true,
   description: 'The Grunt Halo gateway: Halo requests per endpoint, the budgets that keep them within Halo\'s limits, callers and the cache, and health. Series pushed over OTLP.',
   time: { from: 'now-6h', to: 'now' }, refresh: '1m', graphTooltip: 1,
   templating: { list: [
