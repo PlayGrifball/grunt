@@ -6,7 +6,8 @@
 //   - the previous release is the highest version merged into HEAD (0.3.10 after 0.3.9)
 //   - the first tagged release says so and lists the chart's recent commits
 //   - the OCI reference, the digest and the cosign verify command
-// Needs git.
+//   - git comes from GIT when it is set
+// Needs git (GIT, or git from PATH).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -116,4 +117,15 @@ test('names the OCI reference, the digest and how to verify the signature', () =
   assert.ok(md.includes('oci://ghcr.io/playgrifball/charts/halo-gateway:0.3.2'), md);
   assert.ok(md.includes(digest), md);
   assert.ok(md.includes(`cosign verify ghcr.io/playgrifball/charts/halo-gateway@${digest} --certificate-identity-regexp '${identity}' --certificate-oidc-issuer https://token.actions.githubusercontent.com`), md);
+});
+
+test('runs git from GIT when it is set', () => {
+  const { r } = history();
+  const saved = process.env.GIT;
+  process.env.GIT = path.join(r.dir, 'no-such-git');
+  try {
+    assert.throws(() => notes(r, '0.3.2'), /ENOENT/);
+  } finally {
+    if (saved === undefined) delete process.env.GIT; else process.env.GIT = saved;
+  }
 });

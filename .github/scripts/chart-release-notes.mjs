@@ -4,7 +4,8 @@
 // The chart's commits since the previous <name>-<version> tag merged into HEAD (the release before this one, also on a
 // re-run where this version's tag already exists): a pull request's merge as one entry, its title linked, with the
 // branch's chart commits under it; a squashed "Subject (#N)" linked. The first tagged release lists recent chart commits.
-// Then the OCI reference, the digest and the cosign verify command. Tests: chart-release-notes.test.mjs.
+// Then the OCI reference, the digest and the cosign verify command. Needs git: GIT, or git from PATH.
+// Tests: chart-release-notes.test.mjs.
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,7 +15,7 @@ import { parseArgs } from 'node:util';
 const FIRST_RELEASE_COMMITS = 20;
 
 export function releaseNotes({ cwd, chart, name, version, repository, chartRepo, digest, identity }) {
-  const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
+  const git = (...args) => execFileSync(process.env.GIT || 'git', args, { cwd, encoding: 'utf8' }).trim();
   const url = `https://github.com/${repository}`;
   const tag = `${name}-${version}`;
   const isVersionTag = t => t !== tag && t.startsWith(`${name}-`) && /^\d+\.\d+\.\d+$/.test(t.slice(name.length + 1));
