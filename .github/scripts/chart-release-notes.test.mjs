@@ -7,8 +7,12 @@
 //   - the previous release is the highest version merged into HEAD (0.3.10 after 0.3.9)
 //   - the first tagged release says so and lists the chart's recent commits
 //   - the chart's OCI reference, digest and cosign verify command, and the image it runs: tag, digest, commit, verify
-//   - imageCommit: the last commit that changed what the gateway image is built from (IMAGE_PATHS, which are
-//     gateway-image.yml's own push paths)
+//   - plan: which image the chart runs (the push's own sha-<pushed commit> when the push changed the gateway, merges and
+//     later chart commits included; else the signed main image) and whether to publish (anything in the chart or the
+//     gateway since the last release merged into HEAD, so a replaced run's changes still publish)
+//   - supersededBy: a newer push that changed the gateway publishes a newer image
+//   - IMAGE_PATHS are gateway-image.yml's push paths, helm-chart.yml runs on each of them, --print-image-paths and
+//     --plan print what the workflow reads
 //   - git comes from GIT when it is set
 // Needs git (GIT, or git from PATH).
 import { test } from 'node:test';
@@ -17,7 +21,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { releaseNotes, imageCommit, IMAGE_PATHS } from './chart-release-notes.mjs';
+import { releaseNotes, plan, supersededBy, IMAGE_PATHS } from './chart-release-notes.mjs';
 
 const repository = 'PlayGrifball/grunt';
 const identity = '^https://github\\.com/PlayGrifball/grunt/\\.github/workflows/helm-chart\\.yml@refs/heads/main$';
@@ -140,15 +144,91 @@ test('names the gateway image the chart runs: its tag, digest, commit and how to
   assert.ok(md.indexOf('## Image') < md.indexOf('## Chart'), 'the image before the chart');
 });
 
-test('imageCommit: the last commit that changed what the gateway image is built from', () => {
+/** What plan decides for a run whose push went from before to HEAD. */
+const planFor = (r, before) => plan(r.dir, { chart: 'charts/halo-gateway', name: 'halo-gateway', before });
+
+test('plan: a push that changed the gateway runs its own image, sha-<pushed commit>, also when it ends in a merge or a chart commit', () => {
   const r = repo();
-  r.commit('Grunt/Program.cs', 'Gateway: old');
-  const image = r.commit('.dockerignore', 'Image: ignore more');
-  r.commit('charts/halo-gateway/values.yaml', 'Chart: only the chart');
+  const before = r.commit('charts/halo-gateway/Chart.yaml', 'Chart: first');
+  r.git('checkout', '-q', '-b', 'pr');
+  r.commit('Grunt/Program.cs', 'Gateway: on the branch');
+  r.git('checkout', '-q', 'main');
+  r.git('merge', '-q', '--no-ff', 'pr', '-m', 'Merge pull request #5 from PlayGrifball/pr');
+  // gateway-image.yml tags only the pushed commit (the merge), never the branch's
+  assert.equal(planFor(r, before).image, 'push');
+  r.commit('charts/halo-gateway/values.yaml', 'Chart: after it, same push');
+  assert.equal(planFor(r, before).image, 'push');
+});
+
+test('plan: a push that did not change the gateway runs the signed main image; so does a run with no push', () => {
+  const r = repo();
+  r.commit('Grunt/Program.cs', 'Gateway');
+  const before = r.commit('README.md', 'Docs');
+  r.commit('charts/halo-gateway/values.yaml', 'Chart only');
+  assert.equal(planFor(r, before).image, 'main');
+  assert.equal(planFor(r, '').image, 'main');
+  assert.equal(planFor(r, undefined).image, 'main');
+});
+
+test("plan: a push whose before commit isn't known ran gateway-image.yml, so its own image", () => {
+  const r = repo();
+  r.commit('charts/halo-gateway/values.yaml', 'Chart only');
+  assert.equal(planFor(r, 'f'.repeat(40)).image, 'push');
+});
+
+test('plan: publishes what changed since the last release, also changes a replaced run never published', () => {
+  const r = repo();
+  r.commit('charts/halo-gateway/Chart.yaml', 'Chart: first');
+  assert.deepEqual(planFor(r, '').publish, true, 'no release yet');
+  r.git('tag', 'halo-gateway-0.3.1');
+  assert.equal(planFor(r, '').publish, false, 'nothing since the release');
+  // a gateway push whose chart run was replaced, then a docs push: this run's own diff is docs only
+  r.commit('Grunt/Program.cs', 'Gateway: dropped by a replaced run');
+  const before = r.git('rev-parse', 'HEAD');
   r.commit('README.md', 'Docs');
-  assert.equal(imageCommit(r.dir), image);
-  const later = r.commit('Grunt/Gateway/Limits.cs', 'Gateway: new');
-  assert.equal(imageCommit(r.dir), later);
+  assert.deepEqual(planFor(r, before), { publish: true, base: 'halo-gateway-0.3.1', image: 'main' });
+});
+
+test('plan: the base is the highest release merged into HEAD, not other charts, v* tags or unmerged tags', () => {
+  const r = repo();
+  r.commit('charts/halo-gateway/Chart.yaml', 'Chart: one');
+  r.git('tag', 'halo-gateway-0.3.9');
+  r.commit('charts/halo-gateway/Chart.yaml', 'Chart: two');
+  r.git('tag', 'halo-gateway-0.3.10');
+  r.git('tag', 'v0.1.0');
+  r.git('tag', 'other-chart-9.9.9');
+  r.git('checkout', '-q', '-b', 'elsewhere');
+  r.commit('charts/halo-gateway/Chart.yaml', 'Chart: not on main');
+  r.git('tag', 'halo-gateway-0.3.11');
+  r.git('checkout', '-q', 'main');
+  assert.deepEqual(planFor(r, ''), { publish: false, base: 'halo-gateway-0.3.10', image: 'main' });
+  r.commit('README.md', 'Docs');
+  assert.equal(planFor(r, '').publish, false, 'other paths publish nothing');
+});
+
+test('supersededBy: a newer push that changed the gateway builds and publishes a newer image; other pushes do not', () => {
+  const r = repo();
+  const sha = r.commit('Grunt/Program.cs', 'Gateway: this push');
+  const docs = r.commit('README.md', 'Docs');
+  const chart = r.commit('charts/halo-gateway/values.yaml', 'Chart');
+  assert.equal(supersededBy(r.dir, sha, sha), false);
+  assert.equal(supersededBy(r.dir, sha, chart), false);
+  const gateway = r.commit('Grunt/Other.cs', 'Gateway: newer push');
+  assert.equal(supersededBy(r.dir, sha, gateway), true);
+  assert.equal(supersededBy(r.dir, docs, gateway), true);
+});
+
+const script = new URL('./chart-release-notes.mjs', import.meta.url).pathname;
+
+test('--print-image-paths prints IMAGE_PATHS, one per line', () => {
+  assert.deepEqual(execFileSync('node', [script, '--print-image-paths'], { encoding: 'utf8' }).trim().split('\n'), IMAGE_PATHS);
+});
+
+test('--plan prints GITHUB_OUTPUT lines', () => {
+  const r = repo();
+  r.commit('Grunt/Program.cs', 'Gateway');
+  const out = execFileSync('node', [script, '--plan', '--chart', 'charts/halo-gateway', '--name', 'halo-gateway', '--before', ''], { cwd: r.dir, encoding: 'utf8' });
+  assert.equal(out, 'publish=true\nbase=\nimage=main\n');
 });
 
 test("IMAGE_PATHS are gateway-image.yml's push paths", () => {
@@ -157,6 +237,16 @@ test("IMAGE_PATHS are gateway-image.yml's push paths", () => {
   assert.ok(push, 'no push paths in gateway-image.yml');
   const paths = push.split(',').map(p => p.trim().replace(/^"|"$/g, '').replace(/\/\*\*$/, ''));
   assert.deepEqual([...IMAGE_PATHS].sort(), paths.sort());
+});
+
+test("helm-chart.yml runs on every IMAGE_PATHS change, on pushes and pull requests", () => {
+  const workflow = fs.readFileSync(new URL('../workflows/helm-chart.yml', import.meta.url), 'utf8');
+  for (const trigger of ['pull_request:\n\\s+paths', 'push:\n\\s+branches: \\[main\\]\n\\s+paths']) {
+    const list = new RegExp(`${trigger}: \\[(.*)\\]`).exec(workflow)?.[1];
+    assert.ok(list, `no ${trigger} paths in helm-chart.yml`);
+    const paths = list.split(',').map(p => p.trim().replace(/^"|"$/g, ''));
+    for (const p of IMAGE_PATHS) assert.ok(paths.includes(p) || paths.includes(`${p}/**`), `${p} missing from ${trigger}: ${paths}`);
+  }
 });
 
 test('runs git from GIT when it is set', () => {
