@@ -2,14 +2,17 @@ name: Helm chart
 
 # charts/halo-gateway: lint, helm-unittest, kubeconform (oldest/newest Kubernetes), an end-to-end install on k3d
 # (charts/halo-gateway/e2e/run.sh, NetworkPolicies enforced) with the image built from this checkout, and, on main,
-# publishing the chart signed (cosign keyless) to oci://ghcr.io/playgrifball/charts as halo-gateway:<x.y>.<run number>.
+# publishing the chart signed (cosign keyless) to oci://ghcr.io/playgrifball/charts as halo-gateway:<x.y>.<run number>,
+# then a GitHub release for that version, tagged halo-gateway-<version> (the <chart>-<version> tag Renovate matches to
+# show release notes on chart bumps), listing the chart's commits since the previous one
+# (.github/scripts/chart-release-notes.mjs).
 
 on:
   pull_request:
-    paths: ["charts/**", "Grunt/**", ".github/workflows/helm-chart.yml"]
+    paths: ["charts/**", "Grunt/**", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*"]
   push:
     branches: [main]
-    paths: ["charts/**", "Grunt/**", ".github/workflows/helm-chart.yml"]
+    paths: ["charts/**", "Grunt/**", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*"]
   workflow_dispatch:
 
 permissions:
@@ -60,6 +63,9 @@ jobs:
           echo "6a726885328ad9efebbf36e876ce2fb6225468a71fd1e7ce3ba666d5f4d97a84  prometheus-3.15.1.linux-amd64.tar.gz" | sha256sum -c -
           tar xzf prometheus-3.15.1.linux-amd64.tar.gz
           PROMTOOL="$PWD/prometheus-3.15.1.linux-amd64/promtool" node --test "$CHART"/tests/*.test.mjs
+
+      - name: Release notes tests
+        run: node --test .github/scripts/chart-release-notes.test.mjs
 
       - name: Schema check
         run: |
@@ -171,6 +177,9 @@ jobs:
       contents: read
       packages: write
       id-token: write
+    outputs:
+      version: ${{ steps.publish.outputs.version }}
+      digest: ${{ steps.publish.outputs.digest }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -197,7 +206,9 @@ jobs:
         with:
           cosign-release: v3.1.4
 
+      # Sets version and digest only when this run published the chart: the release job runs on those
       - name: Publish and sign
+        id: publish
         if: steps.changed.outputs.publish == 'true'
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -210,6 +221,17 @@ jobs:
           version="${base%.*}.${{ github.run_number }}"
           if helm show chart "$CHART_REPO/halo-gateway" --version "$version" >/dev/null 2>&1; then
             echo "halo-gateway $version is already published; not overwriting it."
+            # The version is <x.y>.<run number>, so only an earlier attempt of this run published it: a re-run after the
+            # release job failed still gets its release, for the digest that attempt pushed, if that attempt signed it
+            helm pull "$CHART_REPO/halo-gateway" --version "$version" -d pulled 2>&1 | tee pull.txt
+            digest=$(sed -n 's/^Digest: *//p' pull.txt)
+            test -n "$digest"
+            if cosign verify "${CHART_REPO#oci://}/halo-gateway@$digest" --certificate-identity-regexp "$IDENTITY" \
+                 --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null; then
+              { echo "version=$version"; echo "digest=$digest"; } >> "$GITHUB_OUTPUT"
+            else
+              echo "::warning::halo-gateway $version has no valid signature from this workflow: no release for it."
+            fi
             exit 0
           fi
           helm package "$CHART" --version "$version" -d dist
@@ -220,8 +242,47 @@ jobs:
           cosign sign --yes "$ref"
           cosign verify "$ref" --certificate-identity-regexp "$IDENTITY" \
             --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null
+          { echo "version=$version"; echo "digest=$digest"; } >> "$GITHUB_OUTPUT"
           {
             echo "Published and signed $CHART_REPO/halo-gateway:$version ($digest)."
             echo
             echo "Verify: cosign verify ${ref%@*}:$version --certificate-identity-regexp '$IDENTITY' --certificate-oidc-issuer https://token.actions.githubusercontent.com"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # A GitHub release for the version publish pushed, so Renovate shows release notes on chart bumps: Renovate matches a
+  # release whose tag is <chart>-<version> for an OCI chart (ghcr.io/playgrifball/charts/halo-gateway -> halo-gateway),
+  # see getExactReleaseMatch in renovatebot/renovate lib/workers/repository/update/pr/changelog/release-notes.ts. Never
+  # marked the repository's latest release (left to other releases); not a v* tag, so publish.yml doesn't run on it. On a
+  # re-run it updates the release's notes, and fails if the tag points at another commit.
+  release:
+    needs: publish
+    if: needs.publish.outputs.version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.publish.outputs.version }}
+          DIGEST: ${{ needs.publish.outputs.digest }}
+          IDENTITY: ^https://github\.com/${{ github.repository }}/\.github/workflows/helm-chart\.yml@refs/heads/main$
+        run: |
+          set -euo pipefail
+          tag="halo-gateway-$VERSION"
+          git fetch --tags --force origin
+          node .github/scripts/chart-release-notes.mjs --chart "$CHART" --name halo-gateway --version "$VERSION" \
+            --repository "$GITHUB_REPOSITORY" --chart-repo "$CHART_REPO" --digest "$DIGEST" --identity "$IDENTITY" > notes.md
+          if at=$(git rev-parse -q --verify "refs/tags/$tag^{commit}"); then
+            test "$at" = "$GITHUB_SHA" || { echo "::error::$tag already points at $at, not $GITHUB_SHA"; exit 1; }
+          fi
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release edit "$tag" --title "halo-gateway $VERSION" --notes-file notes.md --latest=false
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" --title "halo-gateway $VERSION" --notes-file notes.md --latest=false
+          fi
+          echo "Released $tag: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$tag" >> "$GITHUB_STEP_SUMMARY"

@@ -10,7 +10,8 @@ helm install halo-gateway oci://ghcr.io/playgrifball/charts/halo-gateway -n halo
 Images and charts are published only by GitHub Actions on `main`, signed keyless with cosign:
 
 - `gateway-image.yml` builds `sha-<commit>`, `main` and `latest` for amd64 and arm64.
-- `helm-chart.yml` publishes `halo-gateway:0.2.<run>`.
+- `helm-chart.yml` publishes `halo-gateway:0.3.<run>`, with a GitHub release tagged `halo-gateway-<version>` that
+  lists the chart's changes since the previous one.
 
 To verify an image:
 

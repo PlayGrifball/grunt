@@ -1,0 +1,67 @@
+// Release notes for a published chart version, as Markdown on stdout (helm-chart.yml's release job):
+//   node .github/scripts/chart-release-notes.mjs --chart charts/halo-gateway --name halo-gateway --version 0.3.51 \
+//     --repository PlayGrifball/grunt --chart-repo oci://ghcr.io/playgrifball/charts --digest sha256:... --identity '<regexp>'
+// The chart's commits since the previous <name>-<version> tag merged into HEAD (the release before this one, also on a
+// re-run where this version's tag already exists): a pull request's merge as one entry, its title linked, with the
+// branch's chart commits under it; a squashed "Subject (#N)" linked. The first tagged release lists recent chart commits.
+// Then the OCI reference, the digest and the cosign verify command. Tests: chart-release-notes.test.mjs.
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
+
+/** How many commits the first tagged release lists. */
+const FIRST_RELEASE_COMMITS = 20;
+
+export function releaseNotes({ cwd, chart, name, version, repository, chartRepo, digest, identity }) {
+  const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
+  const url = `https://github.com/${repository}`;
+  const tag = `${name}-${version}`;
+  const isVersionTag = t => t !== tag && t.startsWith(`${name}-`) && /^\d+\.\d+\.\d+$/.test(t.slice(name.length + 1));
+  const previous = git('tag', '--list', `${name}-*`, '--merged', 'HEAD', '--sort=-version:refname').split('\n').find(isVersionTag);
+
+  // Commits as { sha, parents, subject, body }, NUL-separated records
+  const log = (...args) => git('log', '--format=%H%x1f%P%x1f%s%x1f%b%x00', ...args, '--', chart).split('\0')
+    .map(r => r.trim()).filter(Boolean)
+    .map(r => { const [sha, parents, subject, body] = r.split('\x1f'); return { sha, parents: parents.split(' '), subject, body: body ?? '' }; });
+  const link = sha => `[${sha.slice(0, 7)}](${url}/commit/${sha})`;
+  const prs = text => text.replaceAll(/\(#(\d+)\)/g, (_, n) => `([#${n}](${url}/pull/${n}))`);
+  const entry = c => {
+    const merge = /^Merge pull request #(\d+) from \S+/.exec(c.subject);
+    if (!merge) return [`- ${prs(c.subject)} (${link(c.sha)})`];
+    const title = c.body.split('\n').map(l => l.trim()).find(Boolean) ?? c.subject;
+    const branch = c.parents.length > 1 ? log('--no-merges', `${c.parents[0]}..${c.sha}`) : [];
+    return [`- ${title} ([#${merge[1]}](${url}/pull/${merge[1]}), ${link(c.sha)})`, ...branch.map(b => `  - ${prs(b.subject)} (${link(b.sha)})`)];
+  };
+
+  const lines = [];
+  if (previous) {
+    const changes = log('--first-parent', `${previous}..HEAD`);
+    lines.push(`## Changes since ${previous}`, '');
+    lines.push(...(changes.length ? changes.flatMap(entry) : ['No chart changes (republished).']), '');
+    lines.push(`Full diff: ${url}/compare/${previous}...${tag}`, '');
+  } else {
+    lines.push('## First tagged release', '',
+      `The first tagged release of the chart: earlier versions have no release. Its last ${FIRST_RELEASE_COMMITS} commits:`, '');
+    lines.push(...log('--first-parent', '-n', String(FIRST_RELEASE_COMMITS), 'HEAD').flatMap(entry), '');
+  }
+
+  const ref = `${chartRepo}/${name}`;
+  const image = `${ref.replace(/^oci:\/\//, '')}@${digest}`;
+  lines.push('## Chart', '',
+    `- OCI reference: \`${ref}:${version}\``,
+    `- Digest: \`${digest}\``,
+    `- Commit: ${link(git('rev-parse', 'HEAD'))}`, '',
+    'Signed keylessly with cosign from this repository\'s helm-chart.yml on main. Verify:', '',
+    '```sh',
+    `cosign verify ${image} --certificate-identity-regexp '${identity}' --certificate-oidc-issuer https://token.actions.githubusercontent.com`,
+    '```');
+  return lines.join('\n') + '\n';
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const names = ['chart', 'name', 'version', 'repository', 'chart-repo', 'digest', 'identity'];
+  const { values } = parseArgs({ options: Object.fromEntries(names.map(o => [o, { type: 'string' }])) });
+  for (const k of names) if (!values[k]) throw new Error(`--${k} is missing`);
+  process.stdout.write(releaseNotes({ ...values, chartRepo: values['chart-repo'], cwd: process.cwd() }));
+}
