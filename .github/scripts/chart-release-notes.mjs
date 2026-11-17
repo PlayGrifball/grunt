@@ -3,7 +3,10 @@
 //   node .github/scripts/chart-release-notes.mjs --chart charts/halo-gateway --name halo-gateway --version 0.3.51 \
 //     --repository PlayGrifball/grunt --chart-repo oci://ghcr.io/playgrifball/charts --digest sha256:... --identity '<regexp>' \
 //     --image ghcr.io/playgrifball/halo-gateway:sha-<commit> --image-digest sha256:... --image-commit <sha> --image-identity '<regexp>'
-// or, for the commit whose image the chart runs: node .github/scripts/chart-release-notes.mjs --print-image-commit
+// or what the publish job reads:
+//   --print-image-paths                       what the gateway image is built from, one path per line
+//   --plan --chart <dir> --name <name> --before <sha>   publish=, base= and image= lines for GITHUB_OUTPUT (see plan)
+//   --superseded --since <sha> --newer <sha>  true when a newer push changed the gateway (see supersededBy)
 // The chart's and the gateway's commits since the previous <name>-<version> tag merged into HEAD (the release before this
 // one, also on a re-run where this version's tag already exists): a pull request's merge as one entry, its title linked, with the
 // branch's commits under it; a squashed "Subject (#N)" linked. The first tagged release lists recent commits. Then the
@@ -23,17 +26,51 @@ export const IMAGE_PATHS = ['Grunt', '.dockerignore', '.github/workflows/gateway
 
 const gitIn = cwd => (...args) => execFileSync(process.env.GIT || 'git', args, { cwd, encoding: 'utf8' }).trim();
 
-/** The last commit on HEAD that changed what the gateway image is built from: the one gateway-image.yml tagged sha-<it>. */
-export function imageCommit(cwd) {
-  return gitIn(cwd)('log', '-1', '--format=%H', 'HEAD', '--', ...IMAGE_PATHS);
+/** The newest <name>-<x.y.z> release tag merged into HEAD, other than except, or undefined. */
+function lastRelease(git, name, except) {
+  const isVersionTag = t => t !== except && t.startsWith(`${name}-`) && /^\d+\.\d+\.\d+$/.test(t.slice(name.length + 1));
+  return git('tag', '--list', `${name}-*`, '--merged', 'HEAD', '--sort=-version:refname').split('\n').find(isVersionTag);
+}
+
+/** Whether anything under paths differs between two commits. */
+const changed = (git, from, to, paths) => git('diff', '--name-only', from, to, '--', ...paths) !== '';
+
+/**
+ * What a main run publishes, for the push that went from before to HEAD (before empty: not a push).
+ * - publish: the chart or the gateway changed since the last release merged into HEAD (base), or there is none. Not
+ *   just this push's diff: a pending run replaced by a newer one never publishes, and the newer run picks its changes up.
+ * - image: 'push' when this push changed what the gateway image is built from. gateway-image.yml then builds this push
+ *   and tags sha-<HEAD> only (the pushed commit, a merge included, never the branch's commits). Also 'push' when before
+ *   isn't known here, since GitHub runs path-filtered workflows when it can't diff a push. Otherwise 'main': the signed
+ *   image gateway-image.yml last published, whose revision label is its commit.
+ */
+export function plan(cwd, { chart, name, before }) {
+  const git = gitIn(cwd);
+  const base = lastRelease(git, name);
+  const publish = !base || changed(git, base, 'HEAD', [chart, ...IMAGE_PATHS]);
+  let image = 'main';
+  if (before) {
+    let known = true;
+    try { git('cat-file', '-e', `${before}^{commit}`); } catch { known = false; }
+    if (!known || changed(git, before, 'HEAD', IMAGE_PATHS)) image = 'push';
+  }
+  return { publish, base, image };
+}
+
+/**
+ * Whether newer (a later main) changed what the gateway image is built from since sha. Then gateway-image.yml builds
+ * newer, which may replace sha's pending build, and newer's chart run publishes everything since the last release with
+ * the newer image, so a run waiting for sha's image can stop. Otherwise sha's build still runs and the wait goes on.
+ */
+export function supersededBy(cwd, sha, newer) {
+  return changed(gitIn(cwd), sha, newer, IMAGE_PATHS);
 }
 
 export function releaseNotes({ cwd, chart, name, version, repository, chartRepo, digest, identity, image }) {
   const git = gitIn(cwd);
   const url = `https://github.com/${repository}`;
   const tag = `${name}-${version}`;
-  const isVersionTag = t => t !== tag && t.startsWith(`${name}-`) && /^\d+\.\d+\.\d+$/.test(t.slice(name.length + 1));
-  const previous = git('tag', '--list', `${name}-*`, '--merged', 'HEAD', '--sort=-version:refname').split('\n').find(isVersionTag);
+  const previous = lastRelease(git, name, tag);
 
   // Commits as { sha, parents, subject, body }, NUL-separated records
   const log = (...args) => git('log', '--format=%H%x1f%P%x1f%s%x1f%b%x00', ...args, '--', chart, ...IMAGE_PATHS).split('\0')
@@ -85,9 +122,18 @@ export function releaseNotes({ cwd, chart, name, version, repository, chartRepo,
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const names = ['chart', 'name', 'version', 'repository', 'chart-repo', 'digest', 'identity', 'image', 'image-digest', 'image-commit', 'image-identity'];
-  const { values } = parseArgs({ options: { ...Object.fromEntries(names.map(o => [o, { type: 'string' }])), 'print-image-commit': { type: 'boolean' } } });
-  if (values['print-image-commit']) {
-    process.stdout.write(imageCommit(process.cwd()) + '\n');
+  const flags = ['print-image-paths', 'plan', 'superseded'];
+  const { values } = parseArgs({ options: {
+    ...Object.fromEntries([...names, 'before', 'since', 'newer'].map(o => [o, { type: 'string' }])),
+    ...Object.fromEntries(flags.map(o => [o, { type: 'boolean' }])),
+  } });
+  if (values['print-image-paths']) {
+    process.stdout.write(IMAGE_PATHS.join('\n') + '\n');
+  } else if (values.plan) {
+    const p = plan(process.cwd(), { chart: values.chart, name: values.name, before: values.before });
+    process.stdout.write(`publish=${p.publish}\nbase=${p.base ?? ''}\nimage=${p.image}\n`);
+  } else if (values.superseded) {
+    process.stdout.write(`${supersededBy(process.cwd(), values.since, values.newer)}\n`);
   } else {
     for (const k of names) if (!values[k]) throw new Error(`--${k} is missing`);
     const image = { ref: values.image, digest: values['image-digest'], commit: values['image-commit'], identity: values['image-identity'] };
