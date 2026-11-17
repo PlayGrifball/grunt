@@ -310,6 +310,7 @@ jobs:
               if ! git cat-file -e "$commit^{commit}" 2>/dev/null || ! git diff --quiet "$commit" HEAD -- "${paths[@]}"; then
                 echo "::warning::$IMAGE:main is built from $commit, and the gateway has changed since: the chart runs that image until gateway-image.yml publishes a newer one."
               fi ;;
+            *) ;; # baked: the published version's own image, as it is
           esac
           { echo "ref=$IMAGE:$tag"; echo "tag=$tag"; echo "digest=$digest"; echo "commit=$commit"; } >> "$GITHUB_OUTPUT"
           echo "The chart runs $IMAGE:$tag ($digest), built from $commit."
