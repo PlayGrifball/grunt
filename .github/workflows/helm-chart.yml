@@ -2,17 +2,20 @@ name: Helm chart
 
 # charts/halo-gateway: lint, helm-unittest, kubeconform (oldest/newest Kubernetes), an end-to-end install on k3d
 # (charts/halo-gateway/e2e/run.sh, NetworkPolicies enforced) with the image built from this checkout, and, on main,
-# publishing the chart signed (cosign keyless) to oci://ghcr.io/playgrifball/charts as halo-gateway:<x.y>.<run number>,
-# then a GitHub release for that version, tagged halo-gateway-<version> (the <chart>-<version> tag Renovate matches to
-# show release notes on chart bumps), listing the chart's commits since the previous one
+# publishing the chart signed (cosign keyless) to oci://ghcr.io/playgrifball/charts as halo-gateway:<x.y>.<run number>
+# whenever the chart or the gateway changed, with the gateway image it runs baked in: gateway-image.yml's signed
+# sha-<commit> image for the last commit that changed the gateway, by digest. So one chart version is one release of
+# everything grunt deploys, and a chart bump brings the image written with it. Then a GitHub release for that version,
+# tagged halo-gateway-<version> (the <chart>-<version> tag Renovate matches to show release notes on chart bumps),
+# listing the chart's and the gateway's commits since the previous one, the image and the chart
 # (.github/scripts/chart-release-notes.mjs).
 
 on:
   pull_request:
-    paths: ["charts/**", "Grunt/**", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*"]
+    paths: ["charts/**", "Grunt/**", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*"]
   push:
     branches: [main]
-    paths: ["charts/**", "Grunt/**", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*"]
+    paths: ["charts/**", "Grunt/**", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*"]
   workflow_dispatch:
 
 permissions:
@@ -26,6 +29,9 @@ env:
   CHART: charts/halo-gateway
   REGISTRY: ghcr.io
   CHART_REPO: oci://ghcr.io/playgrifball/charts
+  IMAGE: ghcr.io/playgrifball/halo-gateway
+  # gateway-image.yml's keyless signature on main, which the image the chart runs must carry
+  IMAGE_IDENTITY: ^https://github\.com/PlayGrifball/grunt/\.github/workflows/gateway-image\.yml@refs/heads/main$
   KUBERNETES_OLDEST: "1.30.0"
   KUBERNETES_NEWEST: "1.34.0"
 
@@ -180,20 +186,23 @@ jobs:
     outputs:
       version: ${{ steps.publish.outputs.version }}
       digest: ${{ steps.publish.outputs.digest }}
+      image: ${{ steps.image.outputs.ref }}
+      image-digest: ${{ steps.image.outputs.digest }}
+      image-commit: ${{ steps.image.outputs.commit }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - name: Did the chart change?
+      - name: Did the chart or the gateway change?
         id: changed
         env:
           BEFORE: ${{ github.event.before }}
         run: |
           set -euo pipefail
           if [ "${{ github.event_name }}" = push ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null \
-             && git diff --quiet "$BEFORE" HEAD -- "$CHART"; then
-            echo "The chart didn't change: nothing to publish."
+             && git diff --quiet "$BEFORE" HEAD -- "$CHART" Grunt .dockerignore .github/workflows/gateway-image.yml; then
+            echo "Neither the chart nor the gateway changed: nothing to publish."
             echo "publish=false" >> "$GITHUB_OUTPUT"
           else
             echo "publish=true" >> "$GITHUB_OUTPUT"
@@ -206,6 +215,29 @@ jobs:
         with:
           cosign-release: v3.1.4
 
+      # The image the chart will run: gateway-image.yml's sha-<commit> for the last commit that changed the gateway (this
+      # one, if it did; then its build may still be running, so this waits for it to be pushed and signed), by digest
+      - name: The gateway image
+        id: image
+        if: steps.changed.outputs.publish == 'true'
+        run: |
+          set -euo pipefail
+          commit=$(node .github/scripts/chart-release-notes.mjs --print-image-commit)
+          ref="$IMAGE:sha-${commit:0:7}"
+          for attempt in $(seq 1 80); do
+            if digest=$(docker buildx imagetools inspect "$ref" --format '{{json .Manifest}}' 2>/dev/null | jq -r .digest) \
+               && [ -n "$digest" ] && cosign verify "$IMAGE@$digest" --certificate-identity-regexp "$IMAGE_IDENTITY" \
+                    --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null 2>&1; then
+              { echo "ref=$ref"; echo "tag=sha-${commit:0:7}"; echo "digest=$digest"; echo "commit=$commit"; } >> "$GITHUB_OUTPUT"
+              echo "The chart runs $ref ($digest)."
+              exit 0
+            fi
+            echo "Waiting for gateway-image.yml to push and sign $ref ($attempt/80)"
+            sleep 30
+          done
+          echo "::error::$ref was not pushed and signed within 40 minutes"
+          exit 1
+
       # Sets version and digest only when this run published the chart: the release job runs on those
       - name: Publish and sign
         id: publish
@@ -213,6 +245,8 @@ jobs:
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IDENTITY: ^https://github\.com/${{ github.repository }}/\.github/workflows/helm-chart\.yml@refs/heads/main$
+          IMAGE_TAG: ${{ steps.image.outputs.tag }}
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
         run: |
           set -euo pipefail
           echo "$TOKEN" | helm registry login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
@@ -234,6 +268,10 @@ jobs:
             fi
             exit 0
           fi
+          # The image, baked in: the chart runs repository@digest, and the tag is its version label
+          sed -i -E "/^image:/,/^[^ #]/{s/^  tag: .*/  tag: \"$IMAGE_TAG\"/;s/^  digest: .*/  digest: \"$IMAGE_DIGEST\"/}" "$CHART/values.yaml"
+          sed -i -E "s/^appVersion: .*/appVersion: \"$IMAGE_TAG\"/" "$CHART/Chart.yaml"
+          grep -qx "  digest: \"$IMAGE_DIGEST\"" "$CHART/values.yaml"
           helm package "$CHART" --version "$version" -d dist
           helm push "dist/halo-gateway-$version.tgz" "$CHART_REPO" 2>&1 | tee push.txt
           digest=$(sed -n 's/^Digest: *//p' push.txt)
@@ -270,13 +308,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.publish.outputs.version }}
           DIGEST: ${{ needs.publish.outputs.digest }}
+          IMAGE_REF: ${{ needs.publish.outputs.image }}
+          IMAGE_DIGEST: ${{ needs.publish.outputs.image-digest }}
+          IMAGE_COMMIT: ${{ needs.publish.outputs.image-commit }}
           IDENTITY: ^https://github\.com/${{ github.repository }}/\.github/workflows/helm-chart\.yml@refs/heads/main$
         run: |
           set -euo pipefail
           tag="halo-gateway-$VERSION"
           git fetch --tags --force origin
           node .github/scripts/chart-release-notes.mjs --chart "$CHART" --name halo-gateway --version "$VERSION" \
-            --repository "$GITHUB_REPOSITORY" --chart-repo "$CHART_REPO" --digest "$DIGEST" --identity "$IDENTITY" > notes.md
+            --repository "$GITHUB_REPOSITORY" --chart-repo "$CHART_REPO" --digest "$DIGEST" --identity "$IDENTITY" \
+            --image "$IMAGE_REF" --image-digest "$IMAGE_DIGEST" --image-commit "$IMAGE_COMMIT" --image-identity "$IMAGE_IDENTITY" > notes.md
           if at=$(git rev-parse -q --verify "refs/tags/$tag^{commit}"); then
             test "$at" = "$GITHUB_SHA" || { echo "::error::$tag already points at $at, not $GITHUB_SHA"; exit 1; }
           fi

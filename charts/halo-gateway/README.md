@@ -10,8 +10,10 @@ helm install halo-gateway oci://ghcr.io/playgrifball/charts/halo-gateway -n halo
 Images and charts are published only by GitHub Actions on `main`, signed keyless with cosign:
 
 - `gateway-image.yml` builds `sha-<commit>`, `main` and `latest` for amd64 and arm64.
-- `helm-chart.yml` publishes `halo-gateway:0.3.<run>`, with a GitHub release tagged `halo-gateway-<version>` that
-  lists the chart's changes since the previous one.
+- `helm-chart.yml` publishes `halo-gateway:0.3.<run>` whenever the chart or the gateway changes, with the gateway
+  image it runs baked in (the `sha-<commit>` image of the last gateway change, by digest), so a chart version is one
+  release of both. Its GitHub release, tagged `halo-gateway-<version>`, lists the chart's and the gateway's changes since
+  the previous one, the image and the chart.
 
 To verify an image:
 
@@ -73,8 +75,7 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
 ## Homelab values
 
 ```yaml
-image:
-  tag: sha-<commit>            # or let Argo CD Image Updater follow main/latest by digest
+# No image: each chart version runs the image published with it.
 oauth:
   redirectUrl: https://halo-gateway.<domain>/oauth/callback
   existingSecret: halo-gateway-oauth        # keys ClientId, ClientSecret (the Microsoft app)
