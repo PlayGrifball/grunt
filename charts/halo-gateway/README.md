@@ -10,10 +10,19 @@ helm install halo-gateway oci://ghcr.io/playgrifball/charts/halo-gateway -n halo
 Images and charts are published only by GitHub Actions on `main`, signed keyless with cosign:
 
 - `gateway-image.yml` builds `sha-<commit>`, `main` and `latest` for amd64 and arm64.
-- `helm-chart.yml` publishes `halo-gateway:0.3.<run>` whenever the chart or the gateway changes, with the gateway
-  image it runs baked in (the `sha-<commit>` image of the last gateway change, by digest), so a chart version is one
-  release of both. Its GitHub release, tagged `halo-gateway-<version>`, lists the chart's and the gateway's changes since
-  the previous one, the image and the chart.
+- `helm-chart.yml` publishes `halo-gateway:0.3.<run>` whenever the chart or the gateway changed since the last
+  release, with the gateway image it runs baked in: the `sha-<commit>` image of the push that changed the gateway, else
+  the image `main` points at. So a chart version is one release of both. Its GitHub release, tagged
+  `halo-gateway-<version>`, lists the chart's and the gateway's changes since the previous one, the image and the chart.
+
+Each chart version runs its baked image by digest: `image.digest` and `image.tag` (the `sha-<commit>` tag, as a label)
+are set in the published chart's values, and `appVersion` is that tag. To change the image:
+
+- Follow the chart (the default): set neither. A chart bump brings its image.
+- Pin a digest: set `image.digest`. It overrides the baked digest, in every later chart version too, so drop it to follow
+  the chart again.
+- Pin a tag: set `image.tag` **and** `image.digest: ""`. Setting only `image.tag` no longer selects the image while a
+  digest is baked in: the digest wins, and the tag is just its label.
 
 To verify an image:
 
@@ -75,7 +84,7 @@ cosign verify ghcr.io/playgrifball/halo-gateway:<tag> \
 ## Homelab values
 
 ```yaml
-# No image: each chart version runs the image published with it.
+# No image: each chart version runs the image baked into it, by digest.
 oauth:
   redirectUrl: https://halo-gateway.<domain>/oauth/callback
   existingSecret: halo-gateway-oauth        # keys ClientId, ClientSecret (the Microsoft app)

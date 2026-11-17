@@ -1,6 +1,7 @@
 image:
   repository: ghcr.io/playgrifball/halo-gateway
-  # Empty: the chart's appVersion. Prefer an immutable sha-<commit> tag or a digest.
+  # Published versions set tag (sha-<commit>, a label) and digest (what runs) to their baked image; a digest wins over
+  # the tag, so to pin a tag also set digest: "". Empty: the chart's appVersion.
   tag: ""
   digest: ""
   pullPolicy: IfNotPresent
