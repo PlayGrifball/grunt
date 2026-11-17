@@ -3,9 +3,9 @@ name: Helm chart
 # charts/halo-gateway: lint, helm-unittest, kubeconform (oldest/newest Kubernetes), an end-to-end install on k3d
 # (charts/halo-gateway/e2e/run.sh, NetworkPolicies enforced) with the image built from this checkout, and, on main,
 # publishing the chart signed (cosign keyless) to oci://ghcr.io/playgrifball/charts as halo-gateway:<x.y>.<run number>
-# whenever the chart or the gateway changed, with the gateway image it runs baked in: gateway-image.yml's signed
-# sha-<commit> image for the last commit that changed the gateway, by digest. So one chart version is one release of
-# everything grunt deploys, and a chart bump brings the image written with it. Then a GitHub release for that version,
+# whenever the chart or the gateway changed since the last release, with the gateway image it runs baked in by digest:
+# gateway-image.yml's signed sha-<this commit> when this push changed the gateway (waiting for it), else its signed main
+# image. So one chart version is one release of everything grunt deploys, and a chart bump brings the image with it. Then a GitHub release for that version,
 # tagged halo-gateway-<version> (the <chart>-<version> tag Renovate matches to show release notes on chart bumps),
 # listing the chart's and the gateway's commits since the previous one, the image and the chart
 # (.github/scripts/chart-release-notes.mjs).
@@ -183,9 +183,13 @@ jobs:
       contents: read
       packages: write
       id-token: write
+    env:
+      IDENTITY: ^https://github\.com/${{ github.repository }}/\.github/workflows/helm-chart\.yml@refs/heads/main$
+    # version and digest are set only when a version is ready for its release: published and signed by this run, or by
+    # an earlier attempt of it (a re-run); the release job runs on them
     outputs:
-      version: ${{ steps.publish.outputs.version }}
-      digest: ${{ steps.publish.outputs.digest }}
+      version: ${{ steps.publish.outputs.version || steps.existing.outputs.version }}
+      digest: ${{ steps.publish.outputs.digest || steps.existing.outputs.digest }}
       image: ${{ steps.image.outputs.ref }}
       image-digest: ${{ steps.image.outputs.digest }}
       image-commit: ${{ steps.image.outputs.commit }}
@@ -193,98 +197,149 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-
-      - name: Did the chart or the gateway change?
-        id: changed
-        env:
-          BEFORE: ${{ github.event.before }}
-        run: |
-          set -euo pipefail
-          if [ "${{ github.event_name }}" = push ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null \
-             && git diff --quiet "$BEFORE" HEAD -- "$CHART" Grunt .dockerignore .github/workflows/gateway-image.yml; then
-            echo "Neither the chart nor the gateway changed: nothing to publish."
-            echo "publish=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "publish=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
-        if: steps.changed.outputs.publish == 'true'
       - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
-        if: steps.changed.outputs.publish == 'true'
         with:
           cosign-release: v3.1.4
 
-      # The image the chart will run: gateway-image.yml's sha-<commit> for the last commit that changed the gateway (this
-      # one, if it did; then its build may still be running, so this waits for it to be pushed and signed), by digest
-      - name: The gateway image
-        id: image
-        if: steps.changed.outputs.publish == 'true'
-        run: |
-          set -euo pipefail
-          commit=$(node .github/scripts/chart-release-notes.mjs --print-image-commit)
-          ref="$IMAGE:sha-${commit:0:7}"
-          for attempt in $(seq 1 80); do
-            if digest=$(docker buildx imagetools inspect "$ref" --format '{{json .Manifest}}' 2>/dev/null | jq -r .digest) \
-               && [ -n "$digest" ] && cosign verify "$IMAGE@$digest" --certificate-identity-regexp "$IMAGE_IDENTITY" \
-                    --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null 2>&1; then
-              { echo "ref=$ref"; echo "tag=sha-${commit:0:7}"; echo "digest=$digest"; echo "commit=$commit"; } >> "$GITHUB_OUTPUT"
-              echo "The chart runs $ref ($digest)."
-              exit 0
-            fi
-            echo "Waiting for gateway-image.yml to push and sign $ref ($attempt/80)"
-            sleep 30
-          done
-          echo "::error::$ref was not pushed and signed within 40 minutes"
-          exit 1
-
-      # Sets version and digest only when this run published the chart: the release job runs on those
-      - name: Publish and sign
-        id: publish
-        if: steps.changed.outputs.publish == 'true'
+      # The version is <x.y>.<run number>, so it exists only when an earlier attempt of this run pushed it: then it is
+      # released as it is, with no change check and no image wait
+      - name: Version
+        id: version
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          IDENTITY: ^https://github\.com/${{ github.repository }}/\.github/workflows/helm-chart\.yml@refs/heads/main$
-          IMAGE_TAG: ${{ steps.image.outputs.tag }}
-          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
         run: |
           set -euo pipefail
           echo "$TOKEN" | helm registry login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
           echo "$TOKEN" | cosign login "$REGISTRY" -u "${{ github.actor }}" --password-stdin
           base=$(sed -n 's/^version: *//p' "$CHART/Chart.yaml")
           version="${base%.*}.${{ github.run_number }}"
-          if helm show chart "$CHART_REPO/halo-gateway" --version "$version" >/dev/null 2>&1; then
-            echo "halo-gateway $version is already published; not overwriting it."
-            # The version is <x.y>.<run number>, so only an earlier attempt of this run published it: a re-run after the
-            # release job failed still gets its release, for the digest that attempt pushed, if that attempt signed it
-            helm pull "$CHART_REPO/halo-gateway" --version "$version" -d pulled 2>&1 | tee pull.txt
-            digest=$(sed -n 's/^Digest: *//p' pull.txt)
-            test -n "$digest"
-            if cosign verify "${CHART_REPO#oci://}/halo-gateway@$digest" --certificate-identity-regexp "$IDENTITY" \
-                 --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null; then
-              { echo "version=$version"; echo "digest=$digest"; } >> "$GITHUB_OUTPUT"
-            else
-              echo "::warning::halo-gateway $version has no valid signature from this workflow: no release for it."
-            fi
-            exit 0
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if helm show chart "$CHART_REPO/halo-gateway" --version "$version" > /dev/null 2>&1; then
+            echo "halo-gateway $version is already published (an earlier attempt of this run): releasing it as it is."
+            echo "published=true" >> "$GITHUB_OUTPUT"
           fi
+
+      # A re-run: the chart that attempt pushed, signed by this workflow (signed now if that attempt stopped before it)
+      - name: The published version
+        id: existing
+        if: steps.version.outputs.published == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p pulled
+          helm pull "$CHART_REPO/halo-gateway" --version "$VERSION" -d pulled 2>&1 | tee pull.txt
+          digest=$(sed -n 's/^Digest: *//p' pull.txt)
+          test -n "$digest"
+          ref="${CHART_REPO#oci://}/halo-gateway@$digest"
+          verify() { cosign verify "$ref" --certificate-identity-regexp "$IDENTITY" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null; }
+          if ! verify; then
+            echo "halo-gateway $VERSION has no valid signature from this workflow: signing $digest."
+            cosign sign --yes "$ref"
+            verify
+          fi
+          helm show values "pulled/halo-gateway-$VERSION.tgz" > baked.yaml
+          { echo "version=$VERSION"; echo "digest=$digest"
+            echo "image-tag=$(yq -r '.image.tag' baked.yaml)"; echo "image-digest=$(yq -r '.image.digest' baked.yaml)"; } >> "$GITHUB_OUTPUT"
+
+      # Whether to publish: anything in the chart or the gateway since the last release (so a replaced pending run's
+      # changes still publish), and which image (this push's own when it changed the gateway, else the main image)
+      - name: Did the chart or the gateway change?
+        id: plan
+        if: steps.version.outputs.published != 'true'
+        env:
+          BEFORE: ${{ github.event_name == 'push' && github.event.before || '' }}
+        run: |
+          set -euo pipefail
+          node .github/scripts/chart-release-notes.mjs --plan --chart "$CHART" --name halo-gateway --before "$BEFORE" | tee -a "$GITHUB_OUTPUT"
+
+      # The image the chart runs, signed by gateway-image.yml on main, by digest, with its commit from its revision label:
+      # - push: this push changed the gateway, so gateway-image.yml builds it as sha-<this commit>. Waits for it to be
+      #   pushed and signed, unless a newer push changes the gateway (its chart run then publishes the newer image).
+      # - main: the image gateway-image.yml last published, tagged main.
+      # - a re-run: the image baked into the published version.
+      - name: The gateway image
+        id: image
+        if: steps.version.outputs.published == 'true' || steps.plan.outputs.publish == 'true'
+        env:
+          SOURCE: ${{ steps.version.outputs.published == 'true' && 'baked' || steps.plan.outputs.image }}
+          BAKED_TAG: ${{ steps.existing.outputs.image-tag }}
+          BAKED_DIGEST: ${{ steps.existing.outputs.image-digest }}
+        run: |
+          set -euo pipefail
+          signed() { cosign verify "$IMAGE@$1" --certificate-identity-regexp "$IMAGE_IDENTITY" \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null 2>&1; }
+          resolve() { docker buildx imagetools inspect "$IMAGE:$1" --format '{{.Manifest.Digest}}' 2>/dev/null; }
+          case "$SOURCE" in
+            push)
+              tag="sha-${GITHUB_SHA:0:7}"
+              for attempt in $(seq 1 80); do
+                if digest=$(resolve "$tag") && [ -n "$digest" ] && signed "$digest"; then break; fi
+                digest=
+                git fetch -q origin main
+                newer=$(git rev-parse FETCH_HEAD)
+                if [ "$newer" != "$GITHUB_SHA" ] && [ "$(node .github/scripts/chart-release-notes.mjs --superseded --since "$GITHUB_SHA" --newer "$newer")" = true ]; then
+                  echo "::notice::main is at $newer, which changes the gateway again: its run publishes the chart with that image. Not publishing."
+                  exit 0
+                fi
+                echo "Waiting for gateway-image.yml to push and sign $IMAGE:$tag ($attempt/80)"
+                sleep 30
+              done
+              [ -n "$digest" ] || { echo "::error::$IMAGE:$tag was not pushed and signed within 40 minutes"; exit 1; } ;;
+            main)
+              digest=$(resolve main)
+              if [ -z "$digest" ] || ! signed "$digest"; then
+                echo "::error::$IMAGE:main ($digest) has no valid signature from gateway-image.yml"; exit 1
+              fi ;;
+            baked)
+              tag="$BAKED_TAG"; digest="$BAKED_DIGEST"
+              if [ -z "$digest" ] || ! signed "$digest"; then
+                echo "::error::The baked image $IMAGE@$digest has no valid signature from gateway-image.yml"; exit 1
+              fi ;;
+            *) echo "::error::Unknown image source $SOURCE"; exit 1 ;;
+          esac
+          commit=$(docker buildx imagetools inspect "$IMAGE@$digest" --format '{{index (index .Image "linux/amd64").Config.Labels "org.opencontainers.image.revision"}}')
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::$IMAGE@$digest has no commit in its revision label"; exit 1; }
+          case "$SOURCE" in
+            push) [ "$commit" = "$GITHUB_SHA" ] || { echo "::error::$IMAGE:$tag was built from $commit, not $GITHUB_SHA"; exit 1; } ;;
+            main)
+              tag="sha-${commit:0:7}"
+              mapfile -t paths < <(node .github/scripts/chart-release-notes.mjs --print-image-paths)
+              if ! git cat-file -e "$commit^{commit}" 2>/dev/null || ! git diff --quiet "$commit" HEAD -- "${paths[@]}"; then
+                echo "::warning::$IMAGE:main is built from $commit, and the gateway has changed since: the chart runs that image until gateway-image.yml publishes a newer one."
+              fi ;;
+          esac
+          { echo "ref=$IMAGE:$tag"; echo "tag=$tag"; echo "digest=$digest"; echo "commit=$commit"; } >> "$GITHUB_OUTPUT"
+          echo "The chart runs $IMAGE:$tag ($digest), built from $commit."
+
+      - name: Publish and sign
+        id: publish
+        if: steps.version.outputs.published != 'true' && steps.image.outputs.digest != ''
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          IMAGE_TAG: ${{ steps.image.outputs.tag }}
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+        run: |
+          set -euo pipefail
           # The image, baked in: the chart runs repository@digest, and the tag is its version label
           sed -i -E "/^image:/,/^[^ #]/{s/^  tag: .*/  tag: \"$IMAGE_TAG\"/;s/^  digest: .*/  digest: \"$IMAGE_DIGEST\"/}" "$CHART/values.yaml"
           sed -i -E "s/^appVersion: .*/appVersion: \"$IMAGE_TAG\"/" "$CHART/Chart.yaml"
           grep -qx "  digest: \"$IMAGE_DIGEST\"" "$CHART/values.yaml"
-          helm package "$CHART" --version "$version" -d dist
-          helm push "dist/halo-gateway-$version.tgz" "$CHART_REPO" 2>&1 | tee push.txt
+          helm package "$CHART" --version "$VERSION" -d dist
+          helm push "dist/halo-gateway-$VERSION.tgz" "$CHART_REPO" 2>&1 | tee push.txt
           digest=$(sed -n 's/^Digest: *//p' push.txt)
           test -n "$digest"
           ref="${CHART_REPO#oci://}/halo-gateway@$digest"
           cosign sign --yes "$ref"
           cosign verify "$ref" --certificate-identity-regexp "$IDENTITY" \
             --certificate-oidc-issuer https://token.actions.githubusercontent.com > /dev/null
-          { echo "version=$version"; echo "digest=$digest"; } >> "$GITHUB_OUTPUT"
+          { echo "version=$VERSION"; echo "digest=$digest"; } >> "$GITHUB_OUTPUT"
           {
-            echo "Published and signed $CHART_REPO/halo-gateway:$version ($digest)."
+            echo "Published and signed $CHART_REPO/halo-gateway:$VERSION ($digest)."
             echo
-            echo "Verify: cosign verify ${ref%@*}:$version --certificate-identity-regexp '$IDENTITY' --certificate-oidc-issuer https://token.actions.githubusercontent.com"
+            echo "Verify: cosign verify ${ref%@*}:$VERSION --certificate-identity-regexp '$IDENTITY' --certificate-oidc-issuer https://token.actions.githubusercontent.com"
           } >> "$GITHUB_STEP_SUMMARY"
 
   # A GitHub release for the version publish pushed, so Renovate shows release notes on chart bumps: Renovate matches a
