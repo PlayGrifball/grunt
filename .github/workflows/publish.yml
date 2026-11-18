@@ -122,7 +122,7 @@ jobs:
       # Trusted publishing requires npm >=11.5.1. Pin it so the runner image cannot silently change publish behavior.
       - name: Setup npm
         if: steps.plan.outputs.typescript == 'true'
-        run: npm install --global npm@12.2.3
+        run: npm install --global npm@12.2.3 --ignore-scripts
 
       - name: Generate and build TypeScript client
         if: steps.plan.outputs.typescript == 'true'
