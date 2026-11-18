@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +18,9 @@ using File = System.IO.File;
 using MatchType = Surprenant.Grunt.Models.HaloInfinite.MatchType;
 using System.Net;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Tests;
 
@@ -86,7 +90,7 @@ public class GatewayRoundTripTests
     private static User Grunt() => new() { xuid = "2533274800000000", gamertag = "Grunt", gamerpic = new Gamerpic { small = "s.png" } };
 
     [Test]
-    public async Task OpenApiIsAvailableOutsideDevelopment()
+    public async Task ConsumerOpenApiIsCompleteOutsideDevelopment()
     {
         var client = _factory.CreateClient();
 
@@ -94,17 +98,54 @@ public class GatewayRoundTripTests
         var ui = await client.GetAsync("swagger/index.html");
         var openApi = await document.Content.ReadFromJsonAsync<JsonDocument>();
 
+        var root = openApi!.RootElement;
+        var paths = root.GetProperty("paths");
+        var controllerPrefix = typeof(HaloInfiniteController).GetCustomAttribute<RouteAttribute>()!.Template!.Trim('/');
+        var expectedPaths = typeof(HaloInfiniteController).GetMethods()
+            .SelectMany(method => method.GetCustomAttributes<HttpMethodAttribute>())
+            .Select(attribute => "/" + controllerPrefix + "/" + Regex.Replace(attribute.Template!, @"\{([^}:]+):[^}]+\}", "{$1}"))
+            .ToHashSet(StringComparer.Ordinal);
+
         Assert.Multiple(() =>
         {
             Assert.That(document.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(document.Content.Headers.ContentType?.MediaType, Is.EqualTo("application/json"));
-            Assert.That(openApi!.RootElement.GetProperty("paths").TryGetProperty("/halo/v1/users/by-gamertag/{gamertag}", out _), Is.True);
-            var apiKey = openApi.RootElement.GetProperty("components").GetProperty("securitySchemes").GetProperty(GatewayAuth.ConsumerScheme);
+            Assert.That(paths.EnumerateObject().Select(path => path.Name), Is.EquivalentTo(expectedPaths),
+                "OpenAPI must contain every consumer route and no admin, OAuth, browser or health routes.");
+
+            foreach (var path in paths.EnumerateObject())
+            foreach (var operationProperty in path.Value.EnumerateObject())
+            {
+                var operation = operationProperty.Value;
+                Assert.That(RequiredText(operation, "summary"), Is.Not.Empty, $"{operationProperty.Name} {path.Name} summary");
+                Assert.That(RequiredText(operation, "description"), Is.Not.Empty, $"{operationProperty.Name} {path.Name} description");
+
+                if (operation.TryGetProperty("parameters", out var parameters))
+                    foreach (var parameter in parameters.EnumerateArray())
+                        Assert.That(RequiredText(parameter, "description"), Is.Not.Empty,
+                            $"{operationProperty.Name} {path.Name} parameter {RequiredText(parameter, "name")}");
+
+                if (operation.TryGetProperty("requestBody", out var requestBody))
+                    Assert.That(RequiredText(requestBody, "description"), Is.Not.Empty,
+                        $"{operationProperty.Name} {path.Name} request body description");
+
+                Assert.That(operation.GetProperty("responses").EnumerateObject()
+                    .All(response => !string.IsNullOrWhiteSpace(RequiredText(response.Value, "description"))), Is.True,
+                    $"{operationProperty.Name} {path.Name} response descriptions");
+            }
+
+            var apiKey = root.GetProperty("components").GetProperty("securitySchemes").GetProperty(GatewayAuth.ConsumerScheme);
             Assert.That(apiKey.GetProperty("name").GetString(), Is.EqualTo(HaloGatewayProtocol.DefaultApiKeyHeader));
+            Assert.That(root.GetProperty("security").EnumerateArray()
+                .Any(requirement => requirement.TryGetProperty(GatewayAuth.ConsumerScheme, out _)), Is.True,
+                "The consumer API key must apply to the whole document.");
             Assert.That(ui.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(ui.Content.Headers.ContentType?.MediaType, Is.EqualTo("text/html"));
         });
     }
+
+    private static string RequiredText(JsonElement element, string property)
+        => element.TryGetProperty(property, out var value) ? value.GetString() ?? string.Empty : string.Empty;
 
     [Test]
     public async Task UserByGamertagRoundTripsAndIsCached()

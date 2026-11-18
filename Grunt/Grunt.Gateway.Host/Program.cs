@@ -101,13 +101,16 @@ namespace Surprenant.Grunt.Gateway.Host
                 options.CustomSchemaIds(type => type.FullName);
                 options.SupportNonNullableReferenceTypes();
                 options.UseAllOfToExtendReferenceSchemas();
+                // This is the consumer API contract. Admin/browser/OAuth and health endpoints are operational surfaces,
+                // not part of the generated Halo client API.
+                options.DocInclusionPredicate((_, api) =>
+                    api.RelativePath?.StartsWith("halo/v1/", StringComparison.OrdinalIgnoreCase) == true);
                 // OpenAPI drops ASP.NET route constraints, so the string and Guid match-id overloads become the same
                 // method/path in the document. They have the same response contract; document the general action.
                 options.ResolveConflictingActions(descriptions => descriptions.First());
 
                 foreach (var assembly in new[]
                          {
-                             typeof(Program).Assembly,
                              typeof(HaloInfiniteController).Assembly,
                              typeof(HaloInfiniteClient).Assembly,
                          })

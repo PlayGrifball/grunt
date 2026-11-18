@@ -1,8 +1,10 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Grunt.SourceGenerator;
 
@@ -106,7 +108,7 @@ public sealed class GatewayGenerator : IIncrementalGenerator
             };
 
             sb.AppendLine();
-            sb.AppendLine($"    /// <summary>{m.HttpMethod} {GatewayModelBuilder.Xml(target.RoutePrefix + "/" + m.Route)} → {GatewayModelBuilder.Xml(GatewayModelBuilder.Display(m.Method))}.</summary>");
+            AppendControllerDocumentation(sb, target, m);
             sb.AppendLine($"    [{Mvc}.{verb}({GatewayModelBuilder.Literal(m.Route)})]");
             if (m.CachePolicy != 0)
             {
@@ -170,6 +172,70 @@ public sealed class GatewayGenerator : IIncrementalGenerator
 
         sb.AppendLine("}");
         return sb.ToString();
+    }
+
+    private static void AppendControllerDocumentation(StringBuilder sb, GatewayTarget target, GatewayMethod method)
+    {
+        XElement? member = null;
+        var documentation = method.Method.GetDocumentationCommentXml();
+        if (!string.IsNullOrWhiteSpace(documentation))
+        {
+            try
+            {
+                member = XElement.Parse(documentation!);
+            }
+            catch (System.Xml.XmlException)
+            {
+                // Invalid source documentation must not prevent the gateway from being generated. The complete fallbacks
+                // below still give Swagger a summary, remarks, parameter descriptions and a return description.
+            }
+        }
+
+        var route = target.RoutePrefix + "/" + method.Route;
+        var fallbackSummary = $"{method.HttpMethod} {route}.";
+        AppendDocumentationElement(sb, "summary", DocumentationContent(member?.Element("summary")), fallbackSummary);
+        AppendDocumentationElement(sb, "remarks", null,
+            $"Forwards {method.HttpMethod} {route} to {GatewayModelBuilder.Display(method.Method)} through the shared Halo account.");
+
+        var parameterDocumentation = member?.Elements("param")
+            .Where(p => p.Attribute("name") is not null)
+            .GroupBy(p => p.Attribute("name")!.Value, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => DocumentationContent(g.First()), StringComparer.Ordinal)
+            ?? new Dictionary<string, string?>(StringComparer.Ordinal);
+        foreach (var parameter in method.Parameters)
+        {
+            parameterDocumentation.TryGetValue(parameter.Name, out var content);
+            AppendDocumentationElement(sb, $"param name=\"{GatewayModelBuilder.Xml(parameter.Name)}\"", content,
+                $"The {parameter.Name} {ParameterLocation(parameter.Kind)} value.");
+        }
+
+        AppendDocumentationElement(sb, "returns", DocumentationContent(member?.Element("returns")),
+            method.IsBinary ? "The requested image bytes." : "The Halo API result container.");
+    }
+
+    private static string ParameterLocation(GatewayParameterKind kind) => kind switch
+    {
+        GatewayParameterKind.Route => "route",
+        GatewayParameterKind.Body => "request body",
+        _ => "query string",
+    };
+
+    private static string? DocumentationContent(XElement? element)
+    {
+        if (element is null)
+            return null;
+        var content = string.Concat(element.Nodes().Select(n => n.ToString(SaveOptions.DisableFormatting))).Trim();
+        return string.IsNullOrWhiteSpace(content) ? null : content;
+    }
+
+    private static void AppendDocumentationElement(StringBuilder sb, string element, string? content, string fallback)
+    {
+        content ??= GatewayModelBuilder.Xml(fallback);
+        var name = element.Split(' ')[0];
+        sb.AppendLine($"    /// <{element}>");
+        foreach (var line in content.Replace("\r\n", "\n").Split('\n'))
+            sb.AppendLine("    /// " + line.Trim());
+        sb.AppendLine($"    /// </{name}>");
     }
 
     internal static string EmitClient(GatewayTarget target)

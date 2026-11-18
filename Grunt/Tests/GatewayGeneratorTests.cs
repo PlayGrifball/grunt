@@ -119,6 +119,12 @@ public class GatewayGeneratorTests
 
         public class FixtureClient : IFixtureClient
         {
+            /// <summary>Gets a fixture user.</summary>
+            /// <param name="gamertag">The fixture gamertag.</param>
+            /// <param name="start">The first result index.</param>
+            /// <param name="kind">The match kind.</param>
+            /// <param name="ids">The fixture identifiers.</param>
+            /// <returns>The fixture user result.</returns>
             [GatewayExposed("users/{gamertag}", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 30)]
             public Task<HaloApiResultContainer<User, HaloApiErrorContainer>> GetUser(string gamertag, int start, MatchKind kind, List<string> ids) => throw null!;
 
@@ -154,6 +160,10 @@ public class GatewayGeneratorTests
             Assert.That(code, Does.Contain("namespace Fixture.Gateway;"));
             Assert.That(code, Does.Contain("[global::Microsoft.AspNetCore.Mvc.Route(\"fixture/v2\")]"));
             Assert.That(code, Does.Contain("private readonly global::Fixture.IFixtureClient _client;"));
+            Assert.That(code, Does.Contain("/// Gets a fixture user."));
+            Assert.That(code, Does.Contain("/// <remarks>"));
+            Assert.That(code, Does.Contain("/// The fixture gamertag."));
+            Assert.That(code, Does.Contain("/// The fixture user result."));
             Assert.That(code, Does.Contain("[global::Microsoft.AspNetCore.Mvc.HttpGet(\"users/{gamertag}\")]"));
             Assert.That(code, Does.Contain("[global::Microsoft.AspNetCore.Mvc.FromRoute(Name = \"gamertag\")] string gamertag"));
             Assert.That(code, Does.Contain("[global::Microsoft.AspNetCore.Mvc.FromQuery(Name = \"start\")] int start"));

@@ -22,7 +22,18 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         _logger = logger;
     }
 
-    /// <summary>GET halo/v1/gamecms/image → HaloInfiniteClient.GameCmsGetImage(string).</summary>
+    /// <summary>
+    /// GET halo/v1/gamecms/image.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/gamecms/image to HaloInfiniteClient.GameCmsGetImage(string) through the shared Halo account.
+    /// </remarks>
+    /// <param name="filePath">
+    /// The filePath query string value.
+    /// </param>
+    /// <returns>
+    /// The requested image bytes.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("gamecms/image")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(byte[]), 200, "application/octet-stream")]
@@ -39,7 +50,21 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/skill/matches/{matchId}/players → HaloInfiniteClient.SkillGetMatchPlayerResult(string, System.Collections.Generic.List&lt;string&gt;).</summary>
+    /// <summary>
+    /// GET halo/v1/skill/matches/{matchId}/players.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/skill/matches/{matchId}/players to HaloInfiniteClient.SkillGetMatchPlayerResult(string, System.Collections.Generic.List&lt;string&gt;) through the shared Halo account.
+    /// </remarks>
+    /// <param name="matchId">
+    /// The matchId route value.
+    /// </param>
+    /// <param name="playerIds">
+    /// The playerIds query string value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("skill/matches/{matchId}/players")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerSkillResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -56,7 +81,21 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/skill/playlists/{playlistId}/csr → HaloInfiniteClient.SkillGetPlaylistCsr(string, System.Collections.Generic.List&lt;string&gt;).</summary>
+    /// <summary>
+    /// GET halo/v1/skill/playlists/{playlistId}/csr.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/skill/playlists/{playlistId}/csr to HaloInfiniteClient.SkillGetPlaylistCsr(string, System.Collections.Generic.List&lt;string&gt;) through the shared Halo account.
+    /// </remarks>
+    /// <param name="playlistId">
+    /// The playlistId route value.
+    /// </param>
+    /// <param name="playerIds">
+    /// The playerIds query string value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("skill/playlists/{playlistId}/csr")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 60)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -73,7 +112,18 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/stats/players/{player}/match-count → HaloInfiniteClient.StatsGetMatchCount(string).</summary>
+    /// <summary>
+    /// GET halo/v1/stats/players/{player}/match-count.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/stats/players/{player}/match-count to HaloInfiniteClient.StatsGetMatchCount(string) through the shared Halo account.
+    /// </remarks>
+    /// <param name="player">
+    /// The player route value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/players/{player}/match-count")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 60)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -90,7 +140,27 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/stats/players/{player}/matches → HaloInfiniteClient.StatsGetMatchHistory(string, int, int, Surprenant.Grunt.Models.HaloInfinite.MatchType).</summary>
+    /// <summary>
+    /// GET halo/v1/stats/players/{player}/matches.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/stats/players/{player}/matches to HaloInfiniteClient.StatsGetMatchHistory(string, int, int, Surprenant.Grunt.Models.HaloInfinite.MatchType) through the shared Halo account.
+    /// </remarks>
+    /// <param name="player">
+    /// The player route value.
+    /// </param>
+    /// <param name="start">
+    /// The start query string value.
+    /// </param>
+    /// <param name="count">
+    /// The count query string value.
+    /// </param>
+    /// <param name="type">
+    /// The type query string value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/players/{player}/matches")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 60)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchHistoryResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -107,7 +177,18 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/stats/matches/{matchId} → HaloInfiniteClient.StatsGetMatchStats(string).</summary>
+    /// <summary>
+    /// GET halo/v1/stats/matches/{matchId}.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/stats/matches/{matchId} to HaloInfiniteClient.StatsGetMatchStats(string) through the shared Halo account.
+    /// </remarks>
+    /// <param name="matchId">
+    /// The matchId route value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/matches/{matchId}")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -124,7 +205,18 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/stats/matches/{matchId:guid} → HaloInfiniteClient.StatsGetMatchStats(System.Guid).</summary>
+    /// <summary>
+    /// GET halo/v1/stats/matches/{matchId:guid}.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/stats/matches/{matchId:guid} to HaloInfiniteClient.StatsGetMatchStats(System.Guid) through the shared Halo account.
+    /// </remarks>
+    /// <param name="matchId">
+    /// The matchId route value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/matches/{matchId:guid}")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -141,7 +233,21 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/stats/players/{player}/matches/{matchId}/progression → HaloInfiniteClient.StatsGetPlayerMatchProgression(string, string).</summary>
+    /// <summary>
+    /// GET halo/v1/stats/players/{player}/matches/{matchId}/progression.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/stats/players/{player}/matches/{matchId}/progression to HaloInfiniteClient.StatsGetPlayerMatchProgression(string, string) through the shared Halo account.
+    /// </remarks>
+    /// <param name="player">
+    /// The player route value.
+    /// </param>
+    /// <param name="matchId">
+    /// The matchId route value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/players/{player}/matches/{matchId}/progression")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchProgression, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -158,7 +264,18 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/users → HaloInfiniteClient.Users(System.Collections.Generic.IEnumerable&lt;string&gt;).</summary>
+    /// <summary>
+    /// GET halo/v1/users.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/users to HaloInfiniteClient.Users(System.Collections.Generic.IEnumerable&lt;string&gt;) through the shared Halo account.
+    /// </remarks>
+    /// <param name="xuids">
+    /// The xuids query string value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("users")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 300)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.List<global::Surprenant.Grunt.Models.User>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -175,7 +292,18 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/users/by-gamertag/{gamertag} → HaloInfiniteClient.UserByGamertag(string).</summary>
+    /// <summary>
+    /// GET halo/v1/users/by-gamertag/{gamertag}.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/users/by-gamertag/{gamertag} to HaloInfiniteClient.UserByGamertag(string) through the shared Halo account.
+    /// </remarks>
+    /// <param name="gamertag">
+    /// The gamertag route value.
+    /// </param>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("users/by-gamertag/{gamertag}")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 300)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.User, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
@@ -192,7 +320,15 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
         }
     }
 
-    /// <summary>GET halo/v1/medals → HaloInfiniteClient.Medals().</summary>
+    /// <summary>
+    /// GET halo/v1/medals.
+    /// </summary>
+    /// <remarks>
+    /// Forwards GET halo/v1/medals to HaloInfiniteClient.Medals() through the shared Halo account.
+    /// </remarks>
+    /// <returns>
+    /// The Halo API result container.
+    /// </returns>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("medals")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 3600)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.Medals.MedalMetadataResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
