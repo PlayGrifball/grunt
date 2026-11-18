@@ -1747,7 +1747,7 @@
           },
           "notSent": {
             "type": "boolean",
-            "description": "True when the call was never sent to Halo: its account's budget (Surprenant.Grunt.Core.HaloBudgets) had no room\r\nfor it, or Halo had locked the budget out. Surprenant.Grunt.Models.HaloApiErrorContainer.Code is then 429 and Surprenant.Grunt.Models.HaloApiErrorContainer.RetryAfter says when there would\r\nbe room."
+            "description": "True when the call was never sent to Halo: its account's budget (Surprenant.Grunt.Core.HaloBudgets) had no room\nfor it, or Halo had locked the budget out. Surprenant.Grunt.Models.HaloApiErrorContainer.Code is then 429 and Surprenant.Grunt.Models.HaloApiErrorContainer.RetryAfter says when there would\nbe room."
           }
         },
         "additionalProperties": false,
