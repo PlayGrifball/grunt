@@ -214,7 +214,7 @@ jobs:
           if npm view "@playgrifball/grunt-gateway-client@$VERSION" version --registry https://npm.pkg.github.com > /dev/null 2>&1; then
             echo "@playgrifball/grunt-gateway-client@$VERSION is already on GitHub Packages."
           else
-            npm publish package/*.tgz --registry https://npm.pkg.github.com --access public
+            npm publish ./package/*.tgz --registry https://npm.pkg.github.com --access public
           fi
 
   npmjs:
@@ -251,5 +251,5 @@ jobs:
           if npm view "@playgrifball/grunt-gateway-client@$VERSION" version --registry https://registry.npmjs.org > /dev/null 2>&1; then
             echo "@playgrifball/grunt-gateway-client@$VERSION is already on npmjs."
           else
-            npm publish package/*.tgz --registry https://registry.npmjs.org --access public
+            npm publish ./package/*.tgz --registry https://registry.npmjs.org --access public
           fi

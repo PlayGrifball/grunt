@@ -50,6 +50,24 @@ public sealed class MatchReader(IHaloInfiniteClient halo)
 
 Methods that are not exposed by the gateway throw `NotSupportedException` and identify the unsupported method.
 
+## Supported methods
+
+| .NET method | HTTP endpoint | Purpose |
+|:------------|:--------------|:--------|
+| `GameCmsGetImage` | `GET /halo/v1/gamecms/image` | Retrieve an image from Halo's game CMS |
+| `SkillGetMatchPlayerResult` | `GET /halo/v1/skill/matches/{matchId}/players` | Retrieve per-player skill results for a match |
+| `SkillGetPlaylistCsr` | `GET /halo/v1/skill/playlists/{playlistId}/csr` | Retrieve current playlist CSR for one or more players |
+| `StatsGetMatchCount` | `GET /halo/v1/stats/players/{player}/match-count` | Retrieve a player's match count |
+| `StatsGetMatchHistory` | `GET /halo/v1/stats/players/{player}/matches` | Retrieve a page of a player's match history |
+| `StatsGetMatchStats` (`string` and `Guid` overloads) | `GET /halo/v1/stats/matches/{matchId}` | Retrieve the stats for one match |
+| `StatsGetPlayerMatchProgression` | `GET /halo/v1/stats/players/{player}/matches/{matchId}/progression` | Retrieve one player's progression for a match |
+| `Users` | `GET /halo/v1/users` | Resolve one or more XUIDs to Halo users |
+| `UserByGamertag` | `GET /halo/v1/users/by-gamertag/{gamertag}` | Resolve a gamertag to a Halo user |
+| `Medals` | `GET /halo/v1/medals` | Retrieve Halo Infinite medal metadata |
+
+Parameters, response schemas, cache behavior, and error responses are documented in the
+[live Swagger UI](https://grunt.grifball.xyz/swagger/index.html).
+
 ## Errors, retries, and rate limits
 
 All API keys share the hosted gateway's single upstream Halo account and therefore share its budgets. Cache hits do not use

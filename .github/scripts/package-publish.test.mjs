@@ -10,6 +10,7 @@ const gatewayReadme = readFileSync(new URL('../../Grunt/Grunt.Gateway.Client/REA
 const typescriptReadme = readFileSync(new URL('../../Grunt/Grunt.Gateway.TypeScript/README.md', import.meta.url), 'utf8');
 const coreProject = readFileSync(new URL('../../Grunt/Grunt/Surprenant.Grunt.csproj', import.meta.url), 'utf8');
 const gatewayProject = readFileSync(new URL('../../Grunt/Grunt.Gateway.Client/Surprenant.Grunt.Gateway.Client.csproj', import.meta.url), 'utf8');
+const openapi = JSON.parse(readFileSync(new URL('../../Grunt/Grunt.Gateway.TypeScript/openapi.json', import.meta.url), 'utf8'));
 
 test('publishes both NuGet clients to nuget.org and GitHub Packages', () => {
   assert.match(publish, /dotnet nuget push[^\n]+https:\/\/api\.nuget\.org\/v3\/index\.json/);
@@ -17,8 +18,8 @@ test('publishes both NuGet clients to nuget.org and GitHub Packages', () => {
 });
 
 test('publishes the TypeScript client to GitHub Packages and npmjs', () => {
-  assert.match(publish, /npm publish package\/\*\.tgz --registry https:\/\/npm\.pkg\.github\.com --access public/);
-  assert.match(publish, /npm publish package\/\*\.tgz --registry https:\/\/registry\.npmjs\.org --access public/);
+  assert.match(publish, /npm publish \.\/package\/\*\.tgz --registry https:\/\/npm\.pkg\.github\.com --access public/);
+  assert.match(publish, /npm publish \.\/package\/\*\.tgz --registry https:\/\/registry\.npmjs\.org --access public/);
   assert.match(publish, /npm view "@playgrifball\/grunt-gateway-client@\$VERSION" version --registry https:\/\/npm\.pkg\.github\.com/);
   assert.match(publish, /npm view "@playgrifball\/grunt-gateway-client@\$VERSION" version --registry https:\/\/registry\.npmjs\.org/);
   assert.match(publish, /id-token: write/);
@@ -60,4 +61,23 @@ test('each NuGet package embeds its focused local readme', () => {
     assert.match(project, /<None Update="README\.md"[^>]*>/, `${name} does not pack its local readme`);
     assert.ok(!project.includes('..\\..\\README.md'), `${name} still packs the repository readme`);
   }
+});
+
+test('both gateway client readmes list every public OpenAPI operation and route', () => {
+  const operations = Object.entries(openapi.paths).flatMap(([path, methods]) =>
+    Object.entries(methods)
+      .filter(([method]) => ['get', 'post', 'put', 'patch', 'delete'].includes(method))
+      .map(([method, operation]) => ({ id: operation.operationId, route: `${method.toUpperCase()} ${path}` })));
+
+  const rows = readme => {
+    const section = readme.split('## Supported methods')[1]?.split(/^## /m)[0] ?? '';
+    return [...section.matchAll(/^\| `([^`]+)`(?: \([^|]+\))? \| `([^`]+)` \|/gm)]
+      .map(match => ({ id: match[1], route: match[2] }));
+  };
+
+  assert.deepEqual(rows(gatewayReadme), operations, 'the .NET supported-method table differs from OpenAPI');
+  assert.deepEqual(rows(typescriptReadme), operations.map(operation => ({
+    ...operation,
+    id: operation.id[0].toLowerCase() + operation.id.slice(1),
+  })), 'the TypeScript supported-method table differs from OpenAPI');
 });
