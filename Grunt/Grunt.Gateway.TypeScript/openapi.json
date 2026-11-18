@@ -2292,8 +2292,8 @@
           39
         ],
         "type": "integer",
-        "format": "int32",
-        "description": "Category a game variant falls into."
+        "description": "Category a game variant falls into.",
+        "format": "int32"
       },
       "Surprenant.Grunt.Models.HaloInfinite.GenericAsset": {
         "type": "object",
@@ -2603,8 +2603,8 @@
           3
         ],
         "type": "integer",
-        "format": "int32",
-        "description": "Types of matches that a user can query with M:Surprenant.Grunt.Core.HaloInfiniteClient.StatsGetMatchHistory(System.String,System.Int32,System.Int32,Surprenant.Grunt.Models.HaloInfinite.MatchType)."
+        "description": "Types of matches that a user can query with M:Surprenant.Grunt.Core.HaloInfiniteClient.StatsGetMatchHistory(System.String,System.Int32,System.Int32,Surprenant.Grunt.Models.HaloInfinite.MatchType).",
+        "format": "int32"
       },
       "Surprenant.Grunt.Models.HaloInfinite.Medal": {
         "type": "object",
@@ -3165,8 +3165,8 @@
           5
         ],
         "type": "integer",
-        "format": "int32",
-        "description": "Playlist experience associated with a given match."
+        "description": "Playlist experience associated with a given match.",
+        "format": "int32"
       },
       "Surprenant.Grunt.Models.HaloInfinite.RankRecap": {
         "type": "object",
