@@ -144,7 +144,7 @@ The image's budgets keep under these; re-measure before raising them.
 
 ```csharp
 services.AddHaloGatewayClient(configuration.GetSection("HaloGateway"));
-// HaloGateway: { "BaseAddress": "http://halo-gateway.halo-gateway.svc:8080/", "ApiKey": "<secret>", "Retry": { "MaxAttempts": 3 } }
+// HaloGateway: { "BaseAddress": "http://halo-gateway.halo-gateway.svc:8080/" (default https://grunt.grifball.xyz/), "ApiKey": "<secret>", "Retry": { "MaxAttempts": 3 } }
 ```
 
 This registers `HaloGatewayClient` as a typed HttpClient and as `IHaloInfiniteClient`. A method the gateway doesn't expose

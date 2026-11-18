@@ -12,7 +12,9 @@ try {
     dotnet build $hostProject --configuration Release --no-restore
     $env:Gateway__Auth__TokenPath = $tokenPath
     $env:Gateway__Auth__UseInstanceLock = 'false'
-    dotnet swagger tofile --output $output $hostAssembly v1
+    # The served document has no servers, so Swagger UI calls whichever host serves it. The published contract names the
+    # hosted gateway, which becomes the generated TypeScript client's default base URL.
+    dotnet swagger tofile --host https://grunt.grifball.xyz --output $output $hostAssembly v1
 
     # XML documentation preserves the build host's newline convention inside JSON string values. Canonicalize those
     # escaped newlines so the checked-in contract and generated TypeScript are identical on Windows and Linux.

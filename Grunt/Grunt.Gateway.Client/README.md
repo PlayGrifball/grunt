@@ -12,7 +12,8 @@ response types, and errors are documented in the [live Swagger UI](https://grunt
 dotnet add package Surprenant.Grunt.Gateway.Client
 ```
 
-Register the typed client from configuration:
+Register the typed client from configuration. It calls the hosted gateway at `https://grunt.grifball.xyz/` unless
+`BaseAddress` is set:
 
 ```csharp
 using Surprenant.Grunt.Gateway.Client;
@@ -23,7 +24,6 @@ builder.Services.AddHaloGatewayClient(builder.Configuration.GetSection("HaloGate
 ```json
 {
   "HaloGateway": {
-    "BaseAddress": "https://grunt.grifball.xyz/",
     "ApiKey": "your-api-key",
     "Retry": {
       "MaxAttempts": 3,
