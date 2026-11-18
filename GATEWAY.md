@@ -22,6 +22,10 @@ app ── HaloGatewayClient ──HTTP + X-Api-Key──▶ Grunt.Gateway.Host
 | `Grunt/Grunt.Gateway.Client` | `Surprenant.Grunt.Gateway.Client` | Generated `HaloGatewayClient` plus its HTTP transport. |
 | `Grunt/Grunt.Gateway.Host` | Docker image | The service: auth, caching, Halo account sign-in and refresh, health, OpenTelemetry. |
 
+The host publishes its consumer API OpenAPI document at `/swagger/v1/swagger.json` and Swagger UI at `/swagger` in every
+environment. It describes every generated `halo/v1` operation, parameter and response and supports `X-Api-Key` authorization
+in the UI. Admin, OAuth callback, browser-admin and health endpoints are intentionally excluded.
+
 ## How the generator picks its output
 
 `GatewayGenerator` is in the same analyzer assembly as the interface generator. Each project that references it as an analyzer

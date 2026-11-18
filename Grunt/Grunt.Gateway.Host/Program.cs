@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -91,6 +92,42 @@ namespace Surprenant.Grunt.Gateway.Host
                 .AddApplicationPart(typeof(GatewayHost).Assembly)
                 // Admin/status JSON shows enum names (the generated controller uses HaloGatewayProtocol.JsonOptions instead).
                 .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
+
+            // Publish the gateway contract and its Swagger UI in every environment, matching GrifballWebApp's
+            // Swashbuckle setup. Keeping this outside an environment check makes the deployed gateway discoverable too.
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(options =>
+            {
+                options.CustomSchemaIds(type => type.FullName);
+                options.SupportNonNullableReferenceTypes();
+                options.UseAllOfToExtendReferenceSchemas();
+                // This is the consumer API contract. Admin/browser/OAuth and health endpoints are operational surfaces,
+                // not part of the generated Halo client API.
+                options.DocInclusionPredicate((_, api) =>
+                    api.RelativePath?.StartsWith("halo/v1/", StringComparison.OrdinalIgnoreCase) == true);
+                // OpenAPI drops ASP.NET route constraints, so the string and Guid match-id overloads become the same
+                // method/path in the document. They have the same response contract; document the general action.
+                options.ResolveConflictingActions(descriptions => descriptions.First());
+
+                foreach (var assembly in new[]
+                         {
+                             typeof(HaloInfiniteController).Assembly,
+                             typeof(HaloInfiniteClient).Assembly,
+                         })
+                    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{assembly.GetName().Name}.xml"));
+
+                options.AddSecurityDefinition(GatewayAuth.ConsumerScheme, new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "A consumer API key configured in Gateway:ApiKeys.",
+                    Name = HaloGatewayProtocol.DefaultApiKeyHeader,
+                    Type = SecuritySchemeType.ApiKey,
+                });
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference(GatewayAuth.ConsumerScheme, document)] = [],
+                });
+            });
 
             // Admin endpoints: the admin key, or (when Gateway:Oidc is configured) a browser session from the admin page.
             var oidc = gatewaySection.GetSection("Oidc").Get<OidcOptions>() ?? new OidcOptions();
@@ -197,6 +234,8 @@ namespace Surprenant.Grunt.Gateway.Host
             app.UseForwardedHeaders();
             // After UseForwardedHeaders so ClientIp/the request summary log carry the real (trusted) client address.
             app.UseRequestTelemetry();
+            app.UseSwagger();
+            app.UseSwaggerUI(options => options.SwaggerEndpoint("v1/swagger.json", "Halo gateway"));
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
