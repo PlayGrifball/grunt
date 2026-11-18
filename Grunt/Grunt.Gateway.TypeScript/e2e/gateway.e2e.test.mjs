@@ -95,7 +95,6 @@ test('medals returns the metadata', async () => {
 test('gameCmsGetImage returns the raw image bytes', async () => {
   const data = assertOk(await gateway.gameCmsGetImage({ query: { filePath: 'progression/a b.png' } }));
 
-  // The contract types this as a string, but the client parses application/octet-stream as a Blob.
   assert.ok(data instanceof Blob, `expected a Blob, got ${typeof data}`);
   assert.deepEqual([...new Uint8Array(await data.arrayBuffer())], [137, 80, 78, 71]);
 });

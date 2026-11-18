@@ -186,6 +186,23 @@ public class GatewayRoundTripTests
         });
     }
 
+    [Test]
+    public async Task BinaryResultsAreDocumentedAsRawBytes()
+    {
+        var http = _factory.CreateClient();
+
+        var document = (await (await http.GetAsync("swagger/v1/swagger.json")).Content.ReadFromJsonAsync<JsonDocument>())!.RootElement;
+        var schema = document.GetProperty("paths").GetProperty("/halo/v1/gamecms/image").GetProperty("get").GetProperty("responses")
+            .GetProperty("200").GetProperty("content").GetProperty(HaloGatewayProtocol.BinaryContentType).GetProperty("schema");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(schema.GetProperty("type").GetString(), Is.EqualTo("string"));
+            Assert.That(schema.GetProperty("format").GetString(), Is.EqualTo("binary"),
+                "HaloGatewayResults.Binary writes the raw bytes, not the base64 string \"byte\" would mean");
+        });
+    }
+
     private static string RequiredText(JsonElement element, string property)
         => element.TryGetProperty(property, out var value) ? value.GetString() ?? string.Empty : string.Empty;
 

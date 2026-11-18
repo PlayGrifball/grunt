@@ -617,7 +617,7 @@ export type GameCmsGetImageResponses = {
     /**
      * OK
      */
-    200: string;
+    200: Blob | File;
 };
 
 export type GameCmsGetImageResponse = GameCmsGetImageResponses[keyof GameCmsGetImageResponses];

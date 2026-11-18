@@ -30,7 +30,7 @@
               "application/octet-stream": {
                 "schema": {
                   "type": "string",
-                  "format": "byte"
+                  "format": "binary"
                 }
               }
             }
