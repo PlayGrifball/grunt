@@ -35,6 +35,24 @@ const result = await userByGamertag({
 });
 ```
 
+## Supported methods
+
+| TypeScript function | HTTP endpoint | Purpose |
+|:--------------------|:--------------|:--------|
+| `gameCmsGetImage` | `GET /halo/v1/gamecms/image` | Retrieve an image from Halo's game CMS |
+| `skillGetMatchPlayerResult` | `GET /halo/v1/skill/matches/{matchId}/players` | Retrieve per-player skill results for a match |
+| `skillGetPlaylistCsr` | `GET /halo/v1/skill/playlists/{playlistId}/csr` | Retrieve current playlist CSR for one or more players |
+| `statsGetMatchCount` | `GET /halo/v1/stats/players/{player}/match-count` | Retrieve a player's match count |
+| `statsGetMatchHistory` | `GET /halo/v1/stats/players/{player}/matches` | Retrieve a page of a player's match history |
+| `statsGetMatchStats` | `GET /halo/v1/stats/matches/{matchId}` | Retrieve the stats for one match |
+| `statsGetPlayerMatchProgression` | `GET /halo/v1/stats/players/{player}/matches/{matchId}/progression` | Retrieve one player's progression for a match |
+| `users` | `GET /halo/v1/users` | Resolve one or more XUIDs to Halo users |
+| `userByGamertag` | `GET /halo/v1/users/by-gamertag/{gamertag}` | Resolve a gamertag to a Halo user |
+| `medals` | `GET /halo/v1/medals` | Retrieve Halo Infinite medal metadata |
+
+The generated option and result types provide each operation's path, query, response, and error shapes. See the
+[live Swagger UI](https://grunt.grifball.xyz/swagger/index.html) for the complete schemas and response descriptions.
+
 ## Errors and rate limits
 
 All API keys share the hosted gateway's single upstream Halo account and its budgets. Cache hits do not consume an upstream
