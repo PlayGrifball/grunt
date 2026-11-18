@@ -11,6 +11,7 @@ using Surprenant.Grunt.Models;
 using Surprenant.Grunt.Models.HaloInfinite;
 using Surprenant.Grunt.Models.HaloInfinite.Medals;
 using System.Diagnostics;
+using File = System.IO.File;
 using MatchType = Surprenant.Grunt.Models.HaloInfinite.MatchType;
 
 namespace Tests;

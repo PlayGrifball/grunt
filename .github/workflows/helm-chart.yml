@@ -56,6 +56,7 @@ jobs:
         run: |
           # pwsh only fails the step on the last command's exit code; stop at the first failing native command instead.
           $PSNativeCommandUseErrorActionPreference = $true
+          dotnet restore Grunt/Grunt.slnx
           ./.github/scripts/generate-gateway-openapi.ps1
           Set-Location Grunt/Grunt.Gateway.TypeScript
           npm ci
