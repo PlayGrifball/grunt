@@ -18,8 +18,8 @@ test('publishes both NuGet clients to nuget.org and GitHub Packages', () => {
 });
 
 test('publishes the TypeScript client to GitHub Packages and npmjs', () => {
-  assert.match(publish, /npm publish package\/\*\.tgz --registry https:\/\/npm\.pkg\.github\.com --access public/);
-  assert.match(publish, /npm publish package\/\*\.tgz --registry https:\/\/registry\.npmjs\.org --access public/);
+  assert.match(publish, /npm publish \.\/package\/\*\.tgz --registry https:\/\/npm\.pkg\.github\.com --access public/);
+  assert.match(publish, /npm publish \.\/package\/\*\.tgz --registry https:\/\/registry\.npmjs\.org --access public/);
   assert.match(publish, /npm view "@playgrifball\/grunt-gateway-client@\$VERSION" version --registry https:\/\/npm\.pkg\.github\.com/);
   assert.match(publish, /npm view "@playgrifball\/grunt-gateway-client@\$VERSION" version --registry https:\/\/registry\.npmjs\.org/);
   assert.match(publish, /id-token: write/);
