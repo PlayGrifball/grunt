@@ -84,6 +84,23 @@ public class GatewayRoundTripTests
     private static User Grunt() => new() { xuid = "2533274800000000", gamertag = "Grunt", gamerpic = new Gamerpic { small = "s.png" } };
 
     [Test]
+    public async Task OpenApiIsAvailableOutsideDevelopment()
+    {
+        var client = _factory.CreateClient();
+
+        var document = await client.GetAsync("swagger/v1/swagger.json");
+        var ui = await client.GetAsync("swagger/index.html");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(document.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(document.Content.Headers.ContentType?.MediaType, Is.EqualTo("application/json"));
+            Assert.That(ui.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(ui.Content.Headers.ContentType?.MediaType, Is.EqualTo("text/html"));
+        });
+    }
+
+    [Test]
     public async Task UserByGamertagRoundTripsAndIsCached()
     {
         _factory.Halo.UserByGamertag("Grunt Lord").Returns(_ => Container(Grunt(), 200));

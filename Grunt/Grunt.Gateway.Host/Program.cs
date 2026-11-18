@@ -92,6 +92,17 @@ namespace Surprenant.Grunt.Gateway.Host
                 // Admin/status JSON shows enum names (the generated controller uses HaloGatewayProtocol.JsonOptions instead).
                 .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
 
+            // Publish the gateway contract and its Swagger UI in every environment, matching GrifballWebApp's
+            // Swashbuckle setup. Keeping this outside an environment check makes the deployed gateway discoverable too.
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(options =>
+            {
+                options.CustomSchemaIds(type => type.FullName);
+                // OpenAPI drops ASP.NET route constraints, so the string and Guid match-id overloads become the same
+                // method/path in the document. They have the same response contract; document the general action.
+                options.ResolveConflictingActions(descriptions => descriptions.First());
+            });
+
             // Admin endpoints: the admin key, or (when Gateway:Oidc is configured) a browser session from the admin page.
             var oidc = gatewaySection.GetSection("Oidc").Get<OidcOptions>() ?? new OidcOptions();
             services.AddAuthentication(GatewayAuth.ConsumerScheme)
@@ -197,6 +208,8 @@ namespace Surprenant.Grunt.Gateway.Host
             app.UseForwardedHeaders();
             // After UseForwardedHeaders so ClientIp/the request summary log carry the real (trusted) client address.
             app.UseRequestTelemetry();
+            app.UseSwagger();
+            app.UseSwaggerUI();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
