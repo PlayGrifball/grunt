@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Options;
+using Serilog.Context;
 using Surprenant.Grunt.Gateway.Host.Auth;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -28,7 +29,19 @@ public sealed class ConsumerRequestsMiddleware
             Activity.Current?.SetTag("grunt.api_key", key.Name);
             Activity.Current?.SetTag("grunt.environment", key.Environment);
             GatewayHostMetrics.Requests.Add(1, new("key", key.Name), new("environment", key.Environment), new("action", action.ActionName));
+
+            // Every log the action writes (Halo failures, budgets, retries) names its caller, not only the request summary
+            // line (RequestTelemetryExtensions), so Loki can filter them by consumer without going through trace_id.
+            using (LogContext.PushProperty(RequestTelemetryExtensions.ConsumerKeyNameProperty, key.Name))
+            using (LogContext.PushProperty(ConsumerEnvironmentProperty, key.Environment))
+            {
+                await _next(context);
+            }
+            return;
         }
         await _next(context);
     }
+
+    /// <summary>The consumer API key's configured environment (e.g. prod, preview).</summary>
+    public const string ConsumerEnvironmentProperty = "ConsumerEnvironment";
 }
