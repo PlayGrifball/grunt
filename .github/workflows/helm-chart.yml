@@ -54,13 +54,17 @@ jobs:
       - name: Gateway contract and client packages
         shell: pwsh
         run: |
-          dotnet test Grunt/Grunt.slnx --configuration Release
+          # pwsh only fails the step on the last command's exit code; stop at the first failing native command instead.
+          $PSNativeCommandUseErrorActionPreference = $true
           ./.github/scripts/generate-gateway-openapi.ps1
           Set-Location Grunt/Grunt.Gateway.TypeScript
           npm ci
           npm run check
           Set-Location ../..
           git diff --exit-code -- Grunt/Grunt.Gateway.TypeScript/openapi.json Grunt/Grunt.Gateway.TypeScript/src/generated
+          # After the package is built, so TypeScriptClientEndToEndTests runs the TypeScript client against the host.
+          $env:GRUNT_TYPESCRIPT_E2E = '1'
+          dotnet test Grunt/Grunt.slnx --configuration Release
 
       - name: Lint
         run: |
