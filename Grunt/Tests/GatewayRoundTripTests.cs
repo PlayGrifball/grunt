@@ -159,6 +159,33 @@ public class GatewayRoundTripTests
         });
     }
 
+    [Test]
+    public async Task WireMatchesTheOpenApiDocument()
+    {
+        var id = Guid.NewGuid();
+        _factory.Halo.StatsGetMatchStats(id).Returns(_ => Container(new MatchStats
+        {
+            MatchId = id,
+            MatchInfo = new MatchInfo { GameVariantCategory = GameVariantCategory.MultiplayerGrifball },
+        }, 200));
+        var http = _factory.CreateClient();
+        http.DefaultRequestHeaders.Add("X-Api-Key", ProdKey);
+
+        var body = (await (await http.GetAsync($"halo/v1/stats/matches/{id}")).Content.ReadFromJsonAsync<JsonDocument>())!.RootElement;
+        var schemas = (await (await http.GetAsync("swagger/v1/swagger.json")).Content.ReadFromJsonAsync<JsonDocument>())!
+            .RootElement.GetProperty("components").GetProperty("schemas");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(body.GetProperty("error").GetProperty("code").GetInt32(), Is.EqualTo(200), "camelCase, like the documented schemas");
+            Assert.That(body.GetProperty("result").GetProperty("matchId").GetGuid(), Is.EqualTo(id));
+            Assert.That(body.GetProperty("result").GetProperty("matchInfo").GetProperty("gameVariantCategory").GetInt32(),
+                Is.EqualTo((int)GameVariantCategory.MultiplayerGrifball), "enums are numbers on the wire");
+            Assert.That(schemas.GetProperty(typeof(GameVariantCategory).FullName!).GetProperty("type").GetString(), Is.EqualTo("integer"),
+                "the document describes enums as the numbers the wire carries");
+        });
+    }
+
     private static string RequiredText(JsonElement element, string property)
         => element.TryGetProperty(property, out var value) ? value.GetString() ?? string.Empty : string.Empty;
 

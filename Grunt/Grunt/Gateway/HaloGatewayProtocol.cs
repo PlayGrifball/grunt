@@ -23,11 +23,13 @@ public static class HaloGatewayProtocol
     public const string BinaryContentType = "application/octet-stream";
 
     /// <summary>
-    /// JSON options for serialised result containers on both sides: C# property names (or their <c>JsonPropertyName</c>),
-    /// case-insensitive reads, and TimeSpans as XML durations like the Halo API itself.
+    /// JSON options for serialised result containers on both sides: camelCase property names (or their <c>JsonPropertyName</c>),
+    /// enums as numbers, case-insensitive reads (so clients from before camelCase still read it), and TimeSpans as XML durations
+    /// like the Halo API itself. The gateway's OpenAPI schemas are generated from these options too.
     /// </summary>
     public static JsonSerializerOptions JsonOptions { get; } = new()
     {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true,
         Converters = { new XmlDurationToTimeSpanJsonConverter() },
     };

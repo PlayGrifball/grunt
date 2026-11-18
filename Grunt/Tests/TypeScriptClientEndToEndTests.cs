@@ -98,7 +98,11 @@ public class TypeScriptClientEndToEndTests
         halo.StatsGetMatchHistory(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<MatchType>())
             .Returns(_ => Container(new MatchHistoryResponse(), 200));
         halo.StatsGetMatchCount(Arg.Any<string>()).Returns(_ => Container(new PlayerMatchCount { MatchesPlayedCount = 42 }, 200));
-        halo.StatsGetMatchStats(Arg.Any<Guid>()).Returns(_ => Container(new MatchStats(), 200));
+        halo.StatsGetMatchStats(Arg.Any<Guid>()).Returns(_ => Container(new MatchStats
+        {
+            MatchId = Guid.Parse(MatchId),
+            MatchInfo = new MatchInfo { GameVariantCategory = GameVariantCategory.MultiplayerGrifball },
+        }, 200));
         halo.StatsGetPlayerMatchProgression(Arg.Any<string>(), Arg.Any<string>()).Returns(_ => Container(new MatchProgression(), 200));
         halo.SkillGetMatchPlayerResult(Arg.Any<string>(), Arg.Any<List<string>>()).Returns(_ => Container(new PlayerSkillResultContainer(), 200));
         halo.SkillGetPlaylistCsr(Arg.Any<string>(), Arg.Any<List<string>>()).Returns(_ => Container(new PlaylistCsrResultContainer(), 200));

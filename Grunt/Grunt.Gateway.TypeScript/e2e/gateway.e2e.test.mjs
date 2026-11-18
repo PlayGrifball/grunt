@@ -36,7 +36,7 @@ test('users sends every xuid', async () => {
 test('statsGetMatchHistory sends the paging and match type', async () => {
   const data = assertOk(await gateway.statsGetMatchHistory({
     path: { player: 'xuid(123)' },
-    query: { start: 25, count: 10, type: 'Custom' },
+    query: { start: 25, count: 10, type: 2 }, // MatchType.Custom
   }));
 
   assert.equal(data.error.code, 200);
@@ -53,7 +53,8 @@ test('statsGetMatchStats reads a match by id', async () => {
   const data = assertOk(await gateway.statsGetMatchStats({ path: { matchId } }));
 
   assert.equal(data.error.code, 200);
-  assert.ok(data.result);
+  assert.equal(data.result.matchId, matchId);
+  assert.equal(data.result.matchInfo.gameVariantCategory, 25, 'MultiplayerGrifball, as its number');
 });
 
 test('statsGetPlayerMatchProgression reads one player in one match', async () => {

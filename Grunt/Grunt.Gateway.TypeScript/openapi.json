@@ -2280,18 +2280,19 @@
       },
       "Surprenant.Grunt.Models.HaloInfinite.GameVariantCategory": {
         "enum": [
-          "MultiplayerSlayer",
-          "MultiplayerAttrition",
-          "MultiplayerFiesta",
-          "MultiplayerStrongholds",
-          "MultiplayerBastion",
-          "MultiplayerCtf",
-          "MultiplayerOddball",
-          "MultiplayerInfection",
-          "MultiplayerGrifball",
-          "MultiplayerLandGrab"
+          6,
+          7,
+          9,
+          11,
+          12,
+          15,
+          18,
+          22,
+          25,
+          39
         ],
-        "type": "string",
+        "type": "integer",
+        "format": "int32",
         "description": "Category a game variant falls into."
       },
       "Surprenant.Grunt.Models.HaloInfinite.GenericAsset": {
@@ -2596,12 +2597,13 @@
       },
       "Surprenant.Grunt.Models.HaloInfinite.MatchType": {
         "enum": [
-          "All",
-          "Matchmaking",
-          "Custom",
-          "Local"
+          0,
+          1,
+          2,
+          3
         ],
-        "type": "string",
+        "type": "integer",
+        "format": "int32",
         "description": "Types of matches that a user can query with M:Surprenant.Grunt.Core.HaloInfiniteClient.StatsGetMatchHistory(System.String,System.Int32,System.Int32,Surprenant.Grunt.Models.HaloInfinite.MatchType)."
       },
       "Surprenant.Grunt.Models.HaloInfinite.Medal": {
@@ -3159,10 +3161,11 @@
       },
       "Surprenant.Grunt.Models.HaloInfinite.PlaylistExperience": {
         "enum": [
-          "Arena",
-          "Featured"
+          2,
+          5
         ],
-        "type": "string",
+        "type": "integer",
+        "format": "int32",
         "description": "Playlist experience associated with a given match."
       },
       "Surprenant.Grunt.Models.HaloInfinite.RankRecap": {
