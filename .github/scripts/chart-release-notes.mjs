@@ -66,7 +66,7 @@ export function supersededBy(cwd, sha, newer) {
   return changed(gitIn(cwd), sha, newer, IMAGE_PATHS);
 }
 
-export function releaseNotes({ cwd, chart, name, version, repository, chartRepo, digest, identity, image }) {
+export function releaseNotes({ cwd, chart, name, version, repository, chartRepo, digest, identity, image, packages = {} }) {
   const git = gitIn(cwd);
   const url = `https://github.com/${repository}`;
   const tag = `${name}-${version}`;
@@ -98,6 +98,22 @@ export function releaseNotes({ cwd, chart, name, version, repository, chartRepo,
     lines.push(...log('--first-parent', '-n', String(FIRST_RELEASE_COMMITS), 'HEAD').flatMap(entry), '');
   }
 
+  const [owner, repo] = repository.split('/');
+  const githubPackages = `https://github.com/orgs/${owner}/packages?repo_name=${repo}`;
+  lines.push('## Client packages', '');
+  if (packages.nuget) {
+    lines.push(`- .NET: [Surprenant.Grunt ${version}](https://www.nuget.org/packages/Surprenant.Grunt/${version}) and ` +
+      `[Surprenant.Grunt.Gateway.Client ${version}](https://www.nuget.org/packages/Surprenant.Grunt.Gateway.Client/${version}); ` +
+      `also published to [GitHub Packages](${githubPackages}).`);
+  }
+  if (packages.typescript) {
+    lines.push(`- TypeScript: [@playgrifball/grunt-gateway-client ${version}]` +
+      `(https://www.npmjs.com/package/@playgrifball/grunt-gateway-client/v/${version}); ` +
+      `also published to [GitHub Packages](${githubPackages}).`);
+  }
+  if (!packages.nuget && !packages.typescript) lines.push('No client package changes in this release.');
+  lines.push('');
+
   lines.push('## Image', '',
     `- \`${image.ref}\``,
     `- Digest: \`${image.digest}\``,
@@ -122,7 +138,7 @@ export function releaseNotes({ cwd, chart, name, version, repository, chartRepo,
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const names = ['chart', 'name', 'version', 'repository', 'chart-repo', 'digest', 'identity', 'image', 'image-digest', 'image-commit', 'image-identity'];
-  const flags = ['print-image-paths', 'plan', 'superseded'];
+  const flags = ['print-image-paths', 'plan', 'superseded', 'nuget', 'typescript'];
   const { values } = parseArgs({ options: {
     ...Object.fromEntries([...names, 'before', 'since', 'newer'].map(o => [o, { type: 'string' }])),
     ...Object.fromEntries(flags.map(o => [o, { type: 'boolean' }])),
@@ -137,6 +153,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   } else {
     for (const k of names) if (!values[k]) throw new Error(`--${k} is missing`);
     const image = { ref: values.image, digest: values['image-digest'], commit: values['image-commit'], identity: values['image-identity'] };
-    process.stdout.write(releaseNotes({ ...values, chartRepo: values['chart-repo'], image, cwd: process.cwd() }));
+    const packages = { nuget: values.nuget, typescript: values.typescript };
+    process.stdout.write(releaseNotes({ ...values, chartRepo: values['chart-repo'], image, packages, cwd: process.cwd() }));
   }
 }

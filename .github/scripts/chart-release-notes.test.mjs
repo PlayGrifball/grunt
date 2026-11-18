@@ -48,10 +48,11 @@ function repo() {
   return { dir, git, commit };
 }
 
-const notes = (r, version) => releaseNotes({
+const notes = (r, version, packages = { nuget: true, typescript: true }) => releaseNotes({
   cwd: r.dir, chart: 'charts/halo-gateway', name: 'halo-gateway', version, repository,
   chartRepo: 'oci://ghcr.io/playgrifball/charts', digest, identity,
   image: { ref: 'ghcr.io/playgrifball/halo-gateway:sha-1234567', digest: imageDigest, commit: '1234567'.padEnd(40, '0'), identity: imageIdentity },
+  packages,
 });
 
 /** A chart released as 0.3.1, then a merged pull request, a squashed one and commits elsewhere. */
@@ -142,6 +143,23 @@ test('names the gateway image the chart runs: its tag, digest, commit and how to
   assert.ok(md.includes(`[1234567](https://github.com/${repository}/commit/${commit})`), md);
   assert.ok(md.includes(`cosign verify ghcr.io/playgrifball/halo-gateway@${imageDigest} --certificate-identity-regexp '${imageIdentity}' --certificate-oidc-issuer https://token.actions.githubusercontent.com`), md);
   assert.ok(md.indexOf('## Image') < md.indexOf('## Chart'), 'the image before the chart');
+});
+
+test('lists only the client package families published by this release', () => {
+  const { r } = history();
+  const both = notes(r, '0.3.2');
+  assert.ok(both.includes('## Client packages'), both);
+  assert.ok(both.includes('https://www.nuget.org/packages/Surprenant.Grunt/0.3.2'), both);
+  assert.ok(both.includes('https://www.nuget.org/packages/Surprenant.Grunt.Gateway.Client/0.3.2'), both);
+  assert.ok(both.includes('https://www.npmjs.com/package/@playgrifball/grunt-gateway-client/v/0.3.2'), both);
+  assert.ok(both.indexOf('## Client packages') < both.indexOf('## Image'), both);
+
+  const nuget = notes(r, '0.3.2', { nuget: true, typescript: false });
+  assert.ok(nuget.includes('Surprenant.Grunt 0.3.2') && !nuget.includes('@playgrifball'), nuget);
+
+  const unchanged = notes(r, '0.3.2', { nuget: false, typescript: false });
+  assert.ok(unchanged.includes('No client package changes in this release.'), unchanged);
+  assert.ok(!unchanged.includes('nuget.org/packages') && !unchanged.includes('npmjs.com/package'), unchanged);
 });
 
 /** What plan decides for a run whose push went from before to HEAD. */

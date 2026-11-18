@@ -876,10 +876,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Gets an image for an associated game CMS asset. Example path is "progression/inventory/armor/gloves/003-001-olympus-8e7c9dff-sm.png".
+    /// Downloads an image asset from Halo Infinite's game content catalog.
     /// </summary>
-    /// <param name="filePath">Path to the CMS image.</param>
-    /// <returns>If successful, returns the byte array for the requested image. Otherwise, returns null.</returns>
+    /// <remarks>Use the catalog-relative path stored in Halo metadata, for example <c>progression/inventory/armor/gloves/003-001-olympus-8e7c9dff-sm.png</c>.</remarks>
+    /// <param name="filePath">Catalog-relative path of the image, without the game CMS host or <c>/hi/images/file/</c> prefix.</param>
+    /// <returns>The image bytes and content type when the catalog asset exists.</returns>
     [GatewayExposed("gamecms/image", Cache = GatewayCachePolicy.Immutable)]
     public async Task<HaloApiResultContainer<byte[], HaloApiErrorContainer>> GameCmsGetImage(string filePath)
     {
@@ -2202,12 +2203,12 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     // ================================================
 
     /// <summary>
-    /// Returns individual player stats for a given match.
+    /// Gets the skill results calculated for selected players in a completed match.
     /// </summary>
     /// <include file='../APIDocsExamples/Skill_GetMatchPlayerResult.xml' path='//example'/>
-    /// <param name="matchId">The unique match ID.</param>
-    /// <param name="playerIds">Array of player IDs. Each ID string should be in the format of "xuid(XUID_VALUE)".</param>
-    /// <returns>An instance of <see cref="PlayerSkillResultContainer"/> representing player skills if the request was successful. Otherwise, returns null.</returns>
+    /// <param name="matchId">Unique match ID in GUID format.</param>
+    /// <param name="playerIds">Players whose skill results are requested, each formatted as <c>xuid(XUID_VALUE)</c>.</param>
+    /// <returns>Per-player skill measurements and team skill information for the match.</returns>
     [GatewayExposed("skill/matches/{matchId}/players", Cache = GatewayCachePolicy.Immutable)]
     public async Task<HaloApiResultContainer<PlayerSkillResultContainer, HaloApiErrorContainer>> SkillGetMatchPlayerResult(string matchId, List<string> playerIds)
     {
@@ -2221,12 +2222,12 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Gets playlist Competitive Skill Rank (CSR) for a player or a set of players.
+    /// Gets current Competitive Skill Rank (CSR) ratings for selected players in a ranked playlist.
     /// </summary>
     /// <include file='../APIDocsExamples/Skill_GetPlaylistCsr.xml' path='//example'/>
-    /// <param name="playlistId">Unique ID for the playlist.</param>
-    /// <param name="playerIds">Array of player IDs. Each ID string should be in the format of "xuid(XUID_VALUE)".</param>
-    /// <returns>If successful, an instance of <see cref="PlaylistCsrResultContainer"/> representing player CSRs. Otherwise, returns null.</returns>
+    /// <param name="playlistId">Unique ranked playlist ID in GUID format.</param>
+    /// <param name="playerIds">Players whose ratings are requested, each formatted as <c>xuid(XUID_VALUE)</c>.</param>
+    /// <returns>Each requested player's CSR tier, sub-tier, measurement matches, and rating progress for the playlist.</returns>
     [GatewayExposed("skill/playlists/{playlistId}/csr", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
     public async Task<HaloApiResultContainer<PlaylistCsrResultContainer, HaloApiErrorContainer>> SkillGetPlaylistCsr(string playlistId, List<string> playerIds)
     {
@@ -2278,11 +2279,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Gets the summary on number of played matches.
+    /// Gets a player's lifetime match totals grouped by outcome.
     /// </summary>
     /// <include file='../APIDocsExamples/Stats_GetMatchCount.xml' path='//example'/>
-    /// <param name="player">The player identifier in the format "xuid(000000)"</param>
-    /// <returns>An instance of PlayerMatchCount containing match counts if request was successful. Return value is null otherwise.</returns>
+    /// <param name="player">Player identifier formatted as <c>xuid(XUID_VALUE)</c>.</param>
+    /// <returns>Total matches played and the player's win, loss, tie, and incomplete-match counts.</returns>
     [GatewayExposed("stats/players/{player}/match-count", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
     public async Task<HaloApiResultContainer<PlayerMatchCount, HaloApiErrorContainer>> StatsGetMatchCount(string player)
     {
@@ -2295,14 +2296,14 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Gets match history for a player.
+    /// Gets one page of a player's Halo Infinite match history.
     /// </summary>
     /// <include file='../APIDocsExamples/Stats_GetMatchHistory.xml' path='//example'/>
-    /// <param name="player">The player identifier in the format "xuid(000000)"</param>
-    /// <param name="start">Start value for the counter, from which data should be returned.</param>
-    /// <param name="count">Number of matches to return. Maximum is 25. Going beyond 25 will result in only 25 values being returned.</param>
-    /// <param name="type">Type of matches to query.</param>
-    /// <returns>An instance of MatchContainer containing match metadata if request was successful. Return value is null otherwise.</returns>
+    /// <param name="player">Player identifier formatted as <c>xuid(XUID_VALUE)</c>.</param>
+    /// <param name="start">Zero-based offset into the player's match history.</param>
+    /// <param name="count">Number of matches to return, from 1 through 25. Halo caps larger values at 25.</param>
+    /// <param name="type">Match category to include, such as matchmaking or custom games.</param>
+    /// <returns>A page of match IDs, start times, completion reasons, and playlist or game-variant metadata.</returns>
     [GatewayExposed("stats/players/{player}/matches", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
     public async Task<HaloApiResultContainer<MatchHistoryResponse, HaloApiErrorContainer>> StatsGetMatchHistory(string player, int start, int count, Models.HaloInfinite.MatchType type)
     {
@@ -2315,11 +2316,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Gets stats for a specific match.
+    /// Gets the scoreboard and performance statistics for a completed match.
     /// </summary>
     /// <include file='../APIDocsExamples/Stats_GetMatchStats.xml' path='//example'/>
-    /// <param name="matchId">Match ID in GUID format.</param>
-    /// <returns>An instance of MatchStats containing match metadata if request was successful. Return value is null otherwise.</returns>
+    /// <param name="matchId">Unique match ID in GUID format.</param>
+    /// <returns>Match metadata plus team and player statistics, including scores, outcomes, and core performance metrics.</returns>
     [GatewayExposed("stats/matches/{matchId}", Cache = GatewayCachePolicy.Immutable)]
     public async Task<HaloApiResultContainer<MatchStats, HaloApiErrorContainer>> StatsGetMatchStats(string matchId)
     {
@@ -2332,11 +2333,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Gets stats for a specific match.
+    /// Gets the scoreboard and performance statistics for a completed match.
     /// </summary>
     /// <include file='../APIDocsExamples/Stats_GetMatchStats.xml' path='//example'/>
-    /// <param name="matchId">Match ID in GUID format.</param>
-    /// <returns>An instance of MatchStats containing match metadata if request was successful. Return value is null otherwise.</returns>
+    /// <param name="matchId">Unique match ID.</param>
+    /// <returns>Match metadata plus team and player statistics, including scores, outcomes, and core performance metrics.</returns>
     [GatewayExposed("stats/matches/{matchId:guid}", Name = "StatsGetMatchStatsByGuid", Cache = GatewayCachePolicy.Immutable)]
     public async Task<HaloApiResultContainer<MatchStats, HaloApiErrorContainer>> StatsGetMatchStats(Guid matchId)
     {
@@ -2349,12 +2350,12 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Get challenge progression associated with a given match.
+    /// Gets the challenge and reward progression a player earned from a completed match.
     /// </summary>
     /// <include file='../APIDocsExamples/Stats_GetPlayerMatchProgression.xml' path='//example'/>
-    /// <param name="player">The player identifier in the format "xuid(000000)"</param>
-    /// <param name="matchId">Match ID in GUID format.</param>
-    /// <returns>An instance of MatchProgression containing match challenge progression metadata if request was successful. Return value is null otherwise.</returns>
+    /// <param name="player">Player identifier formatted as <c>xuid(XUID_VALUE)</c>.</param>
+    /// <param name="matchId">Unique match ID in GUID format.</param>
+    /// <returns>Challenge increments and progression rewards attributed to the player for that match.</returns>
     [GatewayExposed("stats/players/{player}/matches/{matchId}/progression", Cache = GatewayCachePolicy.Immutable)]
     public async Task<HaloApiResultContainer<MatchProgression, HaloApiErrorContainer>> StatsGetPlayerMatchProgression(string player, string matchId)
     {
@@ -2418,10 +2419,10 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Retrieves list of users with their respective gamertags and gamerpictures
+    /// Resolves Xbox user IDs to Halo profiles.
     /// </summary>
-    /// <param name="xuids">Xuids in number format. Do NOT format as XUID(Number)</param>
-    /// <returns></returns>
+    /// <param name="xuids">Numeric Xbox user IDs without an <c>xuid(...)</c> wrapper.</param>
+    /// <returns>The matching users' XUIDs, current gamertags, and gamer picture URLs.</returns>
     [GatewayExposed("users", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 300)]
     public async Task<HaloApiResultContainer<List<User>, HaloApiErrorContainer>> Users(IEnumerable<string> xuids)
     {
@@ -2434,10 +2435,10 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Retrieves a user via gamertag with their respective gamertags and gamerpictures
+    /// Resolves a Halo gamertag to its Xbox profile.
     /// </summary>
-    /// <param name="gamertag">The user's gamertag to search for</param>
-    /// <returns></returns>
+    /// <param name="gamertag">The current gamertag to look up, without a <c>gt(...)</c> wrapper.</param>
+    /// <returns>The user's numeric XUID, current gamertag, and gamer picture URLs.</returns>
     [GatewayExposed("users/by-gamertag/{gamertag}", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 300)]
     public async Task<HaloApiResultContainer<User, HaloApiErrorContainer>> UserByGamertag(string gamertag)
     {
@@ -2450,10 +2451,10 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     }
 
     /// <summary>
-    /// Retrieves medals
+    /// Gets the catalog of Halo Infinite multiplayer medals.
     /// </summary>
-    /// <param name="xuids">Xuids in number format. Do NOT format as XUID(Number)</param>
-    /// <returns></returns>
+    /// <remarks>This is medal metadata, not medals earned by a particular player or in a particular match.</remarks>
+    /// <returns>Medal identifiers, names, descriptions, difficulty/type metadata, and sprite image locations.</returns>
     [GatewayExposed("medals", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
     public async Task<HaloApiResultContainer<MedalMetadataResponse, HaloApiErrorContainer>> Medals()
     {

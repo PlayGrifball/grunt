@@ -58,6 +58,33 @@ public sealed class GatewayExposedAttribute : Attribute
 }
 
 /// <summary>
+/// Carries a source method's XML documentation through the generated interface and compiled assembly, so downstream
+/// gateway generation can document the HTTP endpoint even though Roslyn cannot read project-reference XML comments.
+/// Emitted by <c>InterfaceGenerator</c>; application code does not apply this directly.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+public sealed class GatewayDocumentationAttribute : Attribute
+{
+    /// <summary>Creates documentation for an exposed gateway operation.</summary>
+    public GatewayDocumentationAttribute(string summary)
+    {
+        Summary = summary;
+    }
+
+    /// <summary>What the endpoint does.</summary>
+    public string Summary { get; }
+
+    /// <summary>Additional usage details.</summary>
+    public string? Remarks { get; set; }
+
+    /// <summary>Description of a successful result.</summary>
+    public string? Returns { get; set; }
+
+    /// <summary>Alternating parameter name and description values.</summary>
+    public string[] Parameters { get; set; } = [];
+}
+
+/// <summary>
 /// Assembly-level marker for an ASP.NET Core project: the gateway source generator emits
 /// <c>partial class HaloInfiniteController : ControllerBase</c> with one action per <see cref="GatewayExposedAttribute"/>
 /// method of <see cref="ClientType"/>, each calling the injected <c>IHaloInfiniteClient</c>.

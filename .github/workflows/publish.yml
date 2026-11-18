@@ -1,10 +1,8 @@
-# Publishes Surprenant.Grunt and Surprenant.Grunt.Gateway.Client to nuget.org with Trusted Publishing:
-# GitHub's OIDC token is exchanged for a one-hour, single-use API key (NuGet/login), so no API key is
-# stored anywhere. The nuget.org policy trusts PlayGrifball/grunt, workflow file publish.yml.
+# Publishes the .NET clients to nuget.org and GitHub Packages, and the generated TypeScript client to npmjs and
+# GitHub Packages. nuget.org and npmjs use OIDC trusted publishing; GitHub Packages uses the workflow's GITHUB_TOKEN.
+# The nuget.org policy trusts PlayGrifball/grunt, workflow file publish.yml.
 # https://learn.microsoft.com/nuget/nuget-org/trusted-publishing
-#
-# Release: push a tag such as v0.1.0 (the version is the tag without the "v"), or run it by hand with a version.
-name: Publish NuGet packages
+name: Publish client packages
 
 on:
   push:
@@ -14,44 +12,151 @@ on:
       version:
         description: 'Package version, e.g. 0.1.0'
         required: true
+  workflow_call:
+    inputs:
+      version:
+        description: 'Package version supplied by the gateway release'
+        required: true
+        type: string
+      only_if_changed:
+        description: 'Publish only packages whose inputs changed since the previous gateway release'
+        required: false
+        default: false
+        type: boolean
+    outputs:
+      version:
+        description: 'The package version considered by this run'
+        value: ${{ jobs.plan.outputs.version }}
+      nuget:
+        description: 'Whether the .NET clients were published for this release'
+        value: ${{ jobs.plan.outputs.nuget }}
+      typescript:
+        description: 'Whether the TypeScript client was published for this release'
+        value: ${{ jobs.plan.outputs.typescript }}
 
 permissions:
   contents: read
 
 jobs:
-  publish:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      nuget: ${{ steps.plan.outputs.nuget }}
+      typescript: ${{ steps.plan.outputs.typescript }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Version and package plan
+        id: plan
+        env:
+          INPUT_VERSION: ${{ inputs.version || github.event.inputs.version }}
+          ONLY_IF_CHANGED: ${{ inputs.only_if_changed || false }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${INPUT_VERSION:-$GITHUB_REF_NAME}"
+          version="${version#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          nuget=true
+          typescript=true
+          if [ "$ONLY_IF_CHANGED" = true ]; then
+            current="halo-gateway-$version"
+            previous=$(git tag --list 'halo-gateway-*' --sort=-version:refname | grep -Fxv "$current" | head -1 || true)
+            if [ -n "$previous" ]; then
+              if git diff --quiet "$previous" HEAD -- Grunt/Grunt Grunt/Grunt.SourceGenerator Grunt/Grunt.Gateway.Client; then
+                nuget=false
+              fi
+              if git diff --quiet "$previous" HEAD -- \
+                Grunt/Grunt Grunt/Grunt.SourceGenerator Grunt/Grunt.Gateway Grunt/Grunt.Gateway.Host \
+                Grunt/Grunt.Gateway.TypeScript .config/dotnet-tools.json .github/scripts/generate-gateway-openapi.ps1; then
+                typescript=false
+              fi
+            fi
+          fi
+          { echo "nuget=$nuget"; echo "typescript=$typescript"; } >> "$GITHUB_OUTPUT"
+          echo "NuGet: $nuget; TypeScript: $typescript; version: $version"
+
+  build:
+    needs: plan
+    if: needs.plan.outputs.nuget == 'true' || needs.plan.outputs.typescript == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    environment: nuget
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # global.json pins the SDK (10.0, rollForward latestFeature); Grunt.SourceGenerator stays netstandard2.0
-      # (a Roslyn analyzer), everything else targets net10.0.
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: Version
-        env:
-          INPUT_VERSION: ${{ github.event.inputs.version }}
-        run: |
-          version="${INPUT_VERSION:-$GITHUB_REF_NAME}"
-          echo "VERSION=${version#v}" >> "$GITHUB_ENV"
-
       - name: Test
         run: dotnet test Grunt/Grunt.slnx --configuration Release
 
-      - name: Pack
+      - name: Pack NuGet clients
+        if: needs.plan.outputs.nuget == 'true'
+        env:
+          VERSION: ${{ needs.plan.outputs.version }}
         run: |
           dotnet pack Grunt/Grunt/Surprenant.Grunt.csproj --configuration Release --output out -p:PackageVersion="$VERSION"
           dotnet pack Grunt/Grunt.Gateway.Client/Surprenant.Grunt.Gateway.Client.csproj --configuration Release --output out -p:PackageVersion="$VERSION"
 
+      - name: Upload NuGet clients
+        if: needs.plan.outputs.nuget == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-clients
+          path: out/*.nupkg
+          if-no-files-found: error
+
+      - name: Setup Node.js
+        if: needs.plan.outputs.typescript == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: Grunt/Grunt.Gateway.TypeScript/package-lock.json
+
+      - name: Generate and pack TypeScript client
+        if: needs.plan.outputs.typescript == 'true'
+        shell: pwsh
+        run: |
+          ./.github/scripts/generate-gateway-openapi.ps1
+          Set-Location Grunt/Grunt.Gateway.TypeScript
+          npm ci
+          npm run check
+          npm version '${{ needs.plan.outputs.version }}' --no-git-tag-version
+          npm pack --pack-destination ../../out
+
+      - name: Upload TypeScript client
+        if: needs.plan.outputs.typescript == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: typescript-client
+          path: out/*.tgz
+          if-no-files-found: error
+
+  nuget-org:
+    needs: [plan, build]
+    if: needs.plan.outputs.nuget == 'true'
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuget-clients
+          path: out
       # Right before the push: the key is valid for one hour.
       - name: NuGet login
         id: login
@@ -59,5 +164,92 @@ jobs:
         with:
           user: NoahSurprenant
 
-      - name: Push
+      - name: Publish NuGet clients to nuget.org
         run: dotnet nuget push "out/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  nuget-github:
+    needs: [plan, build]
+    if: needs.plan.outputs.nuget == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuget-clients
+          path: out
+      - name: Publish NuGet clients to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: dotnet nuget push "out/*.nupkg" --api-key "$GITHUB_TOKEN" --source https://nuget.pkg.github.com/PlayGrifball/index.json --skip-duplicate
+
+  npm-github:
+    needs: [plan, build]
+    if: needs.plan.outputs.typescript == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: typescript-client
+          path: package
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          scope: '@playgrifball'
+
+      - name: Publish TypeScript client to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.plan.outputs.version }}
+        run: |
+          if npm view "@playgrifball/grunt-gateway-client@$VERSION" version --registry https://npm.pkg.github.com > /dev/null 2>&1; then
+            echo "@playgrifball/grunt-gateway-client@$VERSION is already on GitHub Packages."
+          else
+            npm publish package/*.tgz --registry https://npm.pkg.github.com --access public
+          fi
+
+  npmjs:
+    needs: [plan, build]
+    if: needs.plan.outputs.typescript == 'true'
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: typescript-client
+          path: package
+      # npmjs uses OIDC when its trusted publisher is configured. NPM_TOKEN is a bootstrap fallback for the first
+      # publication, before the package exists on npmjs and can have a trusted publisher attached in its settings.
+      - name: Configure npmjs
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          scope: '@playgrifball'
+
+      # Trusted publishing requires npm >=11.5.1. Pin it so the runner image cannot silently change publish behavior.
+      - name: Setup npm
+        run: npm install --global npm@12.2.3 --ignore-scripts
+
+      - name: Publish TypeScript client to npmjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VERSION: ${{ needs.plan.outputs.version }}
+        run: |
+          if npm view "@playgrifball/grunt-gateway-client@$VERSION" version --registry https://registry.npmjs.org > /dev/null 2>&1; then
+            echo "@playgrifball/grunt-gateway-client@$VERSION is already on npmjs."
+          else
+            npm publish package/*.tgz --registry https://registry.npmjs.org --access public
+          fi
