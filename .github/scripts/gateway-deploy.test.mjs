@@ -28,9 +28,9 @@ test('rejects an image without a tag', () => {
   assert.throws(() => render('ghcr.io/playgrifball/halo-gateway', digest, '0.3.58'));
 });
 
-test('the release workflow deploys only after publishing and releasing', () => {
+test('the release workflow deploys only after publishing, releasing, and publishing client packages', () => {
   const workflow = readFileSync(new URL('../workflows/helm-chart.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /\r?\n  deploy:\r?\n    needs: \[publish, release\]/);
+  assert.match(workflow, /\r?\n  deploy:\r?\n    needs: \[publish, release, packages\]/);
   assert.match(workflow, /\.github\/scripts\/gateway-deploy\.sh/);
   assert.match(workflow, /permissions:\r?\n      contents: write/);
 });
