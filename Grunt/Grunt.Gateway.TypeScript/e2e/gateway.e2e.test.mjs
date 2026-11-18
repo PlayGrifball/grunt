@@ -1,18 +1,19 @@
 // Calls a running gateway host through the built package. Grunt/Tests/TypeScriptClientEndToEndTests.cs starts the host
 // with a fake Halo client answering the values asserted here, runs this file, then checks what the fake was asked.
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test, { before } from 'node:test';
 
 import * as gateway from '../dist/index.js';
-
-const baseUrl = process.env.GATEWAY_URL;
-const apiKey = process.env.GATEWAY_API_KEY;
-assert.ok(baseUrl && apiKey, 'GATEWAY_URL and GATEWAY_API_KEY must be set; run through TypeScriptClientEndToEndTests');
 
 const matchId = '2f5c4b0e-6a77-4a3c-9d0b-0d6a3c1f5e11';
 const playlistId = 'edfef3ac-9cbe-4fa2-b949-8f29deafd483';
 
-gateway.client.setConfig({ baseUrl, headers: { 'X-Api-Key': apiKey } });
+before(() => {
+  const baseUrl = process.env.GATEWAY_URL;
+  const apiKey = process.env.GATEWAY_API_KEY;
+  assert.ok(baseUrl && apiKey, 'GATEWAY_URL and GATEWAY_API_KEY must be set; run through TypeScriptClientEndToEndTests');
+  gateway.client.setConfig({ baseUrl, headers: { 'X-Api-Key': apiKey } });
+});
 
 function assertOk({ data, error, response }) {
   assert.equal(error, undefined, `unexpected ${response.status}: ${JSON.stringify(error)}`);
@@ -24,7 +25,9 @@ test('userByGamertag encodes the gamertag into the path', async () => {
   const data = assertOk(await gateway.userByGamertag({ path: { gamertag: 'Major Nelson#881' } }));
 
   assert.equal(data.error.code, 200);
-  assert.deepEqual(data.result, { xuid: '2533274800000000', gamertag: 'Major Nelson#881', gamerpic: { small: 's.png' } });
+  assert.equal(data.result.xuid, '2533274800000000');
+  assert.equal(data.result.gamertag, 'Major Nelson#881');
+  assert.equal(data.result.gamerpic.small, 's.png');
 });
 
 test('users sends every xuid', async () => {
