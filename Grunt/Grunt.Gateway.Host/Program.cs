@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -98,9 +99,31 @@ namespace Surprenant.Grunt.Gateway.Host
             services.AddSwaggerGen(options =>
             {
                 options.CustomSchemaIds(type => type.FullName);
+                options.SupportNonNullableReferenceTypes();
+                options.UseAllOfToExtendReferenceSchemas();
                 // OpenAPI drops ASP.NET route constraints, so the string and Guid match-id overloads become the same
                 // method/path in the document. They have the same response contract; document the general action.
                 options.ResolveConflictingActions(descriptions => descriptions.First());
+
+                foreach (var assembly in new[]
+                         {
+                             typeof(Program).Assembly,
+                             typeof(HaloInfiniteController).Assembly,
+                             typeof(HaloInfiniteClient).Assembly,
+                         })
+                    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{assembly.GetName().Name}.xml"));
+
+                options.AddSecurityDefinition(GatewayAuth.ConsumerScheme, new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "A consumer API key configured in Gateway:ApiKeys.",
+                    Name = HaloGatewayProtocol.DefaultApiKeyHeader,
+                    Type = SecuritySchemeType.ApiKey,
+                });
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference(GatewayAuth.ConsumerScheme, document)] = [],
+                });
             });
 
             // Admin endpoints: the admin key, or (when Gateway:Oidc is configured) a browser session from the admin page.
@@ -209,7 +232,7 @@ namespace Surprenant.Grunt.Gateway.Host
             // After UseForwardedHeaders so ClientIp/the request summary log carry the real (trusted) client address.
             app.UseRequestTelemetry();
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(options => options.SwaggerEndpoint("v1/swagger.json", "Halo gateway"));
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

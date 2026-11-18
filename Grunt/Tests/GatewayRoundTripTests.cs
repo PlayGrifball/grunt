@@ -7,6 +7,7 @@ using NSubstitute.ExceptionExtensions;
 using Surprenant.Grunt.Core;
 using Surprenant.Grunt.Gateway;
 using Surprenant.Grunt.Gateway.Client;
+using Surprenant.Grunt.Gateway.Host.Auth;
 using Surprenant.Grunt.Gateway.Host.HaloAccount;
 using Surprenant.Grunt.Models;
 using Surprenant.Grunt.Models.HaloInfinite;
@@ -15,6 +16,7 @@ using File = System.IO.File;
 using MatchType = Surprenant.Grunt.Models.HaloInfinite.MatchType;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Tests;
 
@@ -90,11 +92,15 @@ public class GatewayRoundTripTests
 
         var document = await client.GetAsync("swagger/v1/swagger.json");
         var ui = await client.GetAsync("swagger/index.html");
+        var openApi = await document.Content.ReadFromJsonAsync<JsonDocument>();
 
         Assert.Multiple(() =>
         {
             Assert.That(document.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(document.Content.Headers.ContentType?.MediaType, Is.EqualTo("application/json"));
+            Assert.That(openApi!.RootElement.GetProperty("paths").TryGetProperty("/halo/v1/users/by-gamertag/{gamertag}", out _), Is.True);
+            var apiKey = openApi.RootElement.GetProperty("components").GetProperty("securitySchemes").GetProperty(GatewayAuth.ConsumerScheme);
+            Assert.That(apiKey.GetProperty("name").GetString(), Is.EqualTo(HaloGatewayProtocol.DefaultApiKeyHeader));
             Assert.That(ui.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(ui.Content.Headers.ContentType?.MediaType, Is.EqualTo("text/html"));
         });

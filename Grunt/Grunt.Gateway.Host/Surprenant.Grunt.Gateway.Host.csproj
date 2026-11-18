@@ -9,6 +9,9 @@
     <IsPackable>false</IsPackable>
     <RootNamespace>Surprenant.Grunt.Gateway.Host</RootNamespace>
     <AssemblyName>Surprenant.Grunt.Gateway.Host</AssemblyName>
+    <!-- Swagger includes controllers' and models' XML documentation in every build and Docker publish. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
