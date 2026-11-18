@@ -61,7 +61,6 @@ builder.Services.AddHaloGatewayClient(builder.Configuration.GetSection("HaloGate
 ```json
 {
   "HaloGateway": {
-    "BaseAddress": "https://grunt.grifball.xyz/",
     "ApiKey": "your-api-key"
   }
 }

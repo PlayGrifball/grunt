@@ -20,13 +20,12 @@ To use the GitHub Packages copy instead, configure the PlayGrifball scope:
 @playgrifball:registry=https://npm.pkg.github.com
 ```
 
-Set the base URL and API key on the generated client before making requests:
+The client calls the hosted gateway at `https://grunt.grifball.xyz`. Set your API key on it before making requests:
 
 ```ts
 import { client, userByGamertag } from '@playgrifball/grunt-gateway-client';
 
 client.setConfig({
-  baseUrl: 'https://halo-gateway.example.com',
   headers: { 'X-Api-Key': process.env.HALO_GATEWAY_API_KEY! },
 });
 
