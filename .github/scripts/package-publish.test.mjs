@@ -81,3 +81,9 @@ test('both gateway client readmes list every public OpenAPI operation and route'
     id: operation.id[0].toLowerCase() + operation.id.slice(1),
   })), 'the TypeScript supported-method table differs from OpenAPI');
 });
+
+test('the TypeScript pack creates its destination (a TypeScript-only release runs no dotnet pack to make out/)', () => {
+  const step = publish.match(/- name: Generate and pack TypeScript client[\s\S]*?npm pack --pack-destination \.\.\/\.\.\/out/);
+  assert.ok(step, 'no TypeScript pack step');
+  assert.match(step[0], /New-Item -ItemType Directory -Force -Path \.\.\/\.\.\/out/);
+});
