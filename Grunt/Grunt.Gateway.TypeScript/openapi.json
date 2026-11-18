@@ -4,6 +4,11 @@
     "title": "Surprenant.Grunt.Gateway.Host, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
     "version": "1.0"
   },
+  "servers": [
+    {
+      "url": "https://grunt.grifball.xyz"
+    }
+  ],
   "paths": {
     "/halo/v1/gamecms/image": {
       "get": {
