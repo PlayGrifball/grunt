@@ -113,12 +113,24 @@ public class GatewayRoundTripTests
             Assert.That(paths.EnumerateObject().Select(path => path.Name), Is.EquivalentTo(expectedPaths),
                 "OpenAPI must contain every consumer route and no admin, OAuth, browser or health routes.");
 
+            var operationIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (var path in paths.EnumerateObject())
             foreach (var operationProperty in path.Value.EnumerateObject())
             {
                 var operation = operationProperty.Value;
-                Assert.That(RequiredText(operation, "summary"), Is.Not.Empty, $"{operationProperty.Name} {path.Name} summary");
-                Assert.That(RequiredText(operation, "description"), Is.Not.Empty, $"{operationProperty.Name} {path.Name} description");
+                var summary = RequiredText(operation, "summary");
+                var description = RequiredText(operation, "description");
+                var operationId = RequiredText(operation, "operationId");
+                Assert.That(operationId, Is.Not.Empty,
+                    $"{operationProperty.Name} {path.Name} must have a stable generated-client method name");
+                Assert.That(operationIds.Add(operationId), Is.True,
+                    $"{operationProperty.Name} {path.Name} operationId {operationId} must be unique");
+                Assert.That(summary, Is.Not.Empty.And.Not.StartWith(operationProperty.Name.ToUpperInvariant() + " "),
+                    $"{operationProperty.Name} {path.Name} must explain its purpose, not repeat its route");
+                Assert.That(summary.Split(' ', StringSplitOptions.RemoveEmptyEntries), Has.Length.GreaterThanOrEqualTo(4),
+                    $"{operationProperty.Name} {path.Name} summary must say what the endpoint is for");
+                Assert.That(description, Is.Not.Empty.And.Not.Contain("Forwards ").And.Not.EqualTo(summary),
+                    $"{operationProperty.Name} {path.Name} description");
 
                 if (operation.TryGetProperty("parameters", out var parameters))
                     foreach (var parameter in parameters.EnumerateArray())
@@ -132,6 +144,9 @@ public class GatewayRoundTripTests
                 Assert.That(operation.GetProperty("responses").EnumerateObject()
                     .All(response => !string.IsNullOrWhiteSpace(RequiredText(response.Value, "description"))), Is.True,
                     $"{operationProperty.Name} {path.Name} response descriptions");
+                Assert.That(operation.GetProperty("responses").EnumerateObject().Select(response => response.Name),
+                    Does.Contain("400").And.Contain("401").And.Contain("404").And.Contain("429").And.Contain("502").And.Contain("503"),
+                    $"{operationProperty.Name} {path.Name} documented error responses");
             }
 
             var apiKey = root.GetProperty("components").GetProperty("securitySchemes").GetProperty(GatewayAuth.ConsumerScheme);

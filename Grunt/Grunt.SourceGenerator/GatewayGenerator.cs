@@ -33,6 +33,7 @@ public sealed class GatewayGenerator : IIncrementalGenerator
     private const string ClientOptions = "global::Surprenant.Grunt.Gateway.Client.HaloGatewayClientOptions";
     private const string UriHelper = "global::Surprenant.Grunt.Gateway.Client.HaloGatewayUri";
     private const string Mvc = "global::Microsoft.AspNetCore.Mvc";
+    private const string DocumentationAttributeName = "Surprenant.Grunt.Attributes.GatewayDocumentationAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -122,6 +123,9 @@ public sealed class GatewayGenerator : IIncrementalGenerator
             {
                 sb.AppendLine($"    [{Mvc}.ProducesResponseType(typeof({containerType}), 200)]");
             }
+            foreach (var status in new[] { 400, 404, 429, 502, 503 })
+                sb.AppendLine($"    [{Mvc}.ProducesResponseType(typeof({containerType}), {status})]");
+            sb.AppendLine($"    [{Mvc}.ProducesResponseType(401)]");
 
             var parameters = new List<string>();
             var args = new List<string>();
@@ -191,17 +195,19 @@ public sealed class GatewayGenerator : IIncrementalGenerator
             }
         }
 
+        var metadata = DocumentationMetadata(target, method);
         var route = target.RoutePrefix + "/" + method.Route;
         var fallbackSummary = $"{method.HttpMethod} {route}.";
-        AppendDocumentationElement(sb, "summary", DocumentationContent(member?.Element("summary")), fallbackSummary);
-        AppendDocumentationElement(sb, "remarks", null,
-            $"Forwards {method.HttpMethod} {route} to {GatewayModelBuilder.Display(method.Method)} through the shared Halo account.");
+        var summary = DocumentationContent(member?.Element("summary")) ?? metadata.Summary;
+        AppendDocumentationElement(sb, "summary", summary, fallbackSummary);
+        AppendDocumentationElement(sb, "remarks", DocumentationContent(member?.Element("remarks")) ?? metadata.Remarks ?? metadata.Returns ?? summary,
+            $"Calls Halo through the gateway's shared account.");
 
         var parameterDocumentation = member?.Elements("param")
             .Where(p => p.Attribute("name") is not null)
             .GroupBy(p => p.Attribute("name")!.Value, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => DocumentationContent(g.First()), StringComparer.Ordinal)
-            ?? new Dictionary<string, string?>(StringComparer.Ordinal);
+            ?? metadata.Parameters;
         foreach (var parameter in method.Parameters)
         {
             parameterDocumentation.TryGetValue(parameter.Name, out var content);
@@ -209,8 +215,53 @@ public sealed class GatewayGenerator : IIncrementalGenerator
                 $"The {parameter.Name} {ParameterLocation(parameter.Kind)} value.");
         }
 
-        AppendDocumentationElement(sb, "returns", DocumentationContent(member?.Element("returns")),
+        AppendDocumentationElement(sb, "returns", DocumentationContent(member?.Element("returns")) ?? metadata.Returns,
             method.IsBinary ? "The requested image bytes." : "The Halo API result container.");
+        AppendDocumentationElement(sb, "response code=\"400\"", null,
+            "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.");
+        AppendDocumentationElement(sb, "response code=\"401\"", null,
+            "The X-Api-Key header is missing or invalid.");
+        AppendDocumentationElement(sb, "response code=\"404\"", null,
+            "Halo could not find the requested player, match, playlist, asset, or other resource.");
+        AppendDocumentationElement(sb, "response code=\"429\"", null,
+            "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.");
+        AppendDocumentationElement(sb, "response code=\"502\"", null,
+            "The gateway could not authenticate to Halo or get a usable upstream response after retries.");
+        AppendDocumentationElement(sb, "response code=\"503\"", null,
+            "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.");
+    }
+
+    private sealed class Documentation
+    {
+        public string? Summary { get; set; }
+        public string? Remarks { get; set; }
+        public string? Returns { get; set; }
+        public Dictionary<string, string?> Parameters { get; } = new(StringComparer.Ordinal);
+    }
+
+    private static Documentation DocumentationMetadata(GatewayTarget target, GatewayMethod method)
+    {
+        var result = new Documentation();
+        var interfaceMethod = target.InterfaceType!.GetMembers(method.Method.Name).OfType<IMethodSymbol>()
+            .FirstOrDefault(candidate => SameSignature(method.Method, candidate));
+        var attribute = interfaceMethod?.GetAttributes()
+            .FirstOrDefault(a => a.AttributeClass?.ToDisplayString() == DocumentationAttributeName);
+        if (attribute is null)
+            return result;
+
+        result.Summary = attribute.ConstructorArguments.FirstOrDefault().Value as string;
+        foreach (var argument in attribute.NamedArguments)
+        {
+            if (argument.Key == "Remarks") result.Remarks = argument.Value.Value as string;
+            else if (argument.Key == "Returns") result.Returns = argument.Value.Value as string;
+            else if (argument.Key == "Parameters")
+            {
+                var values = argument.Value.Values.Select(v => v.Value as string ?? string.Empty).ToArray();
+                for (var i = 0; i + 1 < values.Length; i += 2)
+                    result.Parameters[values[i]] = values[i + 1];
+            }
+        }
+        return result;
     }
 
     private static string ParameterLocation(GatewayParameterKind kind) => kind switch

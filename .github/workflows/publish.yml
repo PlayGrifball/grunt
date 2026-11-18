@@ -1,10 +1,7 @@
-# Publishes Surprenant.Grunt and Surprenant.Grunt.Gateway.Client to nuget.org with Trusted Publishing:
-# GitHub's OIDC token is exchanged for a one-hour, single-use API key (NuGet/login), so no API key is
-# stored anywhere. The nuget.org policy trusts PlayGrifball/grunt, workflow file publish.yml.
+# Publishes the .NET clients to nuget.org with Trusted Publishing and the generated TypeScript client to
+# GitHub Packages. The nuget.org policy trusts PlayGrifball/grunt, workflow file publish.yml.
 # https://learn.microsoft.com/nuget/nuget-org/trusted-publishing
-#
-# Release: push a tag such as v0.1.0 (the version is the tag without the "v"), or run it by hand with a version.
-name: Publish NuGet packages
+name: Publish client packages
 
 on:
   push:
@@ -14,6 +11,17 @@ on:
       version:
         description: 'Package version, e.g. 0.1.0'
         required: true
+  workflow_call:
+    inputs:
+      version:
+        description: 'Package version supplied by the gateway release'
+        required: true
+        type: string
+      only_if_changed:
+        description: 'Publish only packages whose inputs changed since the previous gateway release'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -26,38 +34,97 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # global.json pins the SDK (10.0, rollForward latestFeature); Grunt.SourceGenerator stays netstandard2.0
-      # (a Roslyn analyzer), everything else targets net10.0.
+      - name: Version and package plan
+        id: plan
+        env:
+          INPUT_VERSION: ${{ inputs.version || github.event.inputs.version }}
+          ONLY_IF_CHANGED: ${{ inputs.only_if_changed || false }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${INPUT_VERSION:-$GITHUB_REF_NAME}"
+          version="${version#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          nuget=true
+          typescript=true
+          if [ "$ONLY_IF_CHANGED" = true ]; then
+            current="halo-gateway-$version"
+            previous=$(git tag --list 'halo-gateway-*' --sort=-version:refname | grep -Fxv "$current" | head -1 || true)
+            if [ -n "$previous" ]; then
+              if git diff --quiet "$previous" HEAD -- Grunt/Grunt Grunt/Grunt.SourceGenerator Grunt/Grunt.Gateway.Client; then
+                nuget=false
+              fi
+              if git diff --quiet "$previous" HEAD -- \
+                Grunt/Grunt Grunt/Grunt.SourceGenerator Grunt/Grunt.Gateway Grunt/Grunt.Gateway.Host \
+                Grunt/Grunt.Gateway.TypeScript .config/dotnet-tools.json .github/scripts/generate-gateway-openapi.ps1; then
+                typescript=false
+              fi
+            fi
+          fi
+          { echo "nuget=$nuget"; echo "typescript=$typescript"; } >> "$GITHUB_OUTPUT"
+          echo "NuGet: $nuget; TypeScript: $typescript; version: $version"
+
       - name: Setup .NET
+        if: steps.plan.outputs.nuget == 'true' || steps.plan.outputs.typescript == 'true'
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
 
-      - name: Version
-        env:
-          INPUT_VERSION: ${{ github.event.inputs.version }}
-        run: |
-          version="${INPUT_VERSION:-$GITHUB_REF_NAME}"
-          echo "VERSION=${version#v}" >> "$GITHUB_ENV"
-
       - name: Test
+        if: steps.plan.outputs.nuget == 'true' || steps.plan.outputs.typescript == 'true'
         run: dotnet test Grunt/Grunt.slnx --configuration Release
 
-      - name: Pack
+      - name: Pack NuGet clients
+        if: steps.plan.outputs.nuget == 'true'
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
         run: |
           dotnet pack Grunt/Grunt/Surprenant.Grunt.csproj --configuration Release --output out -p:PackageVersion="$VERSION"
           dotnet pack Grunt/Grunt.Gateway.Client/Surprenant.Grunt.Gateway.Client.csproj --configuration Release --output out -p:PackageVersion="$VERSION"
 
       # Right before the push: the key is valid for one hour.
       - name: NuGet login
+        if: steps.plan.outputs.nuget == 'true'
         id: login
         uses: NuGet/login@v1
         with:
           user: NoahSurprenant
 
-      - name: Push
+      - name: Publish NuGet clients
+        if: steps.plan.outputs.nuget == 'true'
         run: dotnet nuget push "out/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Setup Node.js
+        if: steps.plan.outputs.typescript == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          scope: '@playgrifball'
+          cache: npm
+          cache-dependency-path: Grunt/Grunt.Gateway.TypeScript/package-lock.json
+
+      - name: Generate and build TypeScript client
+        if: steps.plan.outputs.typescript == 'true'
+        shell: pwsh
+        run: |
+          ./.github/scripts/generate-gateway-openapi.ps1
+          Set-Location Grunt/Grunt.Gateway.TypeScript
+          npm ci
+          npm run check
+          npm version '${{ steps.plan.outputs.version }}' --no-git-tag-version
+
+      - name: Publish TypeScript client
+        if: steps.plan.outputs.typescript == 'true'
+        working-directory: Grunt/Grunt.Gateway.TypeScript
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: npm publish

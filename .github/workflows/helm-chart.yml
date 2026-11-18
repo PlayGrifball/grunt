@@ -13,10 +13,10 @@ name: Helm chart
 
 on:
   pull_request:
-    paths: ["charts/**", "Grunt/**", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*", ".github/scripts/gateway-deploy*"]
+    paths: ["charts/**", "Grunt/**", ".config/dotnet-tools.json", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/workflows/publish.yml", ".github/scripts/chart-release-notes*", ".github/scripts/gateway-deploy*", ".github/scripts/generate-gateway-openapi.ps1"]
   push:
     branches: [main]
-    paths: ["charts/**", "Grunt/**", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*", ".github/scripts/gateway-deploy*"]
+    paths: ["charts/**", "Grunt/**", ".config/dotnet-tools.json", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/workflows/publish.yml", ".github/scripts/chart-release-notes*", ".github/scripts/gateway-deploy*", ".github/scripts/generate-gateway-openapi.ps1"]
   workflow_dispatch:
 
 permissions:
@@ -42,6 +42,25 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: Grunt/Grunt.Gateway.TypeScript/package-lock.json
+
+      - name: Gateway contract and client packages
+        shell: pwsh
+        run: |
+          dotnet test Grunt/Grunt.slnx --configuration Release
+          ./.github/scripts/generate-gateway-openapi.ps1
+          Set-Location Grunt/Grunt.Gateway.TypeScript
+          npm ci
+          npm run check
+          Set-Location ../..
+          git diff --exit-code -- Grunt/Grunt.Gateway.TypeScript/openapi.json Grunt/Grunt.Gateway.TypeScript/src/generated
 
       - name: Lint
         run: |
@@ -386,10 +405,24 @@ jobs:
           fi
           echo "Released $tag: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$tag" >> "$GITHUB_STEP_SUMMARY"
 
+  # The release version is also the client package version. The reusable workflow keeps NuGet's trusted-publishing
+  # identity in publish.yml and skips a registry independently when none of that package's inputs changed.
+  packages:
+    needs: [publish, release]
+    if: needs.publish.outputs.version != ''
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    uses: ./.github/workflows/publish.yml
+    with:
+      version: ${{ needs.publish.outputs.version }}
+      only_if_changed: true
+
   # One deployment lane, unlike GrifballWebApp's test/staging/prod promotions. The synthetic commit keeps the chart
   # source and this release's exact image digest together; homelab's Argo CD Application follows deploy/current.
   deploy:
-    needs: [publish, release]
+    needs: [publish, release, packages]
     if: needs.publish.outputs.version != ''
     runs-on: ubuntu-latest
     permissions:

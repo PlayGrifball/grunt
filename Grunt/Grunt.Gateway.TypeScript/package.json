@@ -1,0 +1,39 @@
+{
+  "name": "@playgrifball/grunt-gateway-client",
+  "version": "0.0.0",
+  "description": "Generated TypeScript client for the PlayGrifball Halo gateway",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "generate": "openapi-ts",
+    "build": "tsc --project tsconfig.json",
+    "test": "node --test test/*.test.mjs",
+    "check": "npm run generate && npm run build && npm test",
+    "prepack": "npm run check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PlayGrifball/grunt.git",
+    "directory": "Grunt/Grunt.Gateway.TypeScript"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
+    "typescript": "6.0.3"
+  },
+  "overrides": {
+    "js-yaml": "4.3.2"
+  }
+}

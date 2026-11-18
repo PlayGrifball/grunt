@@ -6,6 +6,8 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using System;
+using System.Xml.Linq;
 //using System.Diagnostics;
 
 namespace Grunt.SourceGenerator;
@@ -194,6 +196,7 @@ public class InterfaceGenerator : IIncrementalGenerator
         foreach (var method in publicMethods)
         {
             AppendComments(sb, method);
+            AppendGatewayDocumentation(sb, method);
             var returnType = FormatTypeForInterface(method.ReturnType, method);
             var parameters = string.Join(", ", method.Parameters.Select(p =>
                 $"{FormatTypeForInterface(p.Type, method)} {p.Name}"));
@@ -233,6 +236,51 @@ public class InterfaceGenerator : IIncrementalGenerator
                 sb.AppendLine("    /// " + line.Trim());
             }
         }
+    }
+
+    /// <summary>
+    /// Project references do not give a consuming source generator the referenced project's XML documentation provider.
+    /// Preserve exposed methods' source documentation as ordinary assembly metadata on the generated interface instead.
+    /// </summary>
+    private static void AppendGatewayDocumentation(StringBuilder sb, IMethodSymbol method)
+    {
+        if (!method.GetAttributes().Any(a => a.AttributeClass?.Name == "GatewayExposedAttribute"))
+            return;
+
+        XElement? member = null;
+        var xml = method.GetDocumentationCommentXml();
+        if (!string.IsNullOrWhiteSpace(xml))
+        {
+            try { member = XElement.Parse(xml!); }
+            catch (System.Xml.XmlException) { }
+        }
+
+        var summary = DocumentationContent(member?.Element("summary")) ?? method.Name;
+        var arguments = new List<string> { SymbolDisplay.FormatLiteral(summary, true) };
+        var remarks = DocumentationContent(member?.Element("remarks"));
+        if (remarks is not null)
+            arguments.Add("Remarks = " + SymbolDisplay.FormatLiteral(remarks, true));
+        var returns = DocumentationContent(member?.Element("returns"));
+        if (returns is not null)
+            arguments.Add("Returns = " + SymbolDisplay.FormatLiteral(returns, true));
+
+        var parameters = member?.Elements("param")
+            .Where(p => p.Attribute("name") is not null)
+            .SelectMany(p => new[] { p.Attribute("name")!.Value, DocumentationContent(p) ?? string.Empty })
+            .Select(value => SymbolDisplay.FormatLiteral(value, true))
+            .ToArray() ?? Array.Empty<string>();
+        if (parameters.Length > 0)
+            arguments.Add("Parameters = new string[] { " + string.Join(", ", parameters) + " }");
+
+        sb.AppendLine("    [global::Surprenant.Grunt.Attributes.GatewayDocumentation(" + string.Join(", ", arguments) + ")]");
+    }
+
+    private static string? DocumentationContent(XElement? element)
+    {
+        if (element is null)
+            return null;
+        var content = string.Concat(element.Nodes().Select(n => n.ToString(SaveOptions.DisableFormatting))).Trim();
+        return string.IsNullOrWhiteSpace(content) ? null : content;
     }
 
     private static void CollectMethodTypeUsings(HashSet<string> usings, IMethodSymbol[] publicMethods)

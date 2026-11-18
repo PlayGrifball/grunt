@@ -23,20 +23,44 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/gamecms/image.
+    /// Downloads an image asset from Halo Infinite's game content catalog.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/gamecms/image to HaloInfiniteClient.GameCmsGetImage(string) through the shared Halo account.
+    /// Use the catalog-relative path stored in Halo metadata, for example <c>progression/inventory/armor/gloves/003-001-olympus-8e7c9dff-sm.png</c>.
     /// </remarks>
     /// <param name="filePath">
-    /// The filePath query string value.
+    /// Catalog-relative path of the image, without the game CMS host or <c>/hi/images/file/</c> prefix.
     /// </param>
     /// <returns>
-    /// The requested image bytes.
+    /// The image bytes and content type when the catalog asset exists.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("gamecms/image")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(byte[]), 200, "application/octet-stream")]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> GameCmsGetImage([global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "filePath")] string filePath)
     {
         try
@@ -51,23 +75,47 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/skill/matches/{matchId}/players.
+    /// Gets the skill results calculated for selected players in a completed match.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/skill/matches/{matchId}/players to HaloInfiniteClient.SkillGetMatchPlayerResult(string, System.Collections.Generic.List&lt;string&gt;) through the shared Halo account.
+    /// Per-player skill measurements and team skill information for the match.
     /// </remarks>
     /// <param name="matchId">
-    /// The matchId route value.
+    /// Unique match ID in GUID format.
     /// </param>
     /// <param name="playerIds">
-    /// The playerIds query string value.
+    /// Players whose skill results are requested, each formatted as <c>xuid(XUID_VALUE)</c>.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// Per-player skill measurements and team skill information for the match.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("skill/matches/{matchId}/players")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerSkillResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerSkillResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerSkillResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerSkillResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerSkillResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerSkillResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> SkillGetMatchPlayerResult([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "matchId")] string matchId, [global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "playerIds")] string[] playerIds)
     {
         try
@@ -82,23 +130,47 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/skill/playlists/{playlistId}/csr.
+    /// Gets current Competitive Skill Rank (CSR) ratings for selected players in a ranked playlist.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/skill/playlists/{playlistId}/csr to HaloInfiniteClient.SkillGetPlaylistCsr(string, System.Collections.Generic.List&lt;string&gt;) through the shared Halo account.
+    /// Each requested player's CSR tier, sub-tier, measurement matches, and rating progress for the playlist.
     /// </remarks>
     /// <param name="playlistId">
-    /// The playlistId route value.
+    /// Unique ranked playlist ID in GUID format.
     /// </param>
     /// <param name="playerIds">
-    /// The playerIds query string value.
+    /// Players whose ratings are requested, each formatted as <c>xuid(XUID_VALUE)</c>.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// Each requested player's CSR tier, sub-tier, measurement matches, and rating progress for the playlist.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("skill/playlists/{playlistId}/csr")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 60)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> SkillGetPlaylistCsr([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "playlistId")] string playlistId, [global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "playerIds")] string[] playerIds)
     {
         try
@@ -113,20 +185,44 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/stats/players/{player}/match-count.
+    /// Gets a player's lifetime match totals grouped by outcome.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/stats/players/{player}/match-count to HaloInfiniteClient.StatsGetMatchCount(string) through the shared Halo account.
+    /// Total matches played and the player's win, loss, tie, and incomplete-match counts.
     /// </remarks>
     /// <param name="player">
-    /// The player route value.
+    /// Player identifier formatted as <c>xuid(XUID_VALUE)</c>.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// Total matches played and the player's win, loss, tie, and incomplete-match counts.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/players/{player}/match-count")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 60)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> StatsGetMatchCount([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "player")] string player)
     {
         try
@@ -141,29 +237,53 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/stats/players/{player}/matches.
+    /// Gets one page of a player's Halo Infinite match history.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/stats/players/{player}/matches to HaloInfiniteClient.StatsGetMatchHistory(string, int, int, Surprenant.Grunt.Models.HaloInfinite.MatchType) through the shared Halo account.
+    /// A page of match IDs, start times, completion reasons, and playlist or game-variant metadata.
     /// </remarks>
     /// <param name="player">
-    /// The player route value.
+    /// Player identifier formatted as <c>xuid(XUID_VALUE)</c>.
     /// </param>
     /// <param name="start">
-    /// The start query string value.
+    /// Zero-based offset into the player's match history.
     /// </param>
     /// <param name="count">
-    /// The count query string value.
+    /// Number of matches to return, from 1 through 25. Halo caps larger values at 25.
     /// </param>
     /// <param name="type">
-    /// The type query string value.
+    /// Match category to include, such as matchmaking or custom games.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// A page of match IDs, start times, completion reasons, and playlist or game-variant metadata.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/players/{player}/matches")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 60)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchHistoryResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchHistoryResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchHistoryResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchHistoryResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchHistoryResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchHistoryResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> StatsGetMatchHistory([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "player")] string player, [global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "start")] int start, [global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "count")] int count, [global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "type")] global::Surprenant.Grunt.Models.HaloInfinite.MatchType type)
     {
         try
@@ -178,20 +298,44 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/stats/matches/{matchId}.
+    /// Gets the scoreboard and performance statistics for a completed match.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/stats/matches/{matchId} to HaloInfiniteClient.StatsGetMatchStats(string) through the shared Halo account.
+    /// Match metadata plus team and player statistics, including scores, outcomes, and core performance metrics.
     /// </remarks>
     /// <param name="matchId">
-    /// The matchId route value.
+    /// Unique match ID in GUID format.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// Match metadata plus team and player statistics, including scores, outcomes, and core performance metrics.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/matches/{matchId}")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> StatsGetMatchStats([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "matchId")] string matchId)
     {
         try
@@ -206,20 +350,44 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/stats/matches/{matchId:guid}.
+    /// Gets the scoreboard and performance statistics for a completed match.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/stats/matches/{matchId:guid} to HaloInfiniteClient.StatsGetMatchStats(System.Guid) through the shared Halo account.
+    /// Match metadata plus team and player statistics, including scores, outcomes, and core performance metrics.
     /// </remarks>
     /// <param name="matchId">
-    /// The matchId route value.
+    /// Unique match ID.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// Match metadata plus team and player statistics, including scores, outcomes, and core performance metrics.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/matches/{matchId:guid}")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchStats, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> StatsGetMatchStatsByGuid([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "matchId")] global::System.Guid matchId)
     {
         try
@@ -234,23 +402,47 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/stats/players/{player}/matches/{matchId}/progression.
+    /// Gets the challenge and reward progression a player earned from a completed match.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/stats/players/{player}/matches/{matchId}/progression to HaloInfiniteClient.StatsGetPlayerMatchProgression(string, string) through the shared Halo account.
+    /// Challenge increments and progression rewards attributed to the player for that match.
     /// </remarks>
     /// <param name="player">
-    /// The player route value.
+    /// Player identifier formatted as <c>xuid(XUID_VALUE)</c>.
     /// </param>
     /// <param name="matchId">
-    /// The matchId route value.
+    /// Unique match ID in GUID format.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// Challenge increments and progression rewards attributed to the player for that match.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("stats/players/{player}/matches/{matchId}/progression")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchProgression, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchProgression, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchProgression, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchProgression, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchProgression, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.MatchProgression, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> StatsGetPlayerMatchProgression([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "player")] string player, [global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "matchId")] string matchId)
     {
         try
@@ -265,20 +457,44 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/users.
+    /// Resolves Xbox user IDs to Halo profiles.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/users to HaloInfiniteClient.Users(System.Collections.Generic.IEnumerable&lt;string&gt;) through the shared Halo account.
+    /// The matching users' XUIDs, current gamertags, and gamer picture URLs.
     /// </remarks>
     /// <param name="xuids">
-    /// The xuids query string value.
+    /// Numeric Xbox user IDs without an <c>xuid(...)</c> wrapper.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// The matching users' XUIDs, current gamertags, and gamer picture URLs.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("users")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 300)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.List<global::Surprenant.Grunt.Models.User>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.List<global::Surprenant.Grunt.Models.User>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.List<global::Surprenant.Grunt.Models.User>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.List<global::Surprenant.Grunt.Models.User>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.List<global::Surprenant.Grunt.Models.User>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.List<global::Surprenant.Grunt.Models.User>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> Users([global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "xuids")] string[] xuids)
     {
         try
@@ -293,20 +509,44 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/users/by-gamertag/{gamertag}.
+    /// Resolves a Halo gamertag to its Xbox profile.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/users/by-gamertag/{gamertag} to HaloInfiniteClient.UserByGamertag(string) through the shared Halo account.
+    /// The user's numeric XUID, current gamertag, and gamer picture URLs.
     /// </remarks>
     /// <param name="gamertag">
-    /// The gamertag route value.
+    /// The current gamertag to look up, without a <c>gt(...)</c> wrapper.
     /// </param>
     /// <returns>
-    /// The Halo API result container.
+    /// The user's numeric XUID, current gamertag, and gamer picture URLs.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("users/by-gamertag/{gamertag}")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 300)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.User, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.User, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.User, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.User, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.User, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.User, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> UserByGamertag([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "gamertag")] string gamertag)
     {
         try
@@ -321,17 +561,41 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// GET halo/v1/medals.
+    /// Gets the catalog of Halo Infinite multiplayer medals.
     /// </summary>
     /// <remarks>
-    /// Forwards GET halo/v1/medals to HaloInfiniteClient.Medals() through the shared Halo account.
+    /// This is medal metadata, not medals earned by a particular player or in a particular match.
     /// </remarks>
     /// <returns>
-    /// The Halo API result container.
+    /// Medal identifiers, names, descriptions, difficulty/type metadata, and sprite image locations.
     /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("medals")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 3600)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.Medals.MedalMetadataResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.Medals.MedalMetadataResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.Medals.MedalMetadataResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.Medals.MedalMetadataResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.Medals.MedalMetadataResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.Medals.MedalMetadataResponse, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
     public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> Medals()
     {
         try

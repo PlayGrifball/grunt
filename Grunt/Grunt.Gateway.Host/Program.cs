@@ -99,6 +99,9 @@ namespace Surprenant.Grunt.Gateway.Host
             services.AddSwaggerGen(options =>
             {
                 options.CustomSchemaIds(type => type.FullName);
+                // Stable source action names make generated clients expose StatsGetMatchHistory instead of names
+                // synthesized from every route segment (for example getHaloV1StatsPlayersByPlayerMatches).
+                options.CustomOperationIds(api => api.ActionDescriptor.RouteValues["action"]);
                 options.SupportNonNullableReferenceTypes();
                 options.UseAllOfToExtendReferenceSchemas();
                 // This is the consumer API contract. Admin/browser/OAuth and health endpoints are operational surfaces,
