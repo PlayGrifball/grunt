@@ -5,17 +5,18 @@ name: Helm chart
 # publishing the chart signed (cosign keyless) to oci://ghcr.io/playgrifball/charts as halo-gateway:<x.y>.<run number>
 # whenever the chart or the gateway changed since the last release, with the gateway image it runs baked in by digest:
 # gateway-image.yml's signed sha-<this commit> when this push changed the gateway (waiting for it), else its signed main
-# image. So one chart version is one release of everything grunt deploys, and a chart bump brings the image with it. Then a GitHub release for that version,
+# image. So one chart version is one release of everything grunt deploys. Then a GitHub release for that version,
 # tagged halo-gateway-<version> (the <chart>-<version> tag Renovate matches to show release notes on chart bumps),
 # listing the chart's and the gateway's commits since the previous one, the image and the chart
-# (.github/scripts/chart-release-notes.mjs).
+# (.github/scripts/chart-release-notes.mjs), followed by one atomic deployment commit at deploy/current: the chart from
+# this source commit plus a values file pinning that release's image digest. The homelab follows that moving ref.
 
 on:
   pull_request:
-    paths: ["charts/**", "Grunt/**", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*"]
+    paths: ["charts/**", "Grunt/**", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*", ".github/scripts/gateway-deploy*"]
   push:
     branches: [main]
-    paths: ["charts/**", "Grunt/**", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*"]
+    paths: ["charts/**", "Grunt/**", ".dockerignore", ".github/workflows/gateway-image.yml", ".github/workflows/helm-chart.yml", ".github/scripts/chart-release-notes*", ".github/scripts/gateway-deploy*"]
   workflow_dispatch:
 
 permissions:
@@ -70,8 +71,8 @@ jobs:
           tar xzf prometheus-3.15.1.linux-amd64.tar.gz
           PROMTOOL="$PWD/prometheus-3.15.1.linux-amd64/promtool" node --test "$CHART"/tests/*.test.mjs
 
-      - name: Release notes tests
-        run: node --test .github/scripts/chart-release-notes.test.mjs
+      - name: Release and deployment tests
+        run: node --test .github/scripts/chart-release-notes.test.mjs .github/scripts/gateway-deploy.test.mjs
 
       - name: Schema check
         run: |
@@ -384,3 +385,23 @@ jobs:
             gh release create "$tag" --target "$GITHUB_SHA" --title "halo-gateway $VERSION" --notes-file notes.md --latest=false
           fi
           echo "Released $tag: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$tag" >> "$GITHUB_STEP_SUMMARY"
+
+  # One deployment lane, unlike GrifballWebApp's test/staging/prod promotions. The synthetic commit keeps the chart
+  # source and this release's exact image digest together; homelab's Argo CD Application follows deploy/current.
+  deploy:
+    needs: [publish, release]
+    if: needs.publish.outputs.version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Move deploy/current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: >-
+          .github/scripts/gateway-deploy.sh "$GITHUB_SHA"
+          "${{ needs.publish.outputs.image }}"
+          "${{ needs.publish.outputs.image-digest }}"
+          "${{ needs.publish.outputs.version }}"
