@@ -369,7 +369,7 @@ jobs:
   # marked the repository's latest release (left to other releases); not a v* tag, so publish.yml doesn't run on it. On a
   # re-run it updates the release's notes, and fails if the tag points at another commit.
   release:
-    needs: publish
+    needs: [publish, packages]
     if: needs.publish.outputs.version != ''
     runs-on: ubuntu-latest
     permissions:
@@ -387,14 +387,20 @@ jobs:
           IMAGE_REF: ${{ needs.publish.outputs.image }}
           IMAGE_DIGEST: ${{ needs.publish.outputs.image-digest }}
           IMAGE_COMMIT: ${{ needs.publish.outputs.image-commit }}
+          NUGET_PUBLISHED: ${{ needs.packages.outputs.nuget }}
+          TYPESCRIPT_PUBLISHED: ${{ needs.packages.outputs.typescript }}
           IDENTITY: ^https://github\.com/${{ github.repository }}/\.github/workflows/helm-chart\.yml@refs/heads/main$
         run: |
           set -euo pipefail
           tag="halo-gateway-$VERSION"
           git fetch --tags --force origin
+          package_flags=()
+          [ "$NUGET_PUBLISHED" = true ] && package_flags+=(--nuget)
+          [ "$TYPESCRIPT_PUBLISHED" = true ] && package_flags+=(--typescript)
           node .github/scripts/chart-release-notes.mjs --chart "$CHART" --name halo-gateway --version "$VERSION" \
             --repository "$GITHUB_REPOSITORY" --chart-repo "$CHART_REPO" --digest "$DIGEST" --identity "$IDENTITY" \
-            --image "$IMAGE_REF" --image-digest "$IMAGE_DIGEST" --image-commit "$IMAGE_COMMIT" --image-identity "$IMAGE_IDENTITY" > notes.md
+            --image "$IMAGE_REF" --image-digest "$IMAGE_DIGEST" --image-commit "$IMAGE_COMMIT" --image-identity "$IMAGE_IDENTITY" \
+            "${package_flags[@]}" > notes.md
           if at=$(git rev-parse -q --verify "refs/tags/$tag^{commit}"); then
             test "$at" = "$GITHUB_SHA" || { echo "::error::$tag already points at $at, not $GITHUB_SHA"; exit 1; }
           fi
@@ -405,10 +411,11 @@ jobs:
           fi
           echo "Released $tag: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$tag" >> "$GITHUB_STEP_SUMMARY"
 
-  # The release version is also the client package version. The reusable workflow keeps NuGet's trusted-publishing
-  # identity in publish.yml and skips a registry independently when none of that package's inputs changed.
+  # The release version is also the client package version. Each registry is an independent, idempotent job, so all
+  # destinations are attempted and "Re-run failed jobs" retries only failed destinations. The release is created after
+  # these jobs, letting its notes list exactly which client package families this version published.
   packages:
-    needs: [publish, release]
+    needs: publish
     if: needs.publish.outputs.version != ''
     permissions:
       contents: read
