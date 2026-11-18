@@ -2285,20 +2285,19 @@
       },
       "Surprenant.Grunt.Models.HaloInfinite.GameVariantCategory": {
         "enum": [
-          6,
-          7,
-          9,
-          11,
-          12,
-          15,
-          18,
-          22,
-          25,
-          39
+          "MultiplayerSlayer",
+          "MultiplayerAttrition",
+          "MultiplayerFiesta",
+          "MultiplayerStrongholds",
+          "MultiplayerBastion",
+          "MultiplayerCtf",
+          "MultiplayerOddball",
+          "MultiplayerInfection",
+          "MultiplayerGrifball",
+          "MultiplayerLandGrab"
         ],
-        "type": "integer",
-        "description": "Category a game variant falls into.",
-        "format": "int32"
+        "type": "string",
+        "description": "Category a game variant falls into."
       },
       "Surprenant.Grunt.Models.HaloInfinite.GenericAsset": {
         "type": "object",
@@ -2602,14 +2601,13 @@
       },
       "Surprenant.Grunt.Models.HaloInfinite.MatchType": {
         "enum": [
-          0,
-          1,
-          2,
-          3
+          "All",
+          "Matchmaking",
+          "Custom",
+          "Local"
         ],
-        "type": "integer",
-        "description": "Types of matches that a user can query with M:Surprenant.Grunt.Core.HaloInfiniteClient.StatsGetMatchHistory(System.String,System.Int32,System.Int32,Surprenant.Grunt.Models.HaloInfinite.MatchType).",
-        "format": "int32"
+        "type": "string",
+        "description": "Types of matches that a user can query with M:Surprenant.Grunt.Core.HaloInfiniteClient.StatsGetMatchHistory(System.String,System.Int32,System.Int32,Surprenant.Grunt.Models.HaloInfinite.MatchType)."
       },
       "Surprenant.Grunt.Models.HaloInfinite.Medal": {
         "type": "object",
@@ -3166,12 +3164,11 @@
       },
       "Surprenant.Grunt.Models.HaloInfinite.PlaylistExperience": {
         "enum": [
-          2,
-          5
+          "Arena",
+          "Featured"
         ],
-        "type": "integer",
-        "description": "Playlist experience associated with a given match.",
-        "format": "int32"
+        "type": "string",
+        "description": "Playlist experience associated with a given match."
       },
       "Surprenant.Grunt.Models.HaloInfinite.RankRecap": {
         "type": "object",

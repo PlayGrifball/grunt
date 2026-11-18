@@ -24,14 +24,14 @@ public static class HaloGatewayProtocol
 
     /// <summary>
     /// JSON options for serialised result containers on both sides: camelCase property names (or their <c>JsonPropertyName</c>),
-    /// enums as numbers, case-insensitive reads (so clients from before camelCase still read it), and TimeSpans as XML durations
-    /// like the Halo API itself. The gateway's OpenAPI schemas are generated from these options too.
+    /// enums as their C# names (numbers are still read), case-insensitive reads, and TimeSpans as XML durations like the Halo API
+    /// itself. The gateway's OpenAPI schemas are generated from these options too.
     /// </summary>
     public static JsonSerializerOptions JsonOptions { get; } = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true,
-        Converters = { new XmlDurationToTimeSpanJsonConverter() },
+        Converters = { new XmlDurationToTimeSpanJsonConverter(), new System.Text.Json.Serialization.JsonStringEnumConverter() },
     };
 
     /// <summary>

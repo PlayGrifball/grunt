@@ -97,7 +97,7 @@ namespace Surprenant.Grunt.Gateway.Host
             // Swashbuckle setup. Keeping this outside an environment check makes the deployed gateway discoverable too.
             services.AddEndpointsApiExplorer();
             // Describe the consumer API's schemas with the options its results are written with (HaloGatewayResults), not
-            // MVC's admin JSON options (string enums), so generated clients match the wire. Before AddSwaggerGen's TryAdd.
+            // MVC's admin JSON options, so generated clients match the wire. Before AddSwaggerGen's TryAdd.
             services.AddSingleton<Swashbuckle.AspNetCore.SwaggerGen.ISerializerDataContractResolver>(sp =>
                 new Swashbuckle.AspNetCore.SwaggerGen.JsonSerializerDataContractResolver(HaloGatewayProtocol.JsonOptions,
                     sp.GetRequiredService<IOptions<Swashbuckle.AspNetCore.SwaggerGen.SchemaGeneratorOptions>>().Value));

@@ -179,10 +179,10 @@ public class GatewayRoundTripTests
         {
             Assert.That(body.GetProperty("error").GetProperty("code").GetInt32(), Is.EqualTo(200), "camelCase, like the documented schemas");
             Assert.That(body.GetProperty("result").GetProperty("matchId").GetGuid(), Is.EqualTo(id));
-            Assert.That(body.GetProperty("result").GetProperty("matchInfo").GetProperty("gameVariantCategory").GetInt32(),
-                Is.EqualTo((int)GameVariantCategory.MultiplayerGrifball), "enums are numbers on the wire");
-            Assert.That(schemas.GetProperty(typeof(GameVariantCategory).FullName!).GetProperty("type").GetString(), Is.EqualTo("integer"),
-                "the document describes enums as the numbers the wire carries");
+            Assert.That(body.GetProperty("result").GetProperty("matchInfo").GetProperty("gameVariantCategory").GetString(),
+                Is.EqualTo(nameof(GameVariantCategory.MultiplayerGrifball)), "enums are names on the wire");
+            Assert.That(schemas.GetProperty(typeof(GameVariantCategory).FullName!).GetProperty("type").GetString(), Is.EqualTo("string"),
+                "the document describes enums as the names the wire carries");
         });
     }
 

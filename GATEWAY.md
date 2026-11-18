@@ -95,7 +95,7 @@ Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInf
 ## Wire contract
 
 - The body is the serialised `HaloApiResultContainer` (`result`, `error.code`, `error.message`, `error.retryAfter`) in
-  camelCase with enums as numbers (`HaloGatewayProtocol.JsonOptions`, which the OpenAPI schemas are generated from too), so
+  camelCase with enums as their names (`HaloGatewayProtocol.JsonOptions`, which the OpenAPI schemas are generated from too), so
   the client gets back exactly what the factory returned. A successful `byte[]` result is sent as raw bytes
   (`application/octet-stream`) instead.
 - `X-Halo-Upstream-Status` carries Halo's status code. `0` means Halo gave no response.

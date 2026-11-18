@@ -237,7 +237,7 @@ export type SurprenantGruntModelsHaloInfiniteEliminationStats = {
 /**
  * Category a game variant falls into.
  */
-export type SurprenantGruntModelsHaloInfiniteGameVariantCategory = 6 | 7 | 9 | 11 | 12 | 15 | 18 | 22 | 25 | 39;
+export type SurprenantGruntModelsHaloInfiniteGameVariantCategory = 'MultiplayerSlayer' | 'MultiplayerAttrition' | 'MultiplayerFiesta' | 'MultiplayerStrongholds' | 'MultiplayerBastion' | 'MultiplayerCtf' | 'MultiplayerOddball' | 'MultiplayerInfection' | 'MultiplayerGrifball' | 'MultiplayerLandGrab';
 
 export type SurprenantGruntModelsHaloInfiniteGenericAsset = {
     assetId?: string;
@@ -326,7 +326,7 @@ export type SurprenantGruntModelsHaloInfiniteMatchStats = {
 /**
  * Types of matches that a user can query with M:Surprenant.Grunt.Core.HaloInfiniteClient.StatsGetMatchHistory(System.String,System.Int32,System.Int32,Surprenant.Grunt.Models.HaloInfinite.MatchType).
  */
-export type SurprenantGruntModelsHaloInfiniteMatchType = 0 | 1 | 2 | 3;
+export type SurprenantGruntModelsHaloInfiniteMatchType = 'All' | 'Matchmaking' | 'Custom' | 'Local';
 
 export type SurprenantGruntModelsHaloInfiniteMedal = {
     nameId?: number;
@@ -495,7 +495,7 @@ export type SurprenantGruntModelsHaloInfinitePlaylistCsrResults = {
 /**
  * Playlist experience associated with a given match.
  */
-export type SurprenantGruntModelsHaloInfinitePlaylistExperience = 2 | 5;
+export type SurprenantGruntModelsHaloInfinitePlaylistExperience = 'Arena' | 'Featured';
 
 export type SurprenantGruntModelsHaloInfiniteRankRecap = {
     preMatchCsr?: SurprenantGruntModelsHaloInfiniteMatchCsr;
