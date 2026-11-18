@@ -54,7 +54,7 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     /// </response>
     [global::Microsoft.AspNetCore.Mvc.HttpGet("gamecms/image")]
     [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
-    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(byte[]), 200, "application/octet-stream")]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Microsoft.AspNetCore.Mvc.FileContentResult), 200, "application/octet-stream")]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]

@@ -117,7 +117,9 @@ public sealed class GatewayGenerator : IIncrementalGenerator
             }
             if (m.IsBinary)
             {
-                sb.AppendLine($"    [{Mvc}.ProducesResponseType(typeof(byte[]), 200, \"application/octet-stream\")]");
+                // What HaloGatewayResults.Binary returns: raw bytes, which OpenAPI calls format binary. typeof(byte[]) would
+                // document a base64 string (format byte), and generated clients would expect text.
+                sb.AppendLine($"    [{Mvc}.ProducesResponseType(typeof({Mvc}.FileContentResult), 200, \"application/octet-stream\")]");
             }
             else
             {

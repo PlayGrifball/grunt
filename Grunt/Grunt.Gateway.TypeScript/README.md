@@ -69,3 +69,7 @@ for details.
 
 Run `../../.github/scripts/generate-gateway-openapi.ps1`, then `npm run check`, to regenerate and
 verify the client locally.
+
+`e2e/` calls every operation through the built package against the real gateway host with a fake Halo client. Run it with
+`GRUNT_TYPESCRIPT_E2E=1 dotnet test ../Grunt.slnx --filter Category=TypeScriptClient` after `npm run build`; CI runs it in
+the Helm chart workflow.

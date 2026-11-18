@@ -159,6 +159,50 @@ public class GatewayRoundTripTests
         });
     }
 
+    [Test]
+    public async Task WireMatchesTheOpenApiDocument()
+    {
+        var id = Guid.NewGuid();
+        _factory.Halo.StatsGetMatchStats(id).Returns(_ => Container(new MatchStats
+        {
+            MatchId = id,
+            MatchInfo = new MatchInfo { GameVariantCategory = GameVariantCategory.MultiplayerGrifball },
+        }, 200));
+        var http = _factory.CreateClient();
+        http.DefaultRequestHeaders.Add("X-Api-Key", ProdKey);
+
+        var body = (await (await http.GetAsync($"halo/v1/stats/matches/{id}")).Content.ReadFromJsonAsync<JsonDocument>())!.RootElement;
+        var schemas = (await (await http.GetAsync("swagger/v1/swagger.json")).Content.ReadFromJsonAsync<JsonDocument>())!
+            .RootElement.GetProperty("components").GetProperty("schemas");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(body.GetProperty("error").GetProperty("code").GetInt32(), Is.EqualTo(200), "camelCase, like the documented schemas");
+            Assert.That(body.GetProperty("result").GetProperty("matchId").GetGuid(), Is.EqualTo(id));
+            Assert.That(body.GetProperty("result").GetProperty("matchInfo").GetProperty("gameVariantCategory").GetString(),
+                Is.EqualTo(nameof(GameVariantCategory.MultiplayerGrifball)), "enums are names on the wire");
+            Assert.That(schemas.GetProperty(typeof(GameVariantCategory).FullName!).GetProperty("type").GetString(), Is.EqualTo("string"),
+                "the document describes enums as the names the wire carries");
+        });
+    }
+
+    [Test]
+    public async Task BinaryResultsAreDocumentedAsRawBytes()
+    {
+        var http = _factory.CreateClient();
+
+        var document = (await (await http.GetAsync("swagger/v1/swagger.json")).Content.ReadFromJsonAsync<JsonDocument>())!.RootElement;
+        var schema = document.GetProperty("paths").GetProperty("/halo/v1/gamecms/image").GetProperty("get").GetProperty("responses")
+            .GetProperty("200").GetProperty("content").GetProperty(HaloGatewayProtocol.BinaryContentType).GetProperty("schema");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(schema.GetProperty("type").GetString(), Is.EqualTo("string"));
+            Assert.That(schema.GetProperty("format").GetString(), Is.EqualTo("binary"),
+                "HaloGatewayResults.Binary writes the raw bytes, not the base64 string \"byte\" would mean");
+        });
+    }
+
     private static string RequiredText(JsonElement element, string property)
         => element.TryGetProperty(property, out var value) ? value.GetString() ?? string.Empty : string.Empty;
 
@@ -310,6 +354,57 @@ public class GatewayRoundTripTests
 
         Assert.That(result.Result, Has.Count.EqualTo(1));
         await _factory.Halo.Received(1).Users(Arg.Is<IEnumerable<string>>(x => x.SequenceEqual(new[] { "1", "2" })));
+    }
+
+    [Test]
+    public async Task SkillGetMatchPlayerResultRoundTrips()
+    {
+        var matchId = Guid.NewGuid().ToString();
+        _factory.Halo.SkillGetMatchPlayerResult(Arg.Any<string>(), Arg.Any<List<string>>())
+            .Returns(_ => Container(new PlayerSkillResultContainer { Value = [new PlayerSkillResult { Id = "xuid(1)", ResultCode = 0 }] }, 200));
+
+        var result = await _factory.CreateGatewayClient().SkillGetMatchPlayerResult(matchId, ["xuid(1)", "xuid(2)"]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Error.Code, Is.EqualTo(200));
+            Assert.That(result.Result.Value.Single().Id, Is.EqualTo("xuid(1)"));
+        });
+        await _factory.Halo.Received(1).SkillGetMatchPlayerResult(matchId, Arg.Is<List<string>>(x => x.SequenceEqual(new[] { "xuid(1)", "xuid(2)" })));
+    }
+
+    [Test]
+    public async Task SkillGetPlaylistCsrRoundTrips()
+    {
+        var playlistId = Guid.NewGuid().ToString();
+        _factory.Halo.SkillGetPlaylistCsr(Arg.Any<string>(), Arg.Any<List<string>>())
+            .Returns(_ => Container(new PlaylistCsrResultContainer { Value = [new PlaylistCsrResults { Id = "xuid(2)", ResultCode = 0 }] }, 200));
+
+        var result = await _factory.CreateGatewayClient().SkillGetPlaylistCsr(playlistId, ["xuid(1)", "xuid(2)"]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Error.Code, Is.EqualTo(200));
+            Assert.That(result.Result.Value.Single().Id, Is.EqualTo("xuid(2)"));
+        });
+        await _factory.Halo.Received(1).SkillGetPlaylistCsr(playlistId, Arg.Is<List<string>>(x => x.SequenceEqual(new[] { "xuid(1)", "xuid(2)" })));
+    }
+
+    [Test]
+    public async Task StatsGetPlayerMatchProgressionRoundTrips()
+    {
+        var matchId = Guid.NewGuid().ToString();
+        _factory.Halo.StatsGetPlayerMatchProgression("xuid(123)", matchId)
+            .Returns(_ => Container(new MatchProgression { ClearanceId = "clearance", RewardId = "reward" }, 200));
+
+        var result = await _factory.CreateGatewayClient().StatsGetPlayerMatchProgression("xuid(123)", matchId);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Error.Code, Is.EqualTo(200));
+            Assert.That((result.Result.ClearanceId, result.Result.RewardId), Is.EqualTo(("clearance", "reward")));
+        });
+        await _factory.Halo.Received(1).StatsGetPlayerMatchProgression("xuid(123)", matchId);
     }
 
     [Test]
