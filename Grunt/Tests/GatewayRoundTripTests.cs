@@ -39,6 +39,7 @@ public class GatewayRoundTripTests
         public IHaloOAuthClient OAuth { get; } = Substitute.For<IHaloOAuthClient>();
         public IHaloSession Session { get; } = Substitute.For<IHaloSession>();
         public string TokenDirectory { get; } = Path.Combine(Path.GetTempPath(), "grunt-gateway-tests", Guid.NewGuid().ToString("N"));
+        public LogCollector Logs { get; } = new();
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -58,6 +59,8 @@ public class GatewayRoundTripTests
                 services.AddSingleton(Halo);
                 services.AddSingleton(OAuth);
                 services.AddSingleton(Session);
+                // LoggingExtensions reads sinks from the container (ReadFrom.Services).
+                services.AddSingleton<Serilog.Core.ILogEventSink>(Logs);
             });
         }
 
@@ -75,6 +78,15 @@ public class GatewayRoundTripTests
                 Directory.Delete(TokenDirectory, recursive: true);
         }
     }
+
+    private sealed class LogCollector : Serilog.Core.ILogEventSink
+    {
+        public System.Collections.Concurrent.ConcurrentQueue<Serilog.Events.LogEvent> Events { get; } = new();
+        public void Emit(Serilog.Events.LogEvent logEvent) => Events.Enqueue(logEvent);
+    }
+
+    private static object? Property(Serilog.Events.LogEvent logEvent, string name)
+        => logEvent.Properties.TryGetValue(name, out var value) && value is Serilog.Events.ScalarValue scalar ? scalar.Value : null;
 
     private GatewayFactory _factory = null!;
 
@@ -292,6 +304,21 @@ public class GatewayRoundTripTests
             Assert.That(raw.StatusCode, Is.EqualTo(HttpStatusCode.ServiceUnavailable));
             Assert.That(raw.Headers.GetValues(HaloGatewayProtocol.UpstreamStatusHeader).Single(), Is.EqualTo("429"));
             Assert.That(raw.Headers.RetryAfter?.Delta, Is.EqualTo(TimeSpan.FromMinutes(5)));
+        });
+    }
+
+    [Test]
+    public async Task LogsWrittenDuringARequestNameTheConsumer()
+    {
+        _factory.Halo.Medals().ThrowsAsync(new HttpRequestException("Halo is down"));
+
+        await _factory.CreateGatewayClient().Medals();
+
+        var failure = _factory.Logs.Events.Single(e => e.MessageTemplate.Text.StartsWith("Gateway action", StringComparison.Ordinal));
+        Assert.Multiple(() =>
+        {
+            Assert.That(Property(failure, "ConsumerKeyName"), Is.EqualTo("grif-prod"), "filterable by caller in Loki, not only via trace_id");
+            Assert.That(Property(failure, "ConsumerEnvironment"), Is.EqualTo("prod"));
         });
     }
 
