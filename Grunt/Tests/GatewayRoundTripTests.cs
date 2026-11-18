@@ -357,6 +357,57 @@ public class GatewayRoundTripTests
     }
 
     [Test]
+    public async Task SkillGetMatchPlayerResultRoundTrips()
+    {
+        var matchId = Guid.NewGuid().ToString();
+        _factory.Halo.SkillGetMatchPlayerResult(Arg.Any<string>(), Arg.Any<List<string>>())
+            .Returns(_ => Container(new PlayerSkillResultContainer { Value = [new PlayerSkillResult { Id = "xuid(1)", ResultCode = 0 }] }, 200));
+
+        var result = await _factory.CreateGatewayClient().SkillGetMatchPlayerResult(matchId, ["xuid(1)", "xuid(2)"]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Error.Code, Is.EqualTo(200));
+            Assert.That(result.Result.Value.Single().Id, Is.EqualTo("xuid(1)"));
+        });
+        await _factory.Halo.Received(1).SkillGetMatchPlayerResult(matchId, Arg.Is<List<string>>(x => x.SequenceEqual(new[] { "xuid(1)", "xuid(2)" })));
+    }
+
+    [Test]
+    public async Task SkillGetPlaylistCsrRoundTrips()
+    {
+        var playlistId = Guid.NewGuid().ToString();
+        _factory.Halo.SkillGetPlaylistCsr(Arg.Any<string>(), Arg.Any<List<string>>())
+            .Returns(_ => Container(new PlaylistCsrResultContainer { Value = [new PlaylistCsrResults { Id = "xuid(2)", ResultCode = 0 }] }, 200));
+
+        var result = await _factory.CreateGatewayClient().SkillGetPlaylistCsr(playlistId, ["xuid(1)", "xuid(2)"]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Error.Code, Is.EqualTo(200));
+            Assert.That(result.Result.Value.Single().Id, Is.EqualTo("xuid(2)"));
+        });
+        await _factory.Halo.Received(1).SkillGetPlaylistCsr(playlistId, Arg.Is<List<string>>(x => x.SequenceEqual(new[] { "xuid(1)", "xuid(2)" })));
+    }
+
+    [Test]
+    public async Task StatsGetPlayerMatchProgressionRoundTrips()
+    {
+        var matchId = Guid.NewGuid().ToString();
+        _factory.Halo.StatsGetPlayerMatchProgression("xuid(123)", matchId)
+            .Returns(_ => Container(new MatchProgression { ClearanceId = "clearance", RewardId = "reward" }, 200));
+
+        var result = await _factory.CreateGatewayClient().StatsGetPlayerMatchProgression("xuid(123)", matchId);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Error.Code, Is.EqualTo(200));
+            Assert.That((result.Result.ClearanceId, result.Result.RewardId), Is.EqualTo(("clearance", "reward")));
+        });
+        await _factory.Halo.Received(1).StatsGetPlayerMatchProgression("xuid(123)", matchId);
+    }
+
+    [Test]
     public async Task GuidOverloadUsesTheGuidRoute()
     {
         var id = Guid.NewGuid();
