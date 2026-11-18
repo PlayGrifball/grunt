@@ -1,5 +1,6 @@
-# Publishes the .NET clients to nuget.org with Trusted Publishing and the generated TypeScript client to
-# GitHub Packages. The nuget.org policy trusts PlayGrifball/grunt, workflow file publish.yml.
+# Publishes the .NET clients to nuget.org and GitHub Packages, and the generated TypeScript client to npmjs and
+# GitHub Packages. nuget.org and npmjs use OIDC trusted publishing; GitHub Packages uses the workflow's GITHUB_TOKEN.
+# The nuget.org policy trusts PlayGrifball/grunt, workflow file publish.yml.
 # https://learn.microsoft.com/nuget/nuget-org/trusted-publishing
 name: Publish client packages
 
@@ -98,9 +99,15 @@ jobs:
         with:
           user: NoahSurprenant
 
-      - name: Publish NuGet clients
+      - name: Publish NuGet clients to nuget.org
         if: steps.plan.outputs.nuget == 'true'
         run: dotnet nuget push "out/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Publish NuGet clients to GitHub Packages
+        if: steps.plan.outputs.nuget == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: dotnet nuget push "out/*.nupkg" --api-key "$GITHUB_TOKEN" --source https://nuget.pkg.github.com/PlayGrifball/index.json --skip-duplicate
 
       - name: Setup Node.js
         if: steps.plan.outputs.typescript == 'true'
@@ -112,6 +119,11 @@ jobs:
           cache: npm
           cache-dependency-path: Grunt/Grunt.Gateway.TypeScript/package-lock.json
 
+      # Trusted publishing requires npm >=11.5.1. Pin it so the runner image cannot silently change publish behavior.
+      - name: Setup npm
+        if: steps.plan.outputs.typescript == 'true'
+        run: npm install --global npm@12.2.3
+
       - name: Generate and build TypeScript client
         if: steps.plan.outputs.typescript == 'true'
         shell: pwsh
@@ -122,9 +134,26 @@ jobs:
           npm run check
           npm version '${{ steps.plan.outputs.version }}' --no-git-tag-version
 
-      - name: Publish TypeScript client
+      - name: Publish TypeScript client to GitHub Packages
         if: steps.plan.outputs.typescript == 'true'
         working-directory: Grunt/Grunt.Gateway.TypeScript
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
-        run: npm publish
+        run: npm publish --registry https://npm.pkg.github.com --access public
+
+      # npmjs uses OIDC when its trusted publisher is configured. NPM_TOKEN is a bootstrap fallback for the first
+      # publication, before the package exists on npmjs and can have a trusted publisher attached in its settings.
+      - name: Configure npmjs
+        if: steps.plan.outputs.typescript == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          scope: '@playgrifball'
+
+      - name: Publish TypeScript client to npmjs
+        if: steps.plan.outputs.typescript == 'true'
+        working-directory: Grunt/Grunt.Gateway.TypeScript
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --registry https://registry.npmjs.org --access public

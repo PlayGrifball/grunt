@@ -4,15 +4,17 @@ Generated TypeScript types and Fetch API client for the public endpoints in `Gru
 The package is generated from the host's OpenAPI document, so endpoint descriptions, parameters,
 responses, and authentication stay aligned with the deployed gateway.
 
-The package is published to GitHub Packages with each gateway release whose public API changes.
-Configure the PlayGrifball scope before installing it:
-
-```ini
-@playgrifball:registry=https://npm.pkg.github.com
-```
+The package is published to npmjs and GitHub Packages with each gateway release whose public API changes.
+Install it from npmjs without any registry configuration:
 
 ```shell
 npm install @playgrifball/grunt-gateway-client
+```
+
+To use the GitHub Packages copy instead, configure the PlayGrifball scope:
+
+```ini
+@playgrifball:registry=https://npm.pkg.github.com
 ```
 
 Set the base URL and API key on the generated client before making requests:
