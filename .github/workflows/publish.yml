@@ -131,6 +131,8 @@ jobs:
           npm ci
           npm run check
           npm version '${{ needs.plan.outputs.version }}' --no-git-tag-version
+          # npm pack doesn't create its destination, and a TypeScript-only release runs no dotnet pack to make it.
+          New-Item -ItemType Directory -Force -Path ../../out | Out-Null
           npm pack --pack-destination ../../out
 
       - name: Upload TypeScript client
