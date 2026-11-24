@@ -33,6 +33,7 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     private readonly JsonSerializerOptions serializerOptions = new()
     {
         WriteIndented = true,
+        PropertyNameCaseInsensitive = true,
         Converters =
         {
             new EmptyDateStringToNullJsonConverter(),
