@@ -141,13 +141,16 @@ public partial class HaloGatewayClient : global::Surprenant.Grunt.Core.IHaloInfi
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> EconomyPlayerAppearanceCustomization(string player)
         => throw new global::System.NotSupportedException("IHaloInfiniteClient.EconomyPlayerAppearanceCustomization is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
 
-    /// <summary>GET halo/v1/economy/players/{player}/customization on the gateway.</summary>
+    /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> EconomyPlayerCustomization(string player, string viewType)
+        => throw new global::System.NotSupportedException("IHaloInfiniteClient.EconomyPlayerCustomization is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
+
+    /// <summary>GET halo/v1/economy/players/{player}/customization on the gateway.</summary>
+    public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> EconomyPlayerPublicCustomization(string player)
     {
         var __path = "halo/v1/economy/players/" + global::Surprenant.Grunt.Gateway.Client.HaloGatewayUri.Segment(player) + "/customization";
         var __query = new global::Surprenant.Grunt.Gateway.Client.HaloGatewayUri.QueryBuilder();
-        __query.Add("viewType", viewType);
-        return _transport.SendAsync<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData>(global::System.Net.Http.HttpMethod.Get, __path + __query.ToString(), null, "EconomyPlayerCustomization");
+        return _transport.SendAsync<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData>(global::System.Net.Http.HttpMethod.Get, __path + __query.ToString(), null, "EconomyPlayerPublicCustomization");
     }
 
     /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>

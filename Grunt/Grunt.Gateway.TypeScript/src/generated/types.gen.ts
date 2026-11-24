@@ -1010,24 +1010,19 @@ export type EconomyGetMultiplePlayersCustomizationResponses = {
 
 export type EconomyGetMultiplePlayersCustomizationResponse = EconomyGetMultiplePlayersCustomizationResponses[keyof EconomyGetMultiplePlayersCustomizationResponses];
 
-export type EconomyPlayerCustomizationData = {
+export type EconomyPlayerPublicCustomizationData = {
     body?: never;
     path: {
         /**
-         * The unique player XUID, in the format "xuid(XUID_VALUE)".
+         * Player identifier formatted as `xuid(XUID_VALUE)`.
          */
         player: string;
     };
-    query?: {
-        /**
-         * Determines which view into customizations is shown. Available values are "public" and "private". The private view enables showing all available cores, while the public view only shows equipped cores.
-         */
-        viewType?: string;
-    };
+    query?: never;
     url: '/halo/v1/economy/players/{player}/customization';
 };
 
-export type EconomyPlayerCustomizationErrors = {
+export type EconomyPlayerPublicCustomizationErrors = {
     /**
      * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
      */
@@ -1054,16 +1049,16 @@ export type EconomyPlayerCustomizationErrors = {
     503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCustomizationData_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
 };
 
-export type EconomyPlayerCustomizationError = EconomyPlayerCustomizationErrors[keyof EconomyPlayerCustomizationErrors];
+export type EconomyPlayerPublicCustomizationError = EconomyPlayerPublicCustomizationErrors[keyof EconomyPlayerPublicCustomizationErrors];
 
-export type EconomyPlayerCustomizationResponses = {
+export type EconomyPlayerPublicCustomizationResponses = {
     /**
      * OK
      */
     200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCustomizationData_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
 };
 
-export type EconomyPlayerCustomizationResponse = EconomyPlayerCustomizationResponses[keyof EconomyPlayerCustomizationResponses];
+export type EconomyPlayerPublicCustomizationResponse = EconomyPlayerPublicCustomizationResponses[keyof EconomyPlayerPublicCustomizationResponses];
 
 export type GameCmsGetCustomizationCatalogData = {
     body?: never;

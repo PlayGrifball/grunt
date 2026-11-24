@@ -515,23 +515,15 @@
         "tags": [
           "HaloInfinite"
         ],
-        "summary": "Gets information about available player customizations.",
-        "description": "If successful, returns an instance of CustomizationData containing player customizations. Otherwise, returns null.",
-        "operationId": "EconomyPlayerCustomization",
+        "summary": "Gets a player's public customization: the Spartan body, appearance, and the cores they have equipped.",
+        "description": "The equipped customization other players see, with armor cores and their per-slot item paths.",
+        "operationId": "EconomyPlayerPublicCustomization",
         "parameters": [
           {
             "name": "player",
             "in": "path",
-            "description": "The unique player XUID, in the format \"xuid(XUID_VALUE)\".",
+            "description": "Player identifier formatted as `xuid(XUID_VALUE)`.",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "viewType",
-            "in": "query",
-            "description": "Determines which view into customizations is shown. Available values are \"public\" and \"private\". The private view enables showing all available cores, while the public view only shows equipped cores.",
             "schema": {
               "type": "string"
             }

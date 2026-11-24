@@ -182,19 +182,16 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
-    /// Gets information about available player customizations.
+    /// Gets a player's public customization: the Spartan body, appearance, and the cores they have equipped.
     /// </summary>
     /// <remarks>
-    /// If successful, returns an instance of CustomizationData containing player customizations. Otherwise, returns null.
+    /// The equipped customization other players see, with armor cores and their per-slot item paths.
     /// </remarks>
     /// <param name="player">
-    /// The unique player XUID, in the format "xuid(XUID_VALUE)".
-    /// </param>
-    /// <param name="viewType">
-    /// Determines which view into customizations is shown. Available values are "public" and "private". The private view enables showing all available cores, while the public view only shows equipped cores.
+    /// Player identifier formatted as <c>xuid(XUID_VALUE)</c>.
     /// </param>
     /// <returns>
-    /// If successful, returns an instance of CustomizationData containing player customizations. Otherwise, returns null.
+    /// The equipped customization other players see, with armor cores and their per-slot item paths.
     /// </returns>
     /// <response code="400">
     /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
@@ -223,16 +220,16 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
     [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
-    public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> EconomyPlayerCustomization([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "player")] string player, [global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "viewType")] string viewType)
+    public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> EconomyPlayerPublicCustomization([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "player")] string player)
     {
         try
         {
-            var __response = await _client.EconomyPlayerCustomization(player, viewType).ConfigureAwait(false);
+            var __response = await _client.EconomyPlayerPublicCustomization(player).ConfigureAwait(false);
             return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Json(__response, HttpContext);
         }
         catch (global::System.Exception __ex) when (!HttpContext.RequestAborted.IsCancellationRequested)
         {
-            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Failure<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData>(__ex, HttpContext, _logger, "EconomyPlayerCustomization");
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Failure<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData>(__ex, HttpContext, _logger, "EconomyPlayerPublicCustomization");
         }
     }
 
