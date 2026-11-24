@@ -38,6 +38,18 @@ jobs:
       - name: Test
         run: dotnet test Grunt/Grunt.slnx --configuration Release --no-build --logger "trx;LogFileName=results.trx" --results-directory TestResults
 
+      - name: Regenerate TEMP-REGEN
+        if: always()
+        run: |
+          dotnet build Grunt/Grunt.Gateway.Host/Surprenant.Grunt.Gateway.Host.csproj -c Release
+          pwsh ./.github/scripts/generate-gateway-openapi.ps1
+          mkdir -p regen && cp /tmp/regen/* regen/ && cp Grunt/Grunt.Gateway.TypeScript/openapi.json regen/
+      - name: Upload regen TEMP-REGEN
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regen
+          path: regen
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
