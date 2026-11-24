@@ -95,6 +95,7 @@ Generator errors:
 | `GET economy/players/{player}/customization/armors` | `EconomyArmorCoresCustomization` | 60 s | a player's armor cores and equipped pieces |
 | `GET economy/players/{player}/customization/armors/{coreId}` | `EconomyArmorCoreCustomization` | 60 s | one armor core |
 | `GET gamecms/customization-catalog?flightId=` | `GameCmsGetCustomizationCatalog` | 1 h | item paths to names and images (no `flightId`: the gateway account's current flight) |
+| `GET gamecms/item?itemPath=&flightId=` | `GameCmsGetItem` | 1 h | one item's name, description and image paths, by its `itemPath` from the catalog or a player's armor (a `.json` path; no `flightId`: the gateway account's current flight) |
 
 Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInfiniteClient`.
 

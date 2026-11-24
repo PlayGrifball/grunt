@@ -942,10 +942,18 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// </remarks>
     /// <include file='../APIDocsExamples/GameCms_GetItem.xml' path='//example'/>
     /// <param name="itemPath">Path to the item to be obtained. Example is "/inventory/armor/emblems/013-001-363f4a25.json".</param>
-    /// <param name="flightId">Unique ID for the currently active flight.</param>
+    /// <param name="flightId">Unique ID for the currently active flight. When empty, the client's own clearance is used.</param>
     /// <returns>If successful, an instance of InGameItem. Otherwise, null.</returns>
+    [GatewayExposed("gamecms/item", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
     public async Task<HaloApiResultContainer<InGameItem, HaloApiErrorContainer>> GameCmsGetItem(string itemPath, string flightId)
     {
+        itemPath = itemPath?.TrimStart('/') ?? string.Empty;
+        if (string.IsNullOrEmpty(flightId))
+            flightId = ClearanceToken ?? string.Empty;
+        if (!HaloInput.IsItemPath(itemPath))
+            return BadRequest<InGameItem>("itemPath must be a .json item document path");
+        if (!HaloInput.IsFlightId(flightId))
+            return BadRequest<InGameItem>("flightId must be a GUID");
         return await ExecuteAPIRequest<InGameItem>(
             $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Progression/file/{itemPath}?flight={flightId}",
             HttpMethod.Get,
