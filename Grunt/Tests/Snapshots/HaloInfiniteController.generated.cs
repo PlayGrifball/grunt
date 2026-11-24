@@ -390,6 +390,107 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
+    /// Gets the emblem image paths: every emblem and each of its configurations, with the paths of the emblem and nameplate images.
+    /// </summary>
+    /// <remarks>
+    /// Look an equipped emblem up by the file name of its path without <c>.json</c>, or by the item document's <c>commonData.id</c>, then by configuration id; download the paths from <c>gamecms/waypoint-image</c>.
+    /// </remarks>
+    /// <returns>
+    /// Emblem identifier to configuration identifier to the image paths.
+    /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
+    [global::Microsoft.AspNetCore.Mvc.HttpGet("gamecms/emblem-mapping")]
+    [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 3600)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
+    public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> GameCmsGetEmblemMapping()
+    {
+        try
+        {
+            var __response = await _client.GameCmsGetEmblemMapping().ConfigureAwait(false);
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Json(__response, HttpContext);
+        }
+        catch (global::System.Exception __ex) when (!HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Failure<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>>(__ex, HttpContext, _logger, "GameCmsGetEmblemMapping");
+        }
+    }
+
+    /// <summary>
+    /// Downloads an image from Halo Infinite's Waypoint file store, such as an emblem or nameplate.
+    /// </summary>
+    /// <remarks>
+    /// Use a path from <c>gamecms/emblem-mapping</c>, for example <c>images/emblems/example.png</c>.
+    /// </remarks>
+    /// <param name="filePath">
+    /// Waypoint-relative path of the image.
+    /// </param>
+    /// <returns>
+    /// The image bytes and content type when the asset exists.
+    /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
+    [global::Microsoft.AspNetCore.Mvc.HttpGet("gamecms/waypoint-image")]
+    [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)2, 0)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Microsoft.AspNetCore.Mvc.FileContentResult), 200, "application/octet-stream")]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
+    public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> GameCmsWaypointGetImage([global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "filePath")] string filePath)
+    {
+        try
+        {
+            var __response = await _client.GameCmsWaypointGetImage(filePath).ConfigureAwait(false);
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Binary(__response, HttpContext);
+        }
+        catch (global::System.Exception __ex) when (!HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Failure<byte[]>(__ex, HttpContext, _logger, "GameCmsWaypointGetImage");
+        }
+    }
+
+    /// <summary>
     /// Gets a specific item from the Game CMS, such as armor emplems, weapon cores, vehicle cores, and others.
     /// </summary>
     /// <remarks>

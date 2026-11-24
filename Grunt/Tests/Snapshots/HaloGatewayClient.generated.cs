@@ -255,9 +255,22 @@ public partial class HaloGatewayClient : global::Surprenant.Grunt.Core.IHaloInfi
         return _transport.SendBinaryAsync(global::System.Net.Http.HttpMethod.Get, __path + __query.ToString(), null, "GameCmsGetImage");
     }
 
-    /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
+    /// <summary>GET halo/v1/gamecms/emblem-mapping on the gateway.</summary>
+    public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> GameCmsGetEmblemMapping()
+    {
+        var __path = "halo/v1/gamecms/emblem-mapping";
+        var __query = new global::Surprenant.Grunt.Gateway.Client.HaloGatewayUri.QueryBuilder();
+        return _transport.SendAsync<global::System.Collections.Generic.Dictionary<string, global::System.Collections.Generic.Dictionary<string, global::Surprenant.Grunt.Models.HaloInfinite.EmblemImageAssets>>>(global::System.Net.Http.HttpMethod.Get, __path + __query.ToString(), null, "GameCmsGetEmblemMapping");
+    }
+
+    /// <summary>GET halo/v1/gamecms/waypoint-image on the gateway.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>> GameCmsWaypointGetImage(string filePath)
-        => throw new global::System.NotSupportedException("IHaloInfiniteClient.GameCmsWaypointGetImage is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
+    {
+        var __path = "halo/v1/gamecms/waypoint-image";
+        var __query = new global::Surprenant.Grunt.Gateway.Client.HaloGatewayUri.QueryBuilder();
+        __query.Add("filePath", filePath);
+        return _transport.SendBinaryAsync(global::System.Net.Http.HttpMethod.Get, __path + __query.ToString(), null, "GameCmsWaypointGetImage");
+    }
 
     /// <summary>GET halo/v1/gamecms/item on the gateway.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> GameCmsGetItem(string itemPath, string flightId)

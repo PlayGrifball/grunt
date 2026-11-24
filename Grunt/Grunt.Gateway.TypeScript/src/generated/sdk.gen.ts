@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyPlayerAppearanceCustomizationData, EconomyPlayerAppearanceCustomizationErrors, EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerPublicCustomizationData, EconomyPlayerPublicCustomizationErrors, EconomyPlayerPublicCustomizationResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, GameCmsGetItemData, GameCmsGetItemErrors, GameCmsGetItemResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
+import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyPlayerAppearanceCustomizationData, EconomyPlayerAppearanceCustomizationErrors, EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerPublicCustomizationData, EconomyPlayerPublicCustomizationErrors, EconomyPlayerPublicCustomizationResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetEmblemMappingData, GameCmsGetEmblemMappingErrors, GameCmsGetEmblemMappingResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, GameCmsGetItemData, GameCmsGetItemErrors, GameCmsGetItemResponses, GameCmsWaypointGetImageData, GameCmsWaypointGetImageErrors, GameCmsWaypointGetImageResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -92,6 +92,28 @@ export const gameCmsGetCustomizationCatalog = <ThrowOnError extends boolean = fa
 export const gameCmsGetImage = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetImageData, ThrowOnError>): RequestResult<GameCmsGetImageResponses, GameCmsGetImageErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetImageResponses, GameCmsGetImageErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }],
     url: '/halo/v1/gamecms/image',
+    ...options
+});
+
+/**
+ * Gets the emblem image paths: every emblem and each of its configurations, with the paths of the emblem and nameplate images.
+ *
+ * Look an equipped emblem up by the file name of its path without `.json`, or by the item document's `commonData.id`, then by configuration id; download the paths from `gamecms/waypoint-image`.
+ */
+export const gameCmsGetEmblemMapping = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetEmblemMappingData, ThrowOnError>): RequestResult<GameCmsGetEmblemMappingResponses, GameCmsGetEmblemMappingErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetEmblemMappingResponses, GameCmsGetEmblemMappingErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/emblem-mapping',
+    ...options
+});
+
+/**
+ * Downloads an image from Halo Infinite's Waypoint file store, such as an emblem or nameplate.
+ *
+ * Use a path from `gamecms/emblem-mapping`, for example `images/emblems/example.png`.
+ */
+export const gameCmsWaypointGetImage = <ThrowOnError extends boolean = false>(options?: Options<GameCmsWaypointGetImageData, ThrowOnError>): RequestResult<GameCmsWaypointGetImageResponses, GameCmsWaypointGetImageErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsWaypointGetImageResponses, GameCmsWaypointGetImageErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/waypoint-image',
     ...options
 });
 

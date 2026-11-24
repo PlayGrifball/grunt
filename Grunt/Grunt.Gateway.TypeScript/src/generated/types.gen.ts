@@ -227,6 +227,21 @@ export type SurprenantGruntModelsHaloApiResultContainer2SystemByte___SystemPriva
 /**
  * Container class that encapsulates the result from a Halo API call.
  */
+export type SurprenantGruntModelsHaloApiResultContainer2SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloInfiniteEmblemImageAssets_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: {
+        [key: string]: {
+            [key: string]: SurprenantGruntModelsHaloInfiniteEmblemImageAssets;
+        };
+    } | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
 export type SurprenantGruntModelsHaloApiResultContainer2SystemCollectionsGenericList1SurprenantGruntModelsUser_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
     result?: Array<SurprenantGruntModelsUser> | null;
     /**
@@ -455,6 +470,12 @@ export type SurprenantGruntModelsHaloInfiniteEliminationStats = {
 export type SurprenantGruntModelsHaloInfiniteEmblem = {
     emblemPath?: string;
     configurationId?: number;
+};
+
+export type SurprenantGruntModelsHaloInfiniteEmblemImageAssets = {
+    emblemCmsPath?: string;
+    nameplateCmsPath?: string;
+    textColor?: string;
 };
 
 /**
@@ -1315,6 +1336,101 @@ export type GameCmsGetImageResponses = {
 };
 
 export type GameCmsGetImageResponse = GameCmsGetImageResponses[keyof GameCmsGetImageResponses];
+
+export type GameCmsGetEmblemMappingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/halo/v1/gamecms/emblem-mapping';
+};
+
+export type GameCmsGetEmblemMappingErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloInfiniteEmblemImageAssets_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloInfiniteEmblemImageAssets_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloInfiniteEmblemImageAssets_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloInfiniteEmblemImageAssets_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloInfiniteEmblemImageAssets_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetEmblemMappingError = GameCmsGetEmblemMappingErrors[keyof GameCmsGetEmblemMappingErrors];
+
+export type GameCmsGetEmblemMappingResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SystemCollectionsGenericDictionary2SystemString_SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloInfiniteEmblemImageAssets_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetEmblemMappingResponse = GameCmsGetEmblemMappingResponses[keyof GameCmsGetEmblemMappingResponses];
+
+export type GameCmsWaypointGetImageData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Waypoint-relative path of the image.
+         */
+        filePath?: string;
+    };
+    url: '/halo/v1/gamecms/waypoint-image';
+};
+
+export type GameCmsWaypointGetImageErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SystemByte___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SystemByte___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SystemByte___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SystemByte___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SystemByte___SystemPrivateCoreLib_Version_10000_Culture_neutral_PublicKeyToken_7Cec85D7Bea7798E__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsWaypointGetImageError = GameCmsWaypointGetImageErrors[keyof GameCmsWaypointGetImageErrors];
+
+export type GameCmsWaypointGetImageResponses = {
+    /**
+     * OK
+     */
+    200: Blob | File;
+};
+
+export type GameCmsWaypointGetImageResponse = GameCmsWaypointGetImageResponses[keyof GameCmsWaypointGetImageResponses];
 
 export type GameCmsGetItemData = {
     body?: never;
