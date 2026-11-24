@@ -45,6 +45,8 @@ const result = await userByGamertag({
 | `economyPlayerPublicCustomization` | `GET /halo/v1/economy/players/{player}/customization` | Retrieve one player's public body, appearance and cores |
 | `gameCmsGetCustomizationCatalog` | `GET /halo/v1/gamecms/customization-catalog` | Retrieve the item catalog (paths to names and images) |
 | `gameCmsGetImage` | `GET /halo/v1/gamecms/image` | Retrieve an image from Halo's game CMS |
+| `gameCmsGetEmblemMapping` | `GET /halo/v1/gamecms/emblem-mapping` | Gets the emblem image paths: every emblem and each of its configurations, with the paths of the emblem and nameplate images. |
+| `gameCmsWaypointGetImage` | `GET /halo/v1/gamecms/waypoint-image` | Downloads an image from Halo Infinite's Waypoint file store, such as an emblem or nameplate. |
 | `gameCmsGetItem` | `GET /halo/v1/gamecms/item` | Gets a specific item from the Game CMS, such as armor emplems, weapon cores, vehicle cores, and others. |
 | `skillGetMatchPlayerResult` | `GET /halo/v1/skill/matches/{matchId}/players` | Retrieve per-player skill results for a match |
 | `skillGetPlaylistCsr` | `GET /halo/v1/skill/playlists/{playlistId}/csr` | Retrieve current playlist CSR for one or more players |

@@ -21,6 +21,9 @@ public static partial class HaloInput
     [GeneratedRegex(@"^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.json$", RegexOptions.IgnoreCase)]
     private static partial Regex ItemPathPattern();
 
+    [GeneratedRegex(@"^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(png|jpg|jpeg|webp)$", RegexOptions.IgnoreCase)]
+    private static partial Regex ImagePathPattern();
+
     /// <summary>Whether <paramref name="player"/> is <c>xuid(DIGITS)</c>.</summary>
     public static bool IsPlayer(string? player) => player is not null && XuidPattern().IsMatch(player);
 
@@ -29,6 +32,9 @@ public static partial class HaloInput
 
     /// <summary>Whether <paramref name="itemPath"/> is a GameCms item document: folders and a name of letters, digits, dashes and underscores, ending <c>.json</c>.</summary>
     public static bool IsItemPath(string? itemPath) => itemPath is not null && itemPath.Length <= 200 && ItemPathPattern().IsMatch(itemPath);
+
+    /// <summary>Whether <paramref name="imagePath"/> is a Waypoint image file: folders and a name of letters, digits, dashes and underscores, ending in an image extension.</summary>
+    public static bool IsImagePath(string? imagePath) => imagePath is not null && imagePath.Length <= 200 && ImagePathPattern().IsMatch(imagePath);
 
     /// <summary>Whether <paramref name="view"/> is the customization view <c>public</c> or <c>private</c>.</summary>
     public static bool IsCustomizationView(string? view)
