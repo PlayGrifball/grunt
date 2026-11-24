@@ -90,7 +90,7 @@ Generator errors:
 | `GET medals` | `Medals` | 1 h | GrifballWebApp medal metadata |
 | `GET gamecms/image?filePath=` | `GameCmsGetImage` | immutable | medal and CMS images (binary) |
 | `GET economy/customization?playerIds=` | `EconomyGetMultiplePlayersCustomization` | 60 s | equipped armor for several players |
-| `GET economy/players/{player}/customization?viewType=` | `EconomyPlayerCustomization` | 60 s | a player's Spartan body, appearance and cores |
+| `GET economy/players/{player}/customization` | `EconomyPlayerPublicCustomization` | 60 s | a player's public Spartan body, appearance and cores (the private view is not exposed) |
 | `GET economy/players/{player}/customization/armors` | `EconomyArmorCoresCustomization` | 60 s | a player's armor cores and equipped pieces |
 | `GET economy/players/{player}/customization/armors/{coreId}` | `EconomyArmorCoreCustomization` | 60 s | one armor core |
 | `GET gamecms/customization-catalog?flightId=` | `GameCmsGetCustomizationCatalog` | 1 h | item paths to names and images |
@@ -124,7 +124,7 @@ Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInf
   retried only when that ends within `MaxWait`, otherwise returned with the time left as `Retry-After`. Only calls that
   reach Halo count, so a cache hit takes nothing. Operations in no budget are not limited. The image's budgets
   (`appsettings.json`): `profile` (`UserByGamertag`, `Users`) 15 a minute, locked 5 minutes, no wait; `matchHistory` 2 a
-  second, locked 1 second, waits up to 2 seconds; `matchStats` 480 a minute. Metrics: `grunt.halo.budget.remaining`,
+  second, locked 1 second, waits up to 2 seconds; `matchStats` 480 a minute; `customization` (player armor reads, not measured) 120 a minute. Metrics: `grunt.halo.budget.remaining`,
   `.lockout`, `.wait` and `.rejections` (by budget and reason, `window` or `lockout`).
 - `byte[]` is still buffered once in memory, because `HaloInfiniteClient` returns `byte[]`. True streaming needs a
   Stream-returning client method, which is a follow-up.

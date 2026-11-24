@@ -57,7 +57,7 @@ Methods that are not exposed by the gateway throw `NotSupportedException` and id
 | `EconomyArmorCoreCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors/{coreId}` | Retrieve one armor core |
 | `EconomyArmorCoresCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors` | Retrieve a player's armor cores and equipped pieces |
 | `EconomyGetMultiplePlayersCustomization` | `GET /halo/v1/economy/customization` | Retrieve equipped customization for several players |
-| `EconomyPlayerCustomization` | `GET /halo/v1/economy/players/{player}/customization` | Retrieve one player's body, appearance and cores |
+| `EconomyPlayerPublicCustomization` | `GET /halo/v1/economy/players/{player}/customization` | Retrieve one player's public body, appearance and cores |
 | `GameCmsGetCustomizationCatalog` | `GET /halo/v1/gamecms/customization-catalog` | Retrieve the item catalog (paths to names and images) |
 | `GameCmsGetImage` | `GET /halo/v1/gamecms/image` | Retrieve an image from Halo's game CMS |
 | `SkillGetMatchPlayerResult` | `GET /halo/v1/skill/matches/{matchId}/players` | Retrieve per-player skill results for a match |
