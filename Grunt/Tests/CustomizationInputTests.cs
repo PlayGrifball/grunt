@@ -228,7 +228,7 @@ public class CustomizationInputTests
 
         foreach (var operation in new[]
                  {
-                     "EconomyPlayerPublicCustomization", "EconomyPlayerCustomization", "EconomyGetMultiplePlayersCustomization", "EconomyArmorCoresCustomization",
+                     "EconomyPlayerPublicCustomization", "EconomyPlayerAppearanceCustomization", "EconomyPlayerCustomization", "EconomyGetMultiplePlayersCustomization", "EconomyArmorCoresCustomization",
                      "EconomyArmorCoreCustomization", "GameCmsGetCustomizationCatalog",
                  })
             Assert.That(halo.BudgetOf(operation), Is.EqualTo("customization"), operation);

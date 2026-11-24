@@ -485,8 +485,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// <include file='../APIDocsExamples/Economy_PlayerAppearanceCustomization.xml' path='//example'/>
     /// <param name="player">The unique player XUID, in the format "xuid(XUID_VALUE)".</param>
     /// <returns>If successful, returns an instance of AppearanceCustomization containing customization information. Otherwise, returns null.</returns>
+    [GatewayExposed("economy/players/{player}/customization/appearance", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
     public async Task<HaloApiResultContainer<AppearanceCustomization, HaloApiErrorContainer>> EconomyPlayerAppearanceCustomization(string player)
     {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<AppearanceCustomization>("player must be xuid(XUID_VALUE)");
         return await ExecuteAPIRequest<AppearanceCustomization>(
             $"https://{HaloCoreEndpoints.EconomyOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/customization/appearance",
             HttpMethod.Get,
@@ -820,11 +823,13 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// Gets the full list of existing in-game items.
     /// </summary>
     /// <include file='../APIDocsExamples/GameCms_GetCustomizationCatalog.xml' path='//example'/>
-    /// <param name="flightId">Unique identifier for the currently active flight.</param>
+    /// <param name="flightId">Unique identifier for the currently active flight. When empty, the client's own clearance is used.</param>
     /// <returns>If successful, returns an instance of InventoryDefinition containing the full list of available items. Otherwise, returns null.</returns>
     [GatewayExposed("gamecms/customization-catalog", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
     public async Task<HaloApiResultContainer<InventoryDefinition, HaloApiErrorContainer>> GameCmsGetCustomizationCatalog(string flightId)
     {
+        if (string.IsNullOrEmpty(flightId))
+            flightId = ClearanceToken ?? string.Empty;
         if (!HaloInput.IsFlightId(flightId))
             return BadRequest<InventoryDefinition>("flightId must be a GUID");
         return await ExecuteAPIRequest<InventoryDefinition>(
@@ -2200,6 +2205,24 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     {
         return await ExecuteAPIRequest<PlayerClearance>(
             $"https://{HaloCoreEndpoints.SettingsOrigin}.{HaloCoreEndpoints.ServiceDomain}/oban/flight-configurations/titles/hi/audiences/{audience}/active?sandbox={sandbox}&build={buildNumber}",
+            HttpMethod.Get,
+            true,
+            false,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the clearance/flight ID Halo currently has the player on, the value its Economy and catalog calls want in the
+    /// <c>343-clearance</c> header. Sent without a clearance of its own.
+    /// </summary>
+    /// <param name="player">The player identifier in the format "xuid(000000)".</param>
+    /// <returns>An instance of PlayerClearance if the request is successful.</returns>
+    public async Task<HaloApiResultContainer<PlayerClearance, HaloApiErrorContainer>> SettingsGetActiveClearance(string player)
+    {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<PlayerClearance>("player must be xuid(XUID_VALUE)");
+        return await ExecuteAPIRequest<PlayerClearance>(
+            $"https://{HaloCoreEndpoints.SettingsOrigin}.{HaloCoreEndpoints.ServiceDomain}/oban/flight-configurations/titles/hi/audiences/retail/players/{player}/active",
             HttpMethod.Get,
             true,
             false,
