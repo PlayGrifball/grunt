@@ -59,7 +59,6 @@ public class GatewayGeneratorTests
             "[assembly: Surprenant.Grunt.Attributes.GenerateGatewayController(typeof(Surprenant.Grunt.Core.HaloInfiniteClient))]");
 
         Assert.That(run.GeneratorDiagnostics, Is.Empty);
-        Directory.CreateDirectory("/tmp/regen"); File.WriteAllText("/tmp/regen/HaloInfiniteController.generated.cs", run.Sources["HaloInfiniteController.generated.cs"]); // TEMP-REGEN
         var expected = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Snapshots", "HaloInfiniteController.generated.cs"));
         Assert.That(Normalize(run.Sources["HaloInfiniteController.generated.cs"]), Is.EqualTo(Normalize(expected)),
             "Generated controller changed; if intended, rebuild with -p:EmitCompilerGeneratedFiles=true and copy it into Tests/Snapshots.");
@@ -72,7 +71,6 @@ public class GatewayGeneratorTests
             "[assembly: Surprenant.Grunt.Attributes.GenerateGatewayClient(typeof(Surprenant.Grunt.Core.HaloInfiniteClient))]");
 
         Assert.That(run.GeneratorDiagnostics, Is.Empty);
-        Directory.CreateDirectory("/tmp/regen"); File.WriteAllText("/tmp/regen/HaloGatewayClient.generated.cs", run.Sources["HaloGatewayClient.generated.cs"]); // TEMP-REGEN
         var expected = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Snapshots", "HaloGatewayClient.generated.cs"));
         Assert.That(Normalize(run.Sources["HaloGatewayClient.generated.cs"]), Is.EqualTo(Normalize(expected)),
             "Generated client changed; if intended, rebuild with -p:EmitCompilerGeneratedFiles=true and copy it into Tests/Snapshots.");
