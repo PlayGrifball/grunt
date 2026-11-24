@@ -64,6 +64,11 @@ Methods that are not exposed by the gateway throw `NotSupportedException` and id
 | `Users` | `GET /halo/v1/users` | Resolve one or more XUIDs to Halo users |
 | `UserByGamertag` | `GET /halo/v1/users/by-gamertag/{gamertag}` | Resolve a gamertag to a Halo user |
 | `Medals` | `GET /halo/v1/medals` | Retrieve Halo Infinite medal metadata |
+| `EconomyGetMultiplePlayersCustomization` | `GET /halo/v1/economy/customization` | Retrieve equipped customization for several players |
+| `EconomyPlayerCustomization` | `GET /halo/v1/economy/players/{player}/customization` | Retrieve one player's body, appearance and cores |
+| `EconomyArmorCoresCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors` | Retrieve a player's armor cores and equipped pieces |
+| `EconomyArmorCoreCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors/{coreId}` | Retrieve one armor core |
+| `GameCmsGetCustomizationCatalog` | `GET /halo/v1/gamecms/customization-catalog` | Retrieve the item catalog (paths to names and images) |
 
 Parameters, response schemas, cache behavior, and error responses are documented in the
 [live Swagger UI](https://grunt.grifball.xyz/swagger/index.html).
