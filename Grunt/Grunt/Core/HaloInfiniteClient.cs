@@ -925,8 +925,34 @@ public class HaloInfiniteClient : IHaloInfiniteClient
             GlobalConstants.HALO_WAYPOINT_USER_AGENT);
     }
 
+    /// <summary>
+    /// Gets the emblem image paths: every emblem and each of its configurations, with the paths of the emblem and nameplate images.
+    /// </summary>
+    /// <remarks>Look an equipped emblem up by the file name of its path without <c>.json</c>, or by the item document's <c>commonData.id</c>, then by configuration id; download the paths from <c>gamecms/waypoint-image</c>.</remarks>
+    /// <returns>Emblem identifier to configuration identifier to the image paths.</returns>
+    [GatewayExposed("gamecms/emblem-mapping", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
+    public async Task<HaloApiResultContainer<Dictionary<string, Dictionary<string, EmblemImageAssets>>, HaloApiErrorContainer>> GameCmsGetEmblemMapping()
+    {
+        return await ExecuteAPIRequest<Dictionary<string, Dictionary<string, EmblemImageAssets>>>(
+            $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Waypoint/file/images/emblems/mapping.json",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_WAYPOINT_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Downloads an image from Halo Infinite's Waypoint file store, such as an emblem or nameplate.
+    /// </summary>
+    /// <remarks>Use a path from <c>gamecms/emblem-mapping</c>, for example <c>images/emblems/example.png</c>.</remarks>
+    /// <param name="filePath">Waypoint-relative path of the image.</param>
+    /// <returns>The image bytes and content type when the asset exists.</returns>
+    [GatewayExposed("gamecms/waypoint-image", Cache = GatewayCachePolicy.Immutable)]
     public async Task<HaloApiResultContainer<byte[], HaloApiErrorContainer>> GameCmsWaypointGetImage(string filePath)
     {
+        filePath = filePath?.TrimStart('/') ?? string.Empty;
+        if (!HaloInput.IsImagePath(filePath))
+            return BadRequest<byte[]>("filePath must be an image file path");
         return await ExecuteAPIRequest<byte[]>(
             $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Waypoint/file/{filePath}",
             HttpMethod.Get,
