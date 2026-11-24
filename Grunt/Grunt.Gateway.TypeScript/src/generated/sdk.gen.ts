@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyPlayerPublicCustomizationData, EconomyPlayerPublicCustomizationErrors, EconomyPlayerPublicCustomizationResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
+import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyPlayerAppearanceCustomizationData, EconomyPlayerAppearanceCustomizationErrors, EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerPublicCustomizationData, EconomyPlayerPublicCustomizationErrors, EconomyPlayerPublicCustomizationResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -48,6 +48,17 @@ export const economyArmorCoresCustomization = <ThrowOnError extends boolean = fa
 export const economyGetMultiplePlayersCustomization = <ThrowOnError extends boolean = false>(options?: Options<EconomyGetMultiplePlayersCustomizationData, ThrowOnError>): RequestResult<EconomyGetMultiplePlayersCustomizationResponses, EconomyGetMultiplePlayersCustomizationErrors, ThrowOnError> => (options?.client ?? client).get<EconomyGetMultiplePlayersCustomizationResponses, EconomyGetMultiplePlayersCustomizationErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }],
     url: '/halo/v1/economy/customization',
+    ...options
+});
+
+/**
+ * Gets the current player appearance customization state.
+ *
+ * If successful, returns an instance of AppearanceCustomization containing customization information. Otherwise, returns null.
+ */
+export const economyPlayerAppearanceCustomization = <ThrowOnError extends boolean = false>(options: Options<EconomyPlayerAppearanceCustomizationData, ThrowOnError>): RequestResult<EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerAppearanceCustomizationErrors, ThrowOnError> => (options.client ?? client).get<EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerAppearanceCustomizationErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/economy/players/{player}/customization/appearance',
     ...options
 });
 

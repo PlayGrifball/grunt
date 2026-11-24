@@ -51,6 +51,17 @@ export type SurprenantGruntModelsHaloApiErrorContainer = {
 /**
  * Container class that encapsulates the result from a Halo API call.
  */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteAppearanceCustomization_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfiniteAppearanceCustomization | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
 export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteArmorCore_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
     result?: SurprenantGruntModelsHaloInfiniteArmorCore | null;
     /**
@@ -262,6 +273,11 @@ export type SurprenantGruntModelsHaloInfiniteAppearance = {
     backdropImagePath?: string;
     emblem?: SurprenantGruntModelsHaloInfiniteEmblem;
     introEmotePath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteAppearanceCustomization = {
+    status?: string;
+    appearance?: SurprenantGruntModelsHaloInfiniteAppearance;
 };
 
 export type SurprenantGruntModelsHaloInfiniteArmorCore = {
@@ -1010,6 +1026,56 @@ export type EconomyGetMultiplePlayersCustomizationResponses = {
 
 export type EconomyGetMultiplePlayersCustomizationResponse = EconomyGetMultiplePlayersCustomizationResponses[keyof EconomyGetMultiplePlayersCustomizationResponses];
 
+export type EconomyPlayerAppearanceCustomizationData = {
+    body?: never;
+    path: {
+        /**
+         * The unique player XUID, in the format "xuid(XUID_VALUE)".
+         */
+        player: string;
+    };
+    query?: never;
+    url: '/halo/v1/economy/players/{player}/customization/appearance';
+};
+
+export type EconomyPlayerAppearanceCustomizationErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteAppearanceCustomization_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteAppearanceCustomization_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteAppearanceCustomization_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteAppearanceCustomization_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteAppearanceCustomization_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type EconomyPlayerAppearanceCustomizationError = EconomyPlayerAppearanceCustomizationErrors[keyof EconomyPlayerAppearanceCustomizationErrors];
+
+export type EconomyPlayerAppearanceCustomizationResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteAppearanceCustomization_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type EconomyPlayerAppearanceCustomizationResponse = EconomyPlayerAppearanceCustomizationResponses[keyof EconomyPlayerAppearanceCustomizationResponses];
+
 export type EconomyPlayerPublicCustomizationData = {
     body?: never;
     path: {
@@ -1065,7 +1131,7 @@ export type GameCmsGetCustomizationCatalogData = {
     path?: never;
     query?: {
         /**
-         * Unique identifier for the currently active flight.
+         * Unique identifier for the currently active flight. When empty, the client's own clearance is used.
          */
         flightId?: string;
     };
