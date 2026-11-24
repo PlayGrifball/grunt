@@ -117,3 +117,25 @@ public class ItemMetadataParsingTests
             => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body) });
     }
 }
+
+public class ItemNamesParsingTests
+{
+    private sealed class FixedHandler(string body) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body) });
+    }
+
+    [TestCase("status", "value", "translations")]
+    [TestCase("Status", "Value", "Translations")]
+    public async Task AnItemsTitle_IsRead_WhateverTheCaseOfItsKeys(string status, string value, string translations)
+    {
+        var body = $"{{\"CommonData\":{{\"Title\":{{\"{status}\":\"Ready\",\"{value}\":\"Olympus Helmet\",\"{translations}\":{{}}}}}}}}";
+        var client = new HaloInfiniteClient(new HttpClient(new FixedHandler(body)), "spartan", "xuid(1)", "0e3a52e6-1f6b-4b72-8a5b-0123456789ab");
+
+        var result = await client.GameCmsGetItem("inventory/a.json", "");
+
+        Assert.That(result.Result!.CommonData.Title.Value, Is.EqualTo("Olympus Helmet"));
+        Assert.That(result.Result.CommonData.Title.Status, Is.EqualTo("Ready"));
+    }
+}
