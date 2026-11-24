@@ -72,7 +72,7 @@ retry:
 # `limit` calls in any `window`, a `lockout` after Halo answers 429 (its own Retry-After when longer), and `maxWait`, how
 # long a call waits for room before it is answered 429 with the time until there is room, never sent to Halo. Empty: the
 # image's (appsettings.json, measured on 2026-11-15): profile (UserByGamertag, Users) 15 a minute, locked 5 minutes,
-# no wait; matchHistory 2 a second, locked 1 second, waits up to 2; matchStats 480 a minute. A budget set here overrides
+# no wait; matchHistory 2 a second, locked 1 second, waits up to 2; matchStats 480 a minute; customization (player armor reads, unmeasured) 120 a minute. A budget set here overrides
 # the image's field by field; `operations` replaces its list by index.
 budgets: {}
 #  profile:

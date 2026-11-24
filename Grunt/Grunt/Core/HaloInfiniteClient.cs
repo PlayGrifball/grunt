@@ -213,8 +213,13 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// <param name="player">The unique player XUID, in the format "xuid(XUID_VALUE)".</param>
     /// <param name="coreId">The unique identifier for an armor core. An example value is "017-001-eag-c13d0b38".</param>
     /// <returns>If successful, returns an instance of ArmorCore containing customization information. Otherwise, returns null.</returns>
+    [GatewayExposed("economy/players/{player}/customization/armors/{coreId}", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
     public async Task<HaloApiResultContainer<ArmorCore, HaloApiErrorContainer>> EconomyArmorCoreCustomization(string player, string coreId)
     {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<ArmorCore>("player must be xuid(XUID_VALUE)");
+        if (!HaloInput.IsCoreId(coreId))
+            return BadRequest<ArmorCore>("coreId must be letters, digits and dashes");
         return await ExecuteAPIRequest<ArmorCore>(
             $"https://{HaloCoreEndpoints.EconomyOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/customization/armors/{coreId}",
             HttpMethod.Get,
@@ -229,8 +234,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// <include file='../APIDocsExamples/Economy_ArmorCoresCustomization.xml' path='//example'/>
     /// <param name="player">The unique player XUID, in the format "xuid(XUID_VALUE)".</param>
     /// <returns>If successful, returns an instance of ArmorCoreCollection that contains the list of armor cores. Otherwise, returns null.</returns>
+    [GatewayExposed("economy/players/{player}/customization/armors", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
     public async Task<HaloApiResultContainer<ArmorCoreCollection, HaloApiErrorContainer>> EconomyArmorCoresCustomization(string player)
     {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<ArmorCoreCollection>("player must be xuid(XUID_VALUE)");
         return await ExecuteAPIRequest<ArmorCoreCollection>(
             $"https://{HaloCoreEndpoints.EconomyOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/customization/armors",
             HttpMethod.Get,
@@ -358,8 +366,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// <include file='../APIDocsExamples/Economy_GetMultiplePlayersCustomization.xml' path='//example'/>
     /// <param name="playerIds">Array of player IDs. Each ID string should be in the format of "xuid(XUID_VALUE)."</param>
     /// <returns>If successful, returns an instance of PlayerCustomizationCollection that contains player customizations. Otherwise, returns null.</returns>
+    [GatewayExposed("economy/customization", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
     public async Task<HaloApiResultContainer<PlayerCustomizationCollection, HaloApiErrorContainer>> EconomyGetMultiplePlayersCustomization(List<string> playerIds)
     {
+        if (playerIds is null || playerIds.Count == 0 || playerIds.Count > HaloInput.MaxPlayersPerCall || !playerIds.TrueForAll(HaloInput.IsPlayer))
+            return BadRequest<PlayerCustomizationCollection>($"playerIds must hold 1 to {HaloInput.MaxPlayersPerCall} values of the form xuid(XUID_VALUE)");
         var formattedPlayerList = string.Join(",", playerIds);
         return await ExecuteAPIRequest<PlayerCustomizationCollection>(
             $"https://{HaloCoreEndpoints.EconomyOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/customization?players={formattedPlayerList}",
@@ -493,6 +504,10 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// <returns>If successful, returns an instance of CustomizationData containing player customizations. Otherwise, returns null.</returns>
     public async Task<HaloApiResultContainer<CustomizationData, HaloApiErrorContainer>> EconomyPlayerCustomization(string player, string viewType)
     {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<CustomizationData>("player must be xuid(XUID_VALUE)");
+        if (!HaloInput.IsCustomizationView(viewType))
+            return BadRequest<CustomizationData>("viewType must be public or private");
         return await ExecuteAPIRequest<CustomizationData>(
             $"https://{HaloCoreEndpoints.EconomyOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/customization?view={viewType}",
             HttpMethod.Get,
@@ -500,6 +515,15 @@ public class HaloInfiniteClient : IHaloInfiniteClient
             true,
             GlobalConstants.HALO_WAYPOINT_USER_AGENT);
     }
+
+    /// <summary>
+    /// Gets a player's public customization: the Spartan body, appearance, and the cores they have equipped.
+    /// </summary>
+    /// <param name="player">Player identifier formatted as <c>xuid(XUID_VALUE)</c>.</param>
+    /// <returns>The equipped customization other players see, with armor cores and their per-slot item paths.</returns>
+    [GatewayExposed("economy/players/{player}/customization", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
+    public Task<HaloApiResultContainer<CustomizationData, HaloApiErrorContainer>> EconomyPlayerPublicCustomization(string player)
+        => EconomyPlayerCustomization(player, "public");
 
     /// <summary>
     /// Gets available reward tracks for a player based on current and past battle passes.
@@ -798,8 +822,11 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// <include file='../APIDocsExamples/GameCms_GetCustomizationCatalog.xml' path='//example'/>
     /// <param name="flightId">Unique identifier for the currently active flight.</param>
     /// <returns>If successful, returns an instance of InventoryDefinition containing the full list of available items. Otherwise, returns null.</returns>
+    [GatewayExposed("gamecms/customization-catalog", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
     public async Task<HaloApiResultContainer<InventoryDefinition, HaloApiErrorContainer>> GameCmsGetCustomizationCatalog(string flightId)
     {
+        if (!HaloInput.IsFlightId(flightId))
+            return BadRequest<InventoryDefinition>("flightId must be a GUID");
         return await ExecuteAPIRequest<InventoryDefinition>(
             $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Progression/file/inventory/catalog/inventory_catalog.json?flight={flightId}",
             HttpMethod.Get,
@@ -2480,6 +2507,9 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     /// <param name="contentType">Content type for POST requests. By default it's `application/json`.</param>
     /// <param name="operation">The calling method; names the request in the <c>grunt.halo.requests</c> metric.</param>
     /// <returns>Response string in case of a successful request. Null if request failed.</returns>
+    private static HaloApiResultContainer<T, HaloApiErrorContainer> BadRequest<T>(string message)
+        => new(default, new HaloApiErrorContainer { Code = 400, Message = message });
+
     private async Task<HaloApiResultContainer<T, HaloApiErrorContainer>> ExecuteAPIRequest<T>(string endpoint, HttpMethod method, bool useSpartanToken, bool useClearance, string userAgent, string content = "", ApiContentType contentType = ApiContentType.Json, [CallerMemberName] string operation = "")
     {
         HaloApiResultContainer<T, HaloApiErrorContainer> resultContainer = new(default, new HaloApiErrorContainer());
