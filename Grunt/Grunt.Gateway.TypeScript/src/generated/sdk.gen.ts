@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
+import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyPlayerCustomizationData, EconomyPlayerCustomizationErrors, EconomyPlayerCustomizationResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -17,6 +17,61 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
      */
     meta?: keyof ClientMeta extends never ? Record<string, unknown> : ClientMeta;
 };
+
+/**
+ * Gets information about a specific armor core a player owns.
+ *
+ * If successful, returns an instance of ArmorCore containing customization information. Otherwise, returns null.
+ */
+export const economyArmorCoreCustomization = <ThrowOnError extends boolean = false>(options: Options<EconomyArmorCoreCustomizationData, ThrowOnError>): RequestResult<EconomyArmorCoreCustomizationResponses, EconomyArmorCoreCustomizationErrors, ThrowOnError> => (options.client ?? client).get<EconomyArmorCoreCustomizationResponses, EconomyArmorCoreCustomizationErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/economy/players/{player}/customization/armors/{coreId}',
+    ...options
+});
+
+/**
+ * Gets information about all armor cores a player owns.
+ *
+ * If successful, returns an instance of ArmorCoreCollection that contains the list of armor cores. Otherwise, returns null.
+ */
+export const economyArmorCoresCustomization = <ThrowOnError extends boolean = false>(options: Options<EconomyArmorCoresCustomizationData, ThrowOnError>): RequestResult<EconomyArmorCoresCustomizationResponses, EconomyArmorCoresCustomizationErrors, ThrowOnError> => (options.client ?? client).get<EconomyArmorCoresCustomizationResponses, EconomyArmorCoresCustomizationErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/economy/players/{player}/customization/armors',
+    ...options
+});
+
+/**
+ * Gets information about customizations for multiple players.
+ *
+ * If successful, returns an instance of PlayerCustomizationCollection that contains player customizations. Otherwise, returns null.
+ */
+export const economyGetMultiplePlayersCustomization = <ThrowOnError extends boolean = false>(options?: Options<EconomyGetMultiplePlayersCustomizationData, ThrowOnError>): RequestResult<EconomyGetMultiplePlayersCustomizationResponses, EconomyGetMultiplePlayersCustomizationErrors, ThrowOnError> => (options?.client ?? client).get<EconomyGetMultiplePlayersCustomizationResponses, EconomyGetMultiplePlayersCustomizationErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/economy/customization',
+    ...options
+});
+
+/**
+ * Gets information about available player customizations.
+ *
+ * If successful, returns an instance of CustomizationData containing player customizations. Otherwise, returns null.
+ */
+export const economyPlayerCustomization = <ThrowOnError extends boolean = false>(options: Options<EconomyPlayerCustomizationData, ThrowOnError>): RequestResult<EconomyPlayerCustomizationResponses, EconomyPlayerCustomizationErrors, ThrowOnError> => (options.client ?? client).get<EconomyPlayerCustomizationResponses, EconomyPlayerCustomizationErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/economy/players/{player}/customization',
+    ...options
+});
+
+/**
+ * Gets the full list of existing in-game items.
+ *
+ * If successful, returns an instance of InventoryDefinition containing the full list of available items. Otherwise, returns null.
+ */
+export const gameCmsGetCustomizationCatalog = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetCustomizationCatalogData, ThrowOnError>): RequestResult<GameCmsGetCustomizationCatalogResponses, GameCmsGetCustomizationCatalogErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetCustomizationCatalogResponses, GameCmsGetCustomizationCatalogErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/customization-catalog',
+    ...options
+});
 
 /**
  * Downloads an image asset from Halo Infinite's game content catalog.

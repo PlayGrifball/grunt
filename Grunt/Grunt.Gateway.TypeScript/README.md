@@ -48,6 +48,11 @@ const result = await userByGamertag({
 | `users` | `GET /halo/v1/users` | Resolve one or more XUIDs to Halo users |
 | `userByGamertag` | `GET /halo/v1/users/by-gamertag/{gamertag}` | Resolve a gamertag to a Halo user |
 | `medals` | `GET /halo/v1/medals` | Retrieve Halo Infinite medal metadata |
+| `economyGetMultiplePlayersCustomization` | `GET /halo/v1/economy/customization` | Retrieve equipped customization for several players |
+| `economyPlayerCustomization` | `GET /halo/v1/economy/players/{player}/customization` | Retrieve one player's body, appearance and cores |
+| `economyArmorCoresCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors` | Retrieve a player's armor cores and equipped pieces |
+| `economyArmorCoreCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors/{coreId}` | Retrieve one armor core |
+| `gameCmsGetCustomizationCatalog` | `GET /halo/v1/gamecms/customization-catalog` | Retrieve the item catalog (paths to names and images) |
 
 The generated option and result types provide each operation's path, query, response, and error shapes. See the
 [live Swagger UI](https://grunt.grifball.xyz/swagger/index.html) for the complete schemas and response descriptions.
