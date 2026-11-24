@@ -89,6 +89,11 @@ Generator errors:
 | `GET users/by-gamertag/{gamertag}` | `UserByGamertag` | 300 s | GrifballWebApp gamertag to XUID lookups |
 | `GET medals` | `Medals` | 1 h | GrifballWebApp medal metadata |
 | `GET gamecms/image?filePath=` | `GameCmsGetImage` | immutable | medal and CMS images (binary) |
+| `GET economy/customization?playerIds=` | `EconomyGetMultiplePlayersCustomization` | 60 s | equipped armor for several players |
+| `GET economy/players/{player}/customization?viewType=` | `EconomyPlayerCustomization` | 60 s | a player's Spartan body, appearance and cores |
+| `GET economy/players/{player}/customization/armors` | `EconomyArmorCoresCustomization` | 60 s | a player's armor cores and equipped pieces |
+| `GET economy/players/{player}/customization/armors/{coreId}` | `EconomyArmorCoreCustomization` | 60 s | one armor core |
+| `GET gamecms/customization-catalog?flightId=` | `GameCmsGetCustomizationCatalog` | 1 h | item paths to names and images |
 
 Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInfiniteClient`.
 
