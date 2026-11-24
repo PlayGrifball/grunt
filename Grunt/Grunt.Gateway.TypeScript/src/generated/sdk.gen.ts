@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyPlayerAppearanceCustomizationData, EconomyPlayerAppearanceCustomizationErrors, EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerPublicCustomizationData, EconomyPlayerPublicCustomizationErrors, EconomyPlayerPublicCustomizationResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
+import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyPlayerAppearanceCustomizationData, EconomyPlayerAppearanceCustomizationErrors, EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerPublicCustomizationData, EconomyPlayerPublicCustomizationErrors, EconomyPlayerPublicCustomizationResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, GameCmsGetItemData, GameCmsGetItemErrors, GameCmsGetItemResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -92,6 +92,17 @@ export const gameCmsGetCustomizationCatalog = <ThrowOnError extends boolean = fa
 export const gameCmsGetImage = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetImageData, ThrowOnError>): RequestResult<GameCmsGetImageResponses, GameCmsGetImageErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetImageResponses, GameCmsGetImageErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }],
     url: '/halo/v1/gamecms/image',
+    ...options
+});
+
+/**
+ * Gets a specific item from the Game CMS, such as armor emplems, weapon cores, vehicle cores, and others.
+ *
+ * For example, you may find that you can get the data about an armor emblem with the path "/inventory/armor/emblems/013-001-363f4a25.json".
+ */
+export const gameCmsGetItem = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetItemData, ThrowOnError>): RequestResult<GameCmsGetItemResponses, GameCmsGetItemErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetItemResponses, GameCmsGetItemErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/item',
     ...options
 });
 

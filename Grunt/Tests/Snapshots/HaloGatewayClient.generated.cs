@@ -259,9 +259,15 @@ public partial class HaloGatewayClient : global::Surprenant.Grunt.Core.IHaloInfi
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<byte[], global::Surprenant.Grunt.Models.HaloApiErrorContainer>> GameCmsWaypointGetImage(string filePath)
         => throw new global::System.NotSupportedException("IHaloInfiniteClient.GameCmsWaypointGetImage is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
 
-    /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
+    /// <summary>GET halo/v1/gamecms/item on the gateway.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> GameCmsGetItem(string itemPath, string flightId)
-        => throw new global::System.NotSupportedException("IHaloInfiniteClient.GameCmsGetItem is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
+    {
+        var __path = "halo/v1/gamecms/item";
+        var __query = new global::Surprenant.Grunt.Gateway.Client.HaloGatewayUri.QueryBuilder();
+        __query.Add("itemPath", itemPath);
+        __query.Add("flightId", flightId);
+        return _transport.SendAsync<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem>(global::System.Net.Http.HttpMethod.Get, __path + __query.ToString(), null, "GameCmsGetItem");
+    }
 
     /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.LobbyHopperErrorMessageList, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> GameCmsGetLobbyErrorMessages(string flightId)

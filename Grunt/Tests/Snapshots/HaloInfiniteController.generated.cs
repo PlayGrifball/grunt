@@ -390,6 +390,61 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
+    /// Gets a specific item from the Game CMS, such as armor emplems, weapon cores, vehicle cores, and others.
+    /// </summary>
+    /// <remarks>
+    /// For example, you may find that you can get the data about an armor emblem with the path "/inventory/armor/emblems/013-001-363f4a25.json".
+    /// </remarks>
+    /// <param name="itemPath">
+    /// Path to the item to be obtained. Example is "/inventory/armor/emblems/013-001-363f4a25.json".
+    /// </param>
+    /// <param name="flightId">
+    /// Unique ID for the currently active flight. When empty, the client's own clearance is used.
+    /// </param>
+    /// <returns>
+    /// If successful, an instance of InGameItem. Otherwise, null.
+    /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
+    [global::Microsoft.AspNetCore.Mvc.HttpGet("gamecms/item")]
+    [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 3600)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
+    public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> GameCmsGetItem([global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "itemPath")] string itemPath, [global::Microsoft.AspNetCore.Mvc.FromQuery(Name = "flightId")] string flightId)
+    {
+        try
+        {
+            var __response = await _client.GameCmsGetItem(itemPath, flightId).ConfigureAwait(false);
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Json(__response, HttpContext);
+        }
+        catch (global::System.Exception __ex) when (!HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Failure<global::Surprenant.Grunt.Models.HaloInfinite.InGameItem>(__ex, HttpContext, _logger, "GameCmsGetItem");
+        }
+    }
+
+    /// <summary>
     /// Gets the skill results calculated for selected players in a completed match.
     /// </summary>
     /// <remarks>

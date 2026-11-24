@@ -18,11 +18,17 @@ public static partial class HaloInput
     [GeneratedRegex(@"^[A-Za-z0-9-]{1,100}$")]
     private static partial Regex CoreIdPattern();
 
+    [GeneratedRegex(@"^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.json$", RegexOptions.IgnoreCase)]
+    private static partial Regex ItemPathPattern();
+
     /// <summary>Whether <paramref name="player"/> is <c>xuid(DIGITS)</c>.</summary>
     public static bool IsPlayer(string? player) => player is not null && XuidPattern().IsMatch(player);
 
     /// <summary>Whether <paramref name="coreId"/> is letters, digits and dashes, like <c>017-001-eag-c13d0b38</c>.</summary>
     public static bool IsCoreId(string? coreId) => coreId is not null && CoreIdPattern().IsMatch(coreId);
+
+    /// <summary>Whether <paramref name="itemPath"/> is a GameCms item document: folders and a name of letters, digits, dashes and underscores, ending <c>.json</c>.</summary>
+    public static bool IsItemPath(string? itemPath) => itemPath is not null && itemPath.Length <= 200 && ItemPathPattern().IsMatch(itemPath);
 
     /// <summary>Whether <paramref name="view"/> is the customization view <c>public</c> or <c>private</c>.</summary>
     public static bool IsCustomizationView(string? view)
