@@ -38,6 +38,11 @@ const result = await userByGamertag({
 
 | TypeScript function | HTTP endpoint | Purpose |
 |:--------------------|:--------------|:--------|
+| `economyArmorCoreCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors/{coreId}` | Retrieve one armor core |
+| `economyArmorCoresCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors` | Retrieve a player's armor cores and equipped pieces |
+| `economyGetMultiplePlayersCustomization` | `GET /halo/v1/economy/customization` | Retrieve equipped customization for several players |
+| `economyPlayerCustomization` | `GET /halo/v1/economy/players/{player}/customization` | Retrieve one player's body, appearance and cores |
+| `gameCmsGetCustomizationCatalog` | `GET /halo/v1/gamecms/customization-catalog` | Retrieve the item catalog (paths to names and images) |
 | `gameCmsGetImage` | `GET /halo/v1/gamecms/image` | Retrieve an image from Halo's game CMS |
 | `skillGetMatchPlayerResult` | `GET /halo/v1/skill/matches/{matchId}/players` | Retrieve per-player skill results for a match |
 | `skillGetPlaylistCsr` | `GET /halo/v1/skill/playlists/{playlistId}/csr` | Retrieve current playlist CSR for one or more players |
@@ -48,11 +53,6 @@ const result = await userByGamertag({
 | `users` | `GET /halo/v1/users` | Resolve one or more XUIDs to Halo users |
 | `userByGamertag` | `GET /halo/v1/users/by-gamertag/{gamertag}` | Resolve a gamertag to a Halo user |
 | `medals` | `GET /halo/v1/medals` | Retrieve Halo Infinite medal metadata |
-| `economyGetMultiplePlayersCustomization` | `GET /halo/v1/economy/customization` | Retrieve equipped customization for several players |
-| `economyPlayerCustomization` | `GET /halo/v1/economy/players/{player}/customization` | Retrieve one player's body, appearance and cores |
-| `economyArmorCoresCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors` | Retrieve a player's armor cores and equipped pieces |
-| `economyArmorCoreCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors/{coreId}` | Retrieve one armor core |
-| `gameCmsGetCustomizationCatalog` | `GET /halo/v1/gamecms/customization-catalog` | Retrieve the item catalog (paths to names and images) |
 
 The generated option and result types provide each operation's path, query, response, and error shapes. See the
 [live Swagger UI](https://grunt.grifball.xyz/swagger/index.html) for the complete schemas and response descriptions.
