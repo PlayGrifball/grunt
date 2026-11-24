@@ -168,15 +168,15 @@ public class CustomizationInputTests
         Assert.That(handler.Requests, Has.Count.EqualTo(1));
     }
 
-    [TestCase(new string[0], Description = "no players")]
-    [TestCase(new[] { "xuid(1)", "" })]
-    [TestCase(new[] { "xuid(1)", "xuid(2)&x=1" })]
-    [TestCase(new[] { "xuid(1),xuid(2)" }, Description = "a comma smuggles a second player past the count")]
-    public async Task APlayerListThatIsEmptyOrHoldsANonXuid_Gets400_WithoutAskingHalo(string[] players)
+    [TestCase("", Description = "no players")]
+    [TestCase("xuid(1)|")]
+    [TestCase("xuid(1)|xuid(2)&x=1")]
+    [TestCase("xuid(1),xuid(2)", Description = "a comma smuggles a second player past the count")]
+    public async Task APlayerListThatIsEmptyOrHoldsANonXuid_Gets400_WithoutAskingHalo(string joined)
     {
         var (client, handler) = Create();
 
-        var result = await client.EconomyGetMultiplePlayersCustomization(players.ToList());
+        var result = await client.EconomyGetMultiplePlayersCustomization((joined.Length == 0 ? new List<string>() : joined.Split('|').ToList()));
 
         Assert.That(result.Error.Code, Is.EqualTo(400));
         Assert.That(handler.Requests, Is.Empty);
