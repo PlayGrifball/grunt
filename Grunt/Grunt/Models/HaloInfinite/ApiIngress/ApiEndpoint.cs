@@ -15,6 +15,7 @@ public class ApiEndpoint
     public string QueryString { get; set; }
     public string RetryPolicyId { get; set; }
     public string TopicName { get; set; }
+    [System.Text.Json.Serialization.JsonConverter(typeof(Surprenant.Grunt.Converters.LenientIntJsonConverter))]
     public int AcknowledgementTypeId { get; set; }
     public bool AuthenticationLifetimeExtensionSupported { get; set; }
     public bool ClearanceAware { get; set; }

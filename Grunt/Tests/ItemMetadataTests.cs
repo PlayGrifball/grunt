@@ -92,3 +92,28 @@ public class ItemMetadataTests
         Assert.That(exposed, Does.Contain("GameCmsGetItem"));
     }
 }
+
+public class ItemMetadataParsingTests
+{
+    [TestCase("\"AcknowledgementTypeId\": \"None\"", Description = "Halo names it on item documents")]
+    [TestCase("\"AcknowledgementTypeId\": 0")]
+    [TestCase("\"AcknowledgementTypeId\": \"2\"")]
+    public async Task AnItemWhoseMediaUrlNamesItsAcknowledgementType_IsRead(string field)
+    {
+        var body = "{\"CommonData\":{\"Title\":{\"Value\":\"Olympus Helmet\"},\"DisplayPath\":{\"Media\":{\"MediaUrl\":{\"Path\":\"/x.png\"," + field + "}}}}}";
+        var handler = new FixedHandler(body);
+        var client = new HaloInfiniteClient(new HttpClient(handler), "spartan", "xuid(1)", "0e3a52e6-1f6b-4b72-8a5b-0123456789ab");
+
+        var result = await client.GameCmsGetItem("inventory/a.json", "");
+
+        Assert.That(result.Error.Code, Is.EqualTo(200));
+        Assert.That(result.Result!.CommonData.Title.Value, Is.EqualTo("Olympus Helmet"));
+        Assert.That(result.Result.CommonData.DisplayPath.Media.MediaUrl.Path, Is.EqualTo("/x.png"));
+    }
+
+    private sealed class FixedHandler(string body) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body) });
+    }
+}
