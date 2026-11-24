@@ -27,6 +27,10 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
     // One for every call with this account, so its budgets hold across callers (ClientConfiguration:Budgets)
     private readonly HaloBudgets _budgets;
 
+    // The account's flight, which Halo's Economy and catalog calls want in the 343-clearance header; fetched with the latest tokens
+    private readonly HaloClearanceCache _clearance;
+    private (string SpartanToken, string Xuid)? _clearanceCredentials;
+
     // Semaphore to we only modify _cachedTokens with one thread at a time
     private readonly SemaphoreSlim semaphoreSlim = new(1, 1);
     private Tokens? _cachedTokens;
@@ -45,6 +49,30 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
         _accountAuthorization = accountAuthorization;
         _oAuthStorage = oAuthStorage;
         _budgets = new HaloBudgets(optionsMonitor.CurrentValue?.Budgets, logger: _logger);
+        _clearance = new HaloClearanceCache(FetchClearanceAsync, TimeSpan.FromMinutes(10), logger: _logger);
+    }
+
+    private async Task<string?> FetchClearanceAsync()
+    {
+        if (_clearanceCredentials is not { } credentials)
+            return null;
+
+        var client = new HaloInfiniteClient(_httpClientFactory.CreateClient(nameof(IHaloInfiniteClient)), credentials.SpartanToken, credentials.Xuid);
+        var result = await client.SettingsGetActiveClearance($"xuid({credentials.Xuid})");
+        if (result.Result is null || string.IsNullOrEmpty(result.Result.FlightConfigurationId))
+        {
+            _logger.LogWarning("Halo gave no clearance for the account (HTTP {Code}); Economy calls may be refused", result.Error.Code);
+            return null;
+        }
+
+        return result.Result.FlightConfigurationId;
+    }
+
+    private async Task<HaloInfiniteClient> BuildClientAsync(string spartanToken, string xuid)
+    {
+        _clearanceCredentials = (spartanToken, xuid);
+        var clearance = await _clearance.GetAsync();
+        return new HaloInfiniteClient(_httpClientFactory.CreateClient(nameof(IHaloInfiniteClient)), spartanToken, xuid, clearance ?? string.Empty);
     }
 
     /// <inheritdoc/> 
@@ -126,7 +154,7 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
             HaloTicket = haloTicket,
             ExtendedTicket = extendedTicket,
             HaloToken = haloToken,
-        }, new HaloInfiniteClient(_httpClientFactory.CreateClient(nameof(IHaloInfiniteClient)), haloToken.Token, extendedTicket.DisplayClaims.Xui[0].Xid));
+        }, await BuildClientAsync(haloToken.Token, extendedTicket.DisplayClaims.Xui[0].Xid));
     }
 
     private async Task<OAuthToken> RequestNewToken(XboxAuthenticationClient manager, ClientConfiguration clientConfig)
@@ -189,7 +217,7 @@ public partial class HaloInfiniteClientFactory : IHaloInfiniteClientFactory
             var haloToken = _cachedTokens!.HaloToken;
             var extendedTicket = _cachedTokens.ExtendedTicket;
             _logger.LogDebug("Halo Token appears valid, expires at {time}, reusing existing tokens", expires);
-            return new HaloInfiniteClient(_httpClientFactory.CreateClient(nameof(IHaloInfiniteClient)), haloToken.Token, extendedTicket.DisplayClaims.Xui[0].Xid);
+            return await BuildClientAsync(haloToken.Token, extendedTicket.DisplayClaims.Xui[0].Xid);
         }
         catch (Exception ex)
         {

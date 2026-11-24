@@ -137,9 +137,13 @@ public partial class HaloGatewayClient : global::Surprenant.Grunt.Core.IHaloInfi
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.GenericCore, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> EconomyOwnedCoreDetails(string player, string coreId)
         => throw new global::System.NotSupportedException("IHaloInfiniteClient.EconomyOwnedCoreDetails is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
 
-    /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
+    /// <summary>GET halo/v1/economy/players/{player}/customization/appearance on the gateway.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> EconomyPlayerAppearanceCustomization(string player)
-        => throw new global::System.NotSupportedException("IHaloInfiniteClient.EconomyPlayerAppearanceCustomization is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
+    {
+        var __path = "halo/v1/economy/players/" + global::Surprenant.Grunt.Gateway.Client.HaloGatewayUri.Segment(player) + "/customization/appearance";
+        var __query = new global::Surprenant.Grunt.Gateway.Client.HaloGatewayUri.QueryBuilder();
+        return _transport.SendAsync<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization>(global::System.Net.Http.HttpMethod.Get, __path + __query.ToString(), null, "EconomyPlayerAppearanceCustomization");
+    }
 
     /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.CustomizationData, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> EconomyPlayerCustomization(string player, string viewType)
@@ -526,6 +530,10 @@ public partial class HaloGatewayClient : global::Surprenant.Grunt.Core.IHaloInfi
     /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerClearance, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> SettingsGetClearance(string audience, string sandbox, string buildNumber)
         => throw new global::System.NotSupportedException("IHaloInfiniteClient.SettingsGetClearance is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
+
+    /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
+    public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerClearance, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> SettingsGetActiveClearance(string player)
+        => throw new global::System.NotSupportedException("IHaloInfiniteClient.SettingsGetActiveClearance is not exposed by the Halo gateway. Mark it [GatewayExposed] in Grunt (read-only methods only), or call Halo directly with HaloInfiniteClientFactory.");
 
     /// <summary>Not exposed by the gateway: always throws <see cref="global::System.NotSupportedException"/>.</summary>
     public global::System.Threading.Tasks.Task<global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.PlayerClearance, global::Surprenant.Grunt.Models.HaloApiErrorContainer>> SettingsGetPlayerClearance(string audience, string player, string sandbox, string buildNumber)

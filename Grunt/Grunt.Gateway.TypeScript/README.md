@@ -41,6 +41,7 @@ const result = await userByGamertag({
 | `economyArmorCoreCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors/{coreId}` | Retrieve one armor core |
 | `economyArmorCoresCustomization` | `GET /halo/v1/economy/players/{player}/customization/armors` | Retrieve a player's armor cores and equipped pieces |
 | `economyGetMultiplePlayersCustomization` | `GET /halo/v1/economy/customization` | Retrieve equipped customization for several players |
+| `economyPlayerAppearanceCustomization` | `GET /halo/v1/economy/players/{player}/customization/appearance` | Retrieve one player's service tag, emblem, backdrop and poses |
 | `economyPlayerPublicCustomization` | `GET /halo/v1/economy/players/{player}/customization` | Retrieve one player's public body, appearance and cores |
 | `gameCmsGetCustomizationCatalog` | `GET /halo/v1/gamecms/customization-catalog` | Retrieve the item catalog (paths to names and images) |
 | `gameCmsGetImage` | `GET /halo/v1/gamecms/image` | Retrieve an image from Halo's game CMS |

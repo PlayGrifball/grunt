@@ -182,6 +182,58 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     }
 
     /// <summary>
+    /// Gets the current player appearance customization state.
+    /// </summary>
+    /// <remarks>
+    /// If successful, returns an instance of AppearanceCustomization containing customization information. Otherwise, returns null.
+    /// </remarks>
+    /// <param name="player">
+    /// The unique player XUID, in the format "xuid(XUID_VALUE)".
+    /// </param>
+    /// <returns>
+    /// If successful, returns an instance of AppearanceCustomization containing customization information. Otherwise, returns null.
+    /// </returns>
+    /// <response code="400">
+    /// The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+    /// </response>
+    /// <response code="401">
+    /// The X-Api-Key header is missing or invalid.
+    /// </response>
+    /// <response code="404">
+    /// Halo could not find the requested player, match, playlist, asset, or other resource.
+    /// </response>
+    /// <response code="429">
+    /// The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+    /// </response>
+    /// <response code="502">
+    /// The gateway could not authenticate to Halo or get a usable upstream response after retries.
+    /// </response>
+    /// <response code="503">
+    /// Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+    /// </response>
+    [global::Microsoft.AspNetCore.Mvc.HttpGet("economy/players/{player}/customization/appearance")]
+    [global::Surprenant.Grunt.Gateway.HaloGatewayCacheAttribute((global::Surprenant.Grunt.Attributes.GatewayCachePolicy)1, 60)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 200)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 400)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 404)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 429)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 502)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(typeof(global::Surprenant.Grunt.Models.HaloApiResultContainer<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization, global::Surprenant.Grunt.Models.HaloApiErrorContainer>), 503)]
+    [global::Microsoft.AspNetCore.Mvc.ProducesResponseType(401)]
+    public async global::System.Threading.Tasks.Task<global::Microsoft.AspNetCore.Mvc.IActionResult> EconomyPlayerAppearanceCustomization([global::Microsoft.AspNetCore.Mvc.FromRoute(Name = "player")] string player)
+    {
+        try
+        {
+            var __response = await _client.EconomyPlayerAppearanceCustomization(player).ConfigureAwait(false);
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Json(__response, HttpContext);
+        }
+        catch (global::System.Exception __ex) when (!HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            return global::Surprenant.Grunt.Gateway.HaloGatewayResults.Failure<global::Surprenant.Grunt.Models.HaloInfinite.AppearanceCustomization>(__ex, HttpContext, _logger, "EconomyPlayerAppearanceCustomization");
+        }
+    }
+
+    /// <summary>
     /// Gets a player's public customization: the Spartan body, appearance, and the cores they have equipped.
     /// </summary>
     /// <remarks>
@@ -240,7 +292,7 @@ public partial class HaloInfiniteController : global::Microsoft.AspNetCore.Mvc.C
     /// If successful, returns an instance of InventoryDefinition containing the full list of available items. Otherwise, returns null.
     /// </remarks>
     /// <param name="flightId">
-    /// Unique identifier for the currently active flight.
+    /// Unique identifier for the currently active flight. When empty, the client's own clearance is used.
     /// </param>
     /// <returns>
     /// If successful, returns an instance of InventoryDefinition containing the full list of available items. Otherwise, returns null.

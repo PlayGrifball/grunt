@@ -90,10 +90,11 @@ Generator errors:
 | `GET medals` | `Medals` | 1 h | GrifballWebApp medal metadata |
 | `GET gamecms/image?filePath=` | `GameCmsGetImage` | immutable | medal and CMS images (binary) |
 | `GET economy/customization?playerIds=` | `EconomyGetMultiplePlayersCustomization` | 60 s | equipped armor for several players |
+| `GET economy/players/{player}/customization/appearance` | `EconomyPlayerAppearanceCustomization` | 60 s | a player's service tag, emblem, backdrop, stance, pose and intro emote |
 | `GET economy/players/{player}/customization` | `EconomyPlayerPublicCustomization` | 60 s | a player's public Spartan body, appearance and cores (the private view is not exposed) |
 | `GET economy/players/{player}/customization/armors` | `EconomyArmorCoresCustomization` | 60 s | a player's armor cores and equipped pieces |
 | `GET economy/players/{player}/customization/armors/{coreId}` | `EconomyArmorCoreCustomization` | 60 s | one armor core |
-| `GET gamecms/customization-catalog?flightId=` | `GameCmsGetCustomizationCatalog` | 1 h | item paths to names and images |
+| `GET gamecms/customization-catalog?flightId=` | `GameCmsGetCustomizationCatalog` | 1 h | item paths to names and images (no `flightId`: the gateway account's current flight) |
 
 Grunt has no service-record endpoint yet. Expose one once it's added to `HaloInfiniteClient`.
 

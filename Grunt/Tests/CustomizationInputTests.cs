@@ -183,8 +183,7 @@ public class CustomizationInputTests
     }
 
     [TestCase("0e3a52e6-1f6b-4b72-8a5b-0123456789ab")]
-    [TestCase("")]
-    public async Task AFlightIdThatIsAGuid_OrNone_IsAskedAbout(string flightId)
+    public async Task AFlightIdThatIsAGuid_IsAskedAbout(string flightId)
     {
         var (client, handler) = Create();
 
@@ -228,7 +227,7 @@ public class CustomizationInputTests
 
         foreach (var operation in new[]
                  {
-                     "EconomyPlayerPublicCustomization", "EconomyPlayerCustomization", "EconomyGetMultiplePlayersCustomization", "EconomyArmorCoresCustomization",
+                     "EconomyPlayerPublicCustomization", "EconomyPlayerAppearanceCustomization", "EconomyPlayerCustomization", "EconomyGetMultiplePlayersCustomization", "EconomyArmorCoresCustomization",
                      "EconomyArmorCoreCustomization", "GameCmsGetCustomizationCatalog",
                  })
             Assert.That(halo.BudgetOf(operation), Is.EqualTo("customization"), operation);
