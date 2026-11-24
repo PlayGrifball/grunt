@@ -6,6 +6,11 @@ import * as gateway from '../dist/index.js';
 test('package exports the configured client and every public gateway operation', () => {
   const expected = [
     'client',
+    'economyArmorCoreCustomization',
+    'economyArmorCoresCustomization',
+    'economyGetMultiplePlayersCustomization',
+    'economyPlayerCustomization',
+    'gameCmsGetCustomizationCatalog',
     'gameCmsGetImage',
     'medals',
     'skillGetMatchPlayerResult',
