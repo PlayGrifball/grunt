@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -1270,7 +1271,8 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     {
         if (!HaloInput.IsPlayer(player))
             return BadRequest<PlayerServiceRecord>("player must be xuid(XUID_VALUE)");
-        if (!Enum.TryParse<LifecycleMode>(mode, true, out var lifecycle) || !Enum.IsDefined(lifecycle))
+        var lifecycle = new[] { "Matchmade", "Custom", "Local" }.FirstOrDefault(m => string.Equals(m, mode, StringComparison.OrdinalIgnoreCase));
+        if (lifecycle is null)
             return BadRequest<PlayerServiceRecord>("mode must be Matchmade, Custom or Local");
         var season = string.IsNullOrEmpty(seasonId) ? string.Empty : "?seasonId=" + seasonId;
         if (season.Length > 0 && !HaloInput.IsItemPath(seasonId))
