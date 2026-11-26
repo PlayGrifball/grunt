@@ -25,6 +25,16 @@ test('package exports the configured client and every public gateway operation',
     'statsGetPlayerMatchProgression',
     'userByGamertag',
     'users',
+    'economyGetCareerRanks',
+    'economyGetCustomizationOffers',
+    'economyGetSoftCurrencyOffers',
+    'gameCmsGetCareerRanks',
+    'gameCmsGetCsrCalendar',
+    'gameCmsGetPlayNowButtonSettings',
+    'gameCmsGetPlaylistAsset',
+    'gameCmsGetSeasonCalendar',
+    'statsGetCustomExperience',
+    'statsGetServiceRecord',
   ];
 
   assert.deepEqual(Object.keys(gateway).sort(), expected.sort());
