@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyPlayerAppearanceCustomizationData, EconomyPlayerAppearanceCustomizationErrors, EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerPublicCustomizationData, EconomyPlayerPublicCustomizationErrors, EconomyPlayerPublicCustomizationResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetEmblemMappingData, GameCmsGetEmblemMappingErrors, GameCmsGetEmblemMappingResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, GameCmsGetItemData, GameCmsGetItemErrors, GameCmsGetItemResponses, GameCmsWaypointGetImageData, GameCmsWaypointGetImageErrors, GameCmsWaypointGetImageResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
+import type { EconomyArmorCoreCustomizationData, EconomyArmorCoreCustomizationErrors, EconomyArmorCoreCustomizationResponses, EconomyArmorCoresCustomizationData, EconomyArmorCoresCustomizationErrors, EconomyArmorCoresCustomizationResponses, EconomyGetCareerRanksData, EconomyGetCareerRanksErrors, EconomyGetCareerRanksResponses, EconomyGetCustomizationOffersData, EconomyGetCustomizationOffersErrors, EconomyGetCustomizationOffersResponses, EconomyGetMultiplePlayersCustomizationData, EconomyGetMultiplePlayersCustomizationErrors, EconomyGetMultiplePlayersCustomizationResponses, EconomyGetSoftCurrencyOffersData, EconomyGetSoftCurrencyOffersErrors, EconomyGetSoftCurrencyOffersResponses, EconomyPlayerAppearanceCustomizationData, EconomyPlayerAppearanceCustomizationErrors, EconomyPlayerAppearanceCustomizationResponses, EconomyPlayerPublicCustomizationData, EconomyPlayerPublicCustomizationErrors, EconomyPlayerPublicCustomizationResponses, GameCmsGetCareerRanksData, GameCmsGetCareerRanksErrors, GameCmsGetCareerRanksResponses, GameCmsGetCsrCalendarData, GameCmsGetCsrCalendarErrors, GameCmsGetCsrCalendarResponses, GameCmsGetCustomizationCatalogData, GameCmsGetCustomizationCatalogErrors, GameCmsGetCustomizationCatalogResponses, GameCmsGetEmblemMappingData, GameCmsGetEmblemMappingErrors, GameCmsGetEmblemMappingResponses, GameCmsGetImageData, GameCmsGetImageErrors, GameCmsGetImageResponses, GameCmsGetItemData, GameCmsGetItemErrors, GameCmsGetItemResponses, GameCmsGetPlaylistAssetData, GameCmsGetPlaylistAssetErrors, GameCmsGetPlaylistAssetResponses, GameCmsGetPlayNowButtonSettingsData, GameCmsGetPlayNowButtonSettingsErrors, GameCmsGetPlayNowButtonSettingsResponses, GameCmsGetSeasonCalendarData, GameCmsGetSeasonCalendarErrors, GameCmsGetSeasonCalendarResponses, GameCmsWaypointGetImageData, GameCmsWaypointGetImageErrors, GameCmsWaypointGetImageResponses, MedalsData, MedalsErrors, MedalsResponses, SkillGetMatchPlayerResultData, SkillGetMatchPlayerResultErrors, SkillGetMatchPlayerResultResponses, SkillGetPlaylistCsrData, SkillGetPlaylistCsrErrors, SkillGetPlaylistCsrResponses, StatsGetCustomExperienceData, StatsGetCustomExperienceErrors, StatsGetCustomExperienceResponses, StatsGetMatchCountData, StatsGetMatchCountErrors, StatsGetMatchCountResponses, StatsGetMatchHistoryData, StatsGetMatchHistoryErrors, StatsGetMatchHistoryResponses, StatsGetMatchStatsData, StatsGetMatchStatsErrors, StatsGetMatchStatsResponses, StatsGetPlayerMatchProgressionData, StatsGetPlayerMatchProgressionErrors, StatsGetPlayerMatchProgressionResponses, StatsGetServiceRecordData, StatsGetServiceRecordErrors, StatsGetServiceRecordResponses, UserByGamertagData, UserByGamertagErrors, UserByGamertagResponses, UsersData, UsersErrors, UsersResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -125,6 +125,116 @@ export const gameCmsWaypointGetImage = <ThrowOnError extends boolean = false>(op
 export const gameCmsGetItem = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetItemData, ThrowOnError>): RequestResult<GameCmsGetItemResponses, GameCmsGetItemErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetItemResponses, GameCmsGetItemErrors, ThrowOnError>({
     security: [{ name: 'X-Api-Key', type: 'apiKey' }],
     url: '/halo/v1/gamecms/item',
+    ...options
+});
+
+/**
+ * Gets the calendar of seasons.
+ *
+ * The season calendar.
+ */
+export const gameCmsGetSeasonCalendar = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetSeasonCalendarData, ThrowOnError>): RequestResult<GameCmsGetSeasonCalendarResponses, GameCmsGetSeasonCalendarErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetSeasonCalendarResponses, GameCmsGetSeasonCalendarErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/season-calendar',
+    ...options
+});
+
+/**
+ * Gets the calendar of ranked (CSR) seasons.
+ *
+ * The CSR season calendar.
+ */
+export const gameCmsGetCsrCalendar = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetCsrCalendarData, ThrowOnError>): RequestResult<GameCmsGetCsrCalendarResponses, GameCmsGetCsrCalendarErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetCsrCalendarResponses, GameCmsGetCsrCalendarErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/csr-calendar',
+    ...options
+});
+
+/**
+ * Gets the career rank reward track.
+ *
+ * The career ranks.
+ */
+export const gameCmsGetCareerRanks = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetCareerRanksData, ThrowOnError>): RequestResult<GameCmsGetCareerRanksResponses, GameCmsGetCareerRanksErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetCareerRanksResponses, GameCmsGetCareerRanksErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/career-ranks',
+    ...options
+});
+
+/**
+ * Gets the settings of the Play Now button.
+ *
+ * The fallback playlist settings.
+ */
+export const gameCmsGetPlayNowButtonSettings = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetPlayNowButtonSettingsData, ThrowOnError>): RequestResult<GameCmsGetPlayNowButtonSettingsResponses, GameCmsGetPlayNowButtonSettingsErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetPlayNowButtonSettingsResponses, GameCmsGetPlayNowButtonSettingsErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/play-now-settings',
+    ...options
+});
+
+/**
+ * Gets the configuration of a multiplayer playlist.
+ *
+ * The playlist configuration.
+ */
+export const gameCmsGetPlaylistAsset = <ThrowOnError extends boolean = false>(options?: Options<GameCmsGetPlaylistAssetData, ThrowOnError>): RequestResult<GameCmsGetPlaylistAssetResponses, GameCmsGetPlaylistAssetErrors, ThrowOnError> => (options?.client ?? client).get<GameCmsGetPlaylistAssetResponses, GameCmsGetPlaylistAssetErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/gamecms/playlist-assets',
+    ...options
+});
+
+/**
+ * Gets the soft currency offers of a player's store.
+ *
+ * The offers.
+ */
+export const economyGetSoftCurrencyOffers = <ThrowOnError extends boolean = false>(options: Options<EconomyGetSoftCurrencyOffersData, ThrowOnError>): RequestResult<EconomyGetSoftCurrencyOffersResponses, EconomyGetSoftCurrencyOffersErrors, ThrowOnError> => (options.client ?? client).get<EconomyGetSoftCurrencyOffersResponses, EconomyGetSoftCurrencyOffersErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/economy/players/{player}/soft-currency-offers',
+    ...options
+});
+
+/**
+ * Gets the customization offers of a player's store.
+ *
+ * The offers.
+ */
+export const economyGetCustomizationOffers = <ThrowOnError extends boolean = false>(options: Options<EconomyGetCustomizationOffersData, ThrowOnError>): RequestResult<EconomyGetCustomizationOffersResponses, EconomyGetCustomizationOffersErrors, ThrowOnError> => (options.client ?? client).get<EconomyGetCustomizationOffersResponses, EconomyGetCustomizationOffersErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/economy/players/{player}/customization-offers',
+    ...options
+});
+
+/**
+ * Gets the career rank of players.
+ *
+ * The players' career rank results.
+ */
+export const economyGetCareerRanks = <ThrowOnError extends boolean = false>(options?: Options<EconomyGetCareerRanksData, ThrowOnError>): RequestResult<EconomyGetCareerRanksResponses, EconomyGetCareerRanksErrors, ThrowOnError> => (options?.client ?? client).get<EconomyGetCareerRanksResponses, EconomyGetCareerRanksErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/economy/career-ranks',
+    ...options
+});
+
+/**
+ * Gets a player's service record.
+ *
+ * The service record.
+ */
+export const statsGetServiceRecord = <ThrowOnError extends boolean = false>(options: Options<StatsGetServiceRecordData, ThrowOnError>): RequestResult<StatsGetServiceRecordResponses, StatsGetServiceRecordErrors, ThrowOnError> => (options.client ?? client).get<StatsGetServiceRecordResponses, StatsGetServiceRecordErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/stats/players/{player}/service-record',
+    ...options
+});
+
+/**
+ * Gets a player's daily custom experience.
+ *
+ * The custom experience.
+ */
+export const statsGetCustomExperience = <ThrowOnError extends boolean = false>(options: Options<StatsGetCustomExperienceData, ThrowOnError>): RequestResult<StatsGetCustomExperienceResponses, StatsGetCustomExperienceErrors, ThrowOnError> => (options.client ?? client).get<StatsGetCustomExperienceResponses, StatsGetCustomExperienceErrors, ThrowOnError>({
+    security: [{ name: 'X-Api-Key', type: 'apiKey' }],
+    url: '/halo/v1/stats/players/{player}/custom-experience',
     ...options
 });
 
