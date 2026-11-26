@@ -10,7 +10,7 @@ namespace Surprenant.Grunt.Models.HaloInfinite;
 [IsAutomaticallySerializable]
 public class Stats
 {
-    public CoreStats? CoreStats { get; set; }
+    public CoreStats CoreStats { get; set; }
     public BombStats? BombStats { get; set; }
     public CaptureTheFlagStats? CaptureTheFlagStats { get; set; }
     public EliminationStats? EliminationStats { get; set; }
