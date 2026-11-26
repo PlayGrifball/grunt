@@ -13,6 +13,6 @@ namespace Surprenant.Grunt.Models.HaloInfinite;
 public enum PlaylistExperience
 {
     Arena = 2,
-    Featured = 5
+    Featured = 5,
     BTB = 3,
 }
