@@ -96,6 +96,16 @@ Generator errors:
 | `GET economy/players/{player}/customization/armors/{coreId}` | `EconomyArmorCoreCustomization` | 60 s | one armor core |
 | `GET gamecms/customization-catalog?flightId=` | `GameCmsGetCustomizationCatalog` | 1 h | item paths to names and images (no `flightId`: the gateway account's current flight) |
 | `GET gamecms/item?itemPath=&flightId=` | `GameCmsGetItem` | 1 h | one item's name, description and image paths, by its `itemPath` from the catalog or a player's armor (a `.json` path; no `flightId`: the gateway account's current flight) |
+| `GET gamecms/season-calendar` | `GameCmsGetSeasonCalendar` | 1 h | the season calendar |
+| `GET gamecms/csr-calendar` | `GameCmsGetCsrCalendar` | 1 h | the ranked season calendar |
+| `GET gamecms/career-ranks?careerPathId=` | `GameCmsGetCareerRanks` | 1 h | the career rank reward track |
+| `GET gamecms/play-now-settings` | `GameCmsGetPlayNowButtonSettings` | 1 h | the Play Now button's fallback playlist |
+| `GET gamecms/playlist-assets?playlistFile=` | `GameCmsGetPlaylistAsset` | 1 h | one playlist's configuration (a `.json` file name) |
+| `GET economy/players/{player}/soft-currency-offers` | `EconomyGetSoftCurrencyOffers` | 60 s | a player's soft currency store offers |
+| `GET economy/players/{player}/customization-offers` | `EconomyGetCustomizationOffers` | 60 s | a player's customization store offers |
+| `GET economy/career-ranks?playerIds=&careerPathId=` | `EconomyGetCareerRanks` | 60 s | players' career rank results |
+| `GET stats/players/{player}/service-record?mode=&seasonId=` | `StatsGetServiceRecord` | 60 s | a player's service record (`mode` Matchmade, Custom or Local; `seasonId` optional) |
+| `GET stats/players/{player}/custom-experience` | `StatsGetCustomExperience` | 60 s | a player's daily custom experience |
 | `GET gamecms/emblem-mapping` | `GameCmsGetEmblemMapping` | 1 h | emblem id → configuration id → emblem and nameplate image paths (an emblem item's `commonData.id`, or the file name of its path without `.json`) |
 | `GET gamecms/waypoint-image?filePath=` | `GameCmsWaypointGetImage` | immutable | an emblem or nameplate image (binary), by a path from the mapping |
 
