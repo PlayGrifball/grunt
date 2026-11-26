@@ -299,6 +299,7 @@ export type SurprenantGruntModelsHaloInfiniteAppearance = {
     backdropImagePath?: string;
     emblem?: SurprenantGruntModelsHaloInfiniteEmblem;
     introEmotePath?: string;
+    playerTitlePath?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteAppearanceCustomization = {
@@ -340,12 +341,39 @@ export type SurprenantGruntModelsHaloInfiniteArmorCoreTheme = {
     hipAttachmentPath?: string;
     wristAttachmentPath?: string;
     bigEmblem?: SurprenantGruntModelsHaloInfiniteEmblem;
+    armorFxPaths?: Array<string>;
 };
 
 export type SurprenantGruntModelsHaloInfiniteAssetVersionFile = {
     prefix?: string;
     fileRelativePaths?: Array<string>;
     prefixEndpoint?: SurprenantGruntModelsHaloInfiniteApiIngressApiEndpoint;
+};
+
+export type SurprenantGruntModelsHaloInfiniteBombStats = {
+    bombCarriersKilled?: number | null;
+    bombDefusals?: number | null;
+    bombDefusersKilled?: number | null;
+    bombDetonations?: number | null;
+    bombPickUps?: number | null;
+    bombPlants?: number | null;
+    bombReturns?: number | null;
+    killsAsBombCarrier?: number | null;
+    timeAsBombCarrier?: string | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteCaptureTheFlagStats = {
+    flagCaptureAssists?: number | null;
+    flagCaptures?: number | null;
+    flagCarriersKilled?: number | null;
+    flagGrabs?: number | null;
+    flagReturnersKilled?: number | null;
+    flagReturns?: number | null;
+    flagSecures?: number | null;
+    flagSteals?: number | null;
+    killsAsFlagCarrier?: number | null;
+    killsAsFlagReturner?: number | null;
+    timeAsFlagCarrier?: string | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteChallengeProgressState = {
@@ -379,11 +407,35 @@ export type SurprenantGruntModelsHaloInfiniteCommonItemData = {
     seasonNumber?: number;
     originalSeasonNumber?: number;
     season?: SurprenantGruntModelsHaloInfiniteDisplayString;
+    focusMarker?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    focalDistance?: number | null;
+    focusMarkerOffset?: number | null;
+    dofType?: string;
+    dofFocalLength?: number | null;
+    dofFocalDistance?: number | null;
+    doffStop?: number | null;
+    cameraPositions?: Array<unknown>;
+    cameraOffset?: number | null;
+    cameraFOV?: number | null;
+    cameraTransition?: number | null;
+    orientation?: SurprenantGruntModelsHaloInfiniteVector;
+    focusedObjectOrientation?: SurprenantGruntModelsHaloInfiniteVector;
+    parentTheme?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteConfiguration = {
     configurationId?: number;
     configurationPath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteCoreRegionData = {
+    baseRegionData?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    bodyTypeSmallOverrides?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    bodyTypeLargeOverrides?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    prostheticLeftArmOverrides?: SurprenantGruntModelsHaloInfiniteRegionOverrides;
+    prostheticRightArmOverrides?: SurprenantGruntModelsHaloInfiniteRegionOverrides;
+    prostheticLeftLegOverrides?: SurprenantGruntModelsHaloInfiniteRegionOverrides;
+    prostheticRightLegOverrides?: SurprenantGruntModelsHaloInfiniteRegionOverrides;
 };
 
 export type SurprenantGruntModelsHaloInfiniteCoreStats = {
@@ -420,6 +472,7 @@ export type SurprenantGruntModelsHaloInfiniteCoreStats = {
     deprecatedDamageTaken?: number;
     spawns?: number;
     objectivesCompleted?: number;
+    averageKDA?: number | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteCounterfactuals = {
@@ -443,6 +496,8 @@ export type SurprenantGruntModelsHaloInfiniteDisplayPath = {
     mimeType?: string;
     folderPath?: string;
     fileName?: string;
+    caption?: string;
+    alternateText?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteDisplayString = {
@@ -470,6 +525,16 @@ export type SurprenantGruntModelsHaloInfiniteEliminationStats = {
 export type SurprenantGruntModelsHaloInfiniteEmblem = {
     emblemPath?: string;
     configurationId?: number;
+    path?: string;
+    locationId?: number | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteEmblemConfigurationOptions = {
+    isRequired?: boolean | null;
+    defaultOptionPath?: string;
+    optionPaths?: Array<string>;
+    offRegionInfo?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    availableLocations?: Array<SurprenantGruntModelsHaloInfiniteEmblemLocation>;
 };
 
 export type SurprenantGruntModelsHaloInfiniteEmblemImageAssets = {
@@ -478,10 +543,47 @@ export type SurprenantGruntModelsHaloInfiniteEmblemImageAssets = {
     textColor?: string;
 };
 
+export type SurprenantGruntModelsHaloInfiniteEmblemLocation = {
+    locationId?: number | null;
+    defaultOption?: SurprenantGruntModelsHaloInfiniteEmblem;
+};
+
+export type SurprenantGruntModelsHaloInfiniteEngineGameVariant = {
+    assetId?: string;
+    versionId?: string;
+    assetVersionId?: string | null;
+    publicName?: string | null;
+    name?: string | null;
+    description?: string | null;
+    inspectionResult?: number;
+    cloneBehavior?: number;
+    assetHome?: number;
+    tags?: Array<string> | null;
+    contributors?: Array<string> | null;
+    files?: SurprenantGruntModelsHaloInfiniteAssetVersionFile | null;
+    assetKind?: number;
+    order?: number;
+    assetStats?: SurprenantGruntModelsHaloInfinitePlayAssetStats;
+    customData?: SurprenantGruntModelsHaloInfiniteEngineGameVariantCustomData;
+};
+
+export type SurprenantGruntModelsHaloInfiniteEngineGameVariantCustomData = {
+    subsetData?: SurprenantGruntModelsHaloInfiniteSubsetDataContainer;
+    localizedData?: SurprenantGruntModelsHaloInfiniteLocalizedDataContainer;
+};
+
+export type SurprenantGruntModelsHaloInfiniteExtractionStats = {
+    extractionConversionsCompleted?: number | null;
+    extractionConversionsDenied?: number | null;
+    extractionInitiationsCompleted?: number | null;
+    extractionInitiationsDenied?: number | null;
+    successfulExtractions?: number | null;
+};
+
 /**
  * Category a game variant falls into.
  */
-export type SurprenantGruntModelsHaloInfiniteGameVariantCategory = 'MultiplayerSlayer' | 'MultiplayerAttrition' | 'MultiplayerFiesta' | 'MultiplayerStrongholds' | 'MultiplayerBastion' | 'MultiplayerCtf' | 'MultiplayerOddball' | 'MultiplayerInfection' | 'MultiplayerGrifball' | 'MultiplayerLandGrab';
+export type SurprenantGruntModelsHaloInfiniteGameVariantCategory = 'None' | 'Campaign' | 'Forge' | 'Academy' | 'AcademyTutorial' | 'AcademyPractice' | 'MultiplayerSlayer' | 'MultiplayerAttrition' | 'MultiplayerElimination' | 'MultiplayerFiesta' | 'MultiplayerSwat' | 'MultiplayerStrongholds' | 'MultiplayerBastion' | 'MultiplayerKingOfTheHill' | 'MultiplayerTotalControl' | 'MultiplayerCtf' | 'MultiplayerAssault' | 'MultiplayerExtraction' | 'MultiplayerOddball' | 'MultiplayerStockpile' | 'MultiplayerJuggernaut' | 'MultiplayerRegicide' | 'MultiplayerInfection' | 'MultiplayerEscort' | 'MultiplayerGunGame' | 'MultiplayerGrifball' | 'MultiplayerRace' | 'MultiplayerPrototype' | 'Test' | 'TestAcademy' | 'TestAudio' | 'TestCampaign' | 'TestEngine' | 'TestForge' | 'TestGraphics' | 'TestMultiplayer' | 'TestSandbox' | 'AcademyTraining' | 'AcademyWeaponDrill' | 'MultiplayerLandGrab' | 'MultiplayerMinigame' | 'MultiplayerFirefight' | 'Unknown';
 
 export type SurprenantGruntModelsHaloInfiniteGenericAsset = {
     assetId?: string;
@@ -500,6 +602,23 @@ export type SurprenantGruntModelsHaloInfiniteGenericAsset = {
     order?: number;
 };
 
+export type SurprenantGruntModelsHaloInfiniteHelmetConfigurationOptions = {
+    isRequired?: boolean | null;
+    defaultOptionPath?: string;
+    optionPaths?: Array<string>;
+    offRegionInfo?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    options?: Array<SurprenantGruntModelsHaloInfiniteHelmetOptions>;
+};
+
+export type SurprenantGruntModelsHaloInfiniteHelmetOptions = {
+    isRequired?: boolean | null;
+    defaultOptionPath?: string;
+    optionPaths?: Array<string>;
+    offRegionInfo?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    helmetPath?: string;
+    helmetAttachments?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+};
+
 export type SurprenantGruntModelsHaloInfiniteIdentifierName = {
     m_identifier?: number;
 };
@@ -510,6 +629,51 @@ export type SurprenantGruntModelsHaloInfiniteInGameItem = {
     emblemShaderName?: SurprenantGruntModelsHaloInfiniteIdentifierName;
     commonData?: SurprenantGruntModelsHaloInfiniteCommonItemData;
     availableConfigurations?: Array<SurprenantGruntModelsHaloInfiniteConfiguration>;
+    styleId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    regionPartId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    imagePath?: SurprenantGruntModelsHaloInfiniteDisplayPath;
+    lightingScalarOverride?: number | null;
+    regionData?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    markerLocation?: SurprenantGruntModelsHaloInfiniteMarkerLocation;
+    meshIndex?: number | null;
+    isItemOwnershipRequired?: boolean | null;
+    coatings?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    helmets?: SurprenantGruntModelsHaloInfiniteHelmetConfigurationOptions;
+    visors?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    leftShoulderPads?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    rightShoulderPads?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    gloves?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    kneePads?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    chestAttachments?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    wristAttachments?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    hipAttachments?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    emblems?: SurprenantGruntModelsHaloInfiniteEmblemConfigurationOptions;
+    armorFx?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    mythicFx?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    coreRegionData?: SurprenantGruntModelsHaloInfiniteCoreRegionData;
+    variantId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    isKit?: boolean | null;
+    kitBaseThemePath?: string;
+    stanceId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    weaponTagId?: number | null;
+    fxIds?: Array<number>;
+    fxContentType?: string;
+    composerSceneName?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+};
+
+export type SurprenantGruntModelsHaloInfiniteInfectionStats = {
+    humansInfected?: number | null;
+    humansInfectedAsAlpha?: number | null;
+    lastHumansStandingInfected?: number | null;
+    zombiesKilled?: number | null;
+    alphaZombiesKilled?: number | null;
+    killsAsLastHumanStanding?: number | null;
+    roundsSurvivedAsHuman?: number | null;
+    roundsSurvivedAsLastHumanStanding?: number | null;
+    roundsAsLastHumanStanding?: number | null;
+    timeAsLastHumanStanding?: string | null;
+    roundsAsAlphaZombie?: number | null;
+    roundsFinishedAsZombie?: number | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteInventoryDefinition = {
@@ -559,6 +723,7 @@ export type SurprenantGruntModelsHaloInfiniteInventoryDefinition = {
     spartanVoicesOwnableCount?: number;
     emblemCoatings?: Array<SurprenantGruntModelsHaloInfinitePlayerItem>;
     consumables?: Array<SurprenantGruntModelsHaloInfinitePlayerItem>;
+    WeaponCorersOwnableCount?: number;
 };
 
 export type SurprenantGruntModelsHaloInfiniteItemPath = {
@@ -569,6 +734,15 @@ export type SurprenantGruntModelsHaloInfiniteItemPath = {
 export type SurprenantGruntModelsHaloInfiniteKillDeathStats = {
     kills?: number;
     deaths?: number;
+};
+
+export type SurprenantGruntModelsHaloInfiniteLocalizedDataContainer = {
+    [key: string]: never;
+};
+
+export type SurprenantGruntModelsHaloInfiniteMarkerLocation = {
+    markerName?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    variantId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
 };
 
 export type SurprenantGruntModelsHaloInfiniteMatchCsr = {
@@ -621,6 +795,8 @@ export type SurprenantGruntModelsHaloInfiniteMatchProgression = {
     clearanceId?: string;
     rewardId?: string;
     challengeProgressState?: Array<SurprenantGruntModelsHaloInfiniteChallengeProgressState>;
+    rewardIds?: Array<string>;
+    customXpEligibilityReason?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteMatchStats = {
@@ -702,6 +878,15 @@ export type SurprenantGruntModelsHaloInfiniteMedia = {
     alternateText?: SurprenantGruntModelsHaloInfiniteDisplayString;
     folderPath?: string;
     fileName?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteOddballStats = {
+    killsAsSkullCarrier?: number | null;
+    longestTimeAsSkullCarrier?: string | null;
+    skullCarriersKilled?: number | null;
+    skullGrabs?: number | null;
+    timeAsSkullCarrier?: string | null;
+    skullScoringTicks?: number | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteParticipationInfo = {
@@ -834,11 +1019,46 @@ export type SurprenantGruntModelsHaloInfinitePlaylistCsrResults = {
 /**
  * Playlist experience associated with a given match.
  */
-export type SurprenantGruntModelsHaloInfinitePlaylistExperience = 'Arena' | 'Featured';
+export type SurprenantGruntModelsHaloInfinitePlaylistExperience = 'Arena' | 'BTB' | 'Featured';
+
+export type SurprenantGruntModelsHaloInfinitePveStats = {
+    kills?: number | null;
+    deaths?: number | null;
+    assists?: number | null;
+    kda?: number | null;
+    marineKills?: number | null;
+    gruntKills?: number | null;
+    jackalKills?: number | null;
+    eliteKills?: number | null;
+    bruteKills?: number | null;
+    hunterKills?: number | null;
+    skimmerKills?: number | null;
+    sentinelKills?: number | null;
+    bossKills?: number | null;
+};
+
+export type SurprenantGruntModelsHaloInfinitePvpStats = {
+    assists?: number | null;
+    deaths?: number | null;
+    kda?: number | null;
+    kills?: number | null;
+};
 
 export type SurprenantGruntModelsHaloInfiniteRankRecap = {
     preMatchCsr?: SurprenantGruntModelsHaloInfiniteMatchCsr;
     postMatchCsr?: SurprenantGruntModelsHaloInfiniteMatchCsr;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRegionMetadata = {
+    regionId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    permutationId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    styleIdOverride?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRegionOverrides = {
+    full?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    half?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    extremity?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
 };
 
 export type SurprenantGruntModelsHaloInfiniteSkillResult = {
@@ -866,6 +1086,14 @@ export type SurprenantGruntModelsHaloInfiniteSpartanBody = {
     rightLeg?: string;
     bodyType?: string;
     voice?: number;
+    voicePath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions = {
+    isRequired?: boolean | null;
+    defaultOptionPath?: string;
+    optionPaths?: Array<string>;
+    offRegionInfo?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
 };
 
 export type SurprenantGruntModelsHaloInfiniteStatPerformances = {
@@ -875,14 +1103,32 @@ export type SurprenantGruntModelsHaloInfiniteStatPerformances = {
 
 export type SurprenantGruntModelsHaloInfiniteStats = {
     coreStats?: SurprenantGruntModelsHaloInfiniteCoreStats;
-    bombStats?: unknown;
-    captureTheFlagStats?: unknown;
+    bombStats?: SurprenantGruntModelsHaloInfiniteBombStats;
+    captureTheFlagStats?: SurprenantGruntModelsHaloInfiniteCaptureTheFlagStats;
     eliminationStats?: SurprenantGruntModelsHaloInfiniteEliminationStats | null;
-    extractionStats?: unknown;
-    infectionStats?: unknown;
-    oddballStats?: unknown;
-    zonesStats?: unknown;
-    stockpileStats?: unknown;
+    extractionStats?: SurprenantGruntModelsHaloInfiniteExtractionStats;
+    infectionStats?: SurprenantGruntModelsHaloInfiniteInfectionStats;
+    oddballStats?: SurprenantGruntModelsHaloInfiniteOddballStats;
+    zonesStats?: SurprenantGruntModelsHaloInfiniteZonesStats;
+    stockpileStats?: SurprenantGruntModelsHaloInfiniteStockpileStats;
+    vipStats?: SurprenantGruntModelsHaloInfiniteVipStats;
+    pveStats?: SurprenantGruntModelsHaloInfinitePveStats;
+    pvpStats?: SurprenantGruntModelsHaloInfinitePvpStats;
+};
+
+export type SurprenantGruntModelsHaloInfiniteStockpileStats = {
+    killsAsPowerSeedCarrier?: number | null;
+    powerSeedsDeposited?: number | null;
+    powerSeedsStolen?: number | null;
+    powerSeedCarriersKilled?: number | null;
+    timeAsPowerSeedCarrier?: string | null;
+    timeAsPowerSeedDriver?: string | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteSubsetDataContainer = {
+    statBucketGameType?: number;
+    engineName?: string;
+    variantName?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteTeam = {
@@ -918,6 +1164,17 @@ export type SurprenantGruntModelsHaloInfiniteUgcGameVariant = {
     order?: number;
     customData?: unknown;
     assetStats?: SurprenantGruntModelsHaloInfinitePlayAssetStats;
+    engineGameVariantLink?: SurprenantGruntModelsHaloInfiniteEngineGameVariant;
+};
+
+export type SurprenantGruntModelsHaloInfiniteVipStats = {
+    [key: string]: never;
+};
+
+export type SurprenantGruntModelsHaloInfiniteVector = {
+    x?: number | null;
+    y?: number | null;
+    z?: number | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteVehicleCore = {
@@ -975,6 +1232,15 @@ export type SurprenantGruntModelsHaloInfiniteWeaponCoreTheme = {
     weaponCharmPath?: string;
     alternateGeometryRegionPath?: string;
     ammoCounterPath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteZonesStats = {
+    zoneCaptures?: number | null;
+    zoneDefensiveKills?: number | null;
+    zoneOffensiveKills?: number | null;
+    zoneSecures?: number | null;
+    totalZoneOccupationTime?: string | null;
+    zoneScoringTicks?: number | null;
 };
 
 export type SurprenantGruntModelsUser = {

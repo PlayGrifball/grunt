@@ -3812,6 +3812,9 @@
           },
           "introEmotePath": {
             "type": "string"
+          },
+          "playerTitlePath": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3955,6 +3958,12 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Emblem"
               }
             ]
+          },
+          "armorFxPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "additionalProperties": false
@@ -3977,6 +3986,118 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ApiIngress.ApiEndpoint"
               }
             ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.BombStats": {
+        "type": "object",
+        "properties": {
+          "bombCarriersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombDefusals": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombDefusersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombDetonations": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombPickUps": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombPlants": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombReturns": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "killsAsBombCarrier": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsBombCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.CaptureTheFlagStats": {
+        "type": "object",
+        "properties": {
+          "flagCaptureAssists": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagCaptures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagCarriersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagGrabs": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagReturnersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagReturns": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagSecures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagSteals": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "killsAsFlagCarrier": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "killsAsFlagReturner": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsFlagCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4118,6 +4239,77 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayString"
               }
             ]
+          },
+          "focusMarker": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "focalDistance": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "focusMarkerOffset": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "dofType": {
+            "type": "string"
+          },
+          "dofFocalLength": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "dofFocalDistance": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "doffStop": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cameraPositions": {
+            "type": "array",
+            "items": { }
+          },
+          "cameraOffset": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cameraFOV": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cameraTransition": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "orientation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Vector"
+              }
+            ]
+          },
+          "focusedObjectOrientation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Vector"
+              }
+            ]
+          },
+          "parentTheme": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4131,6 +4323,58 @@
           },
           "configurationPath": {
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.CoreRegionData": {
+        "type": "object",
+        "properties": {
+          "baseRegionData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "bodyTypeSmallOverrides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "bodyTypeLargeOverrides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "prostheticLeftArmOverrides": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionOverrides"
+              }
+            ]
+          },
+          "prostheticRightArmOverrides": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionOverrides"
+              }
+            ]
+          },
+          "prostheticLeftLegOverrides": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionOverrides"
+              }
+            ]
+          },
+          "prostheticRightLegOverrides": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionOverrides"
+              }
+            ]
           }
         },
         "additionalProperties": false
@@ -4273,6 +4517,11 @@
           "objectivesCompleted": {
             "type": "integer",
             "format": "int32"
+          },
+          "averageKDA": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4371,6 +4620,12 @@
           },
           "fileName": {
             "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "alternateText": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4453,6 +4708,45 @@
           "configurationId": {
             "type": "integer",
             "format": "int32"
+          },
+          "path": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.EmblemConfigurationOptions": {
+        "type": "object",
+        "properties": {
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "defaultOptionPath": {
+            "type": "string"
+          },
+          "optionPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offRegionInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "availableLocations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EmblemLocation"
+            }
           }
         },
         "additionalProperties": false
@@ -4472,18 +4766,206 @@
         },
         "additionalProperties": false
       },
+      "Surprenant.Grunt.Models.HaloInfinite.EmblemLocation": {
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "defaultOption": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Emblem"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.EngineGameVariant": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "versionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "publicName": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "inspectionResult": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cloneBehavior": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "assetHome": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "contributors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "files": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.AssetVersionFile"
+              }
+            ],
+            "nullable": true
+          },
+          "assetKind": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "assetStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayAssetStats"
+              }
+            ]
+          },
+          "customData": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EngineGameVariantCustomData"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.EngineGameVariantCustomData": {
+        "type": "object",
+        "properties": {
+          "subsetData": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.SubsetDataContainer"
+              }
+            ]
+          },
+          "localizedData": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.LocalizedDataContainer"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.ExtractionStats": {
+        "type": "object",
+        "properties": {
+          "extractionConversionsCompleted": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "extractionConversionsDenied": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "extractionInitiationsCompleted": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "extractionInitiationsDenied": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "successfulExtractions": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Surprenant.Grunt.Models.HaloInfinite.GameVariantCategory": {
         "enum": [
+          "None",
+          "Campaign",
+          "Forge",
+          "Academy",
+          "AcademyTutorial",
+          "AcademyPractice",
           "MultiplayerSlayer",
           "MultiplayerAttrition",
+          "MultiplayerElimination",
           "MultiplayerFiesta",
+          "MultiplayerSwat",
           "MultiplayerStrongholds",
           "MultiplayerBastion",
+          "MultiplayerKingOfTheHill",
+          "MultiplayerTotalControl",
           "MultiplayerCtf",
+          "MultiplayerAssault",
+          "MultiplayerExtraction",
           "MultiplayerOddball",
+          "MultiplayerStockpile",
+          "MultiplayerJuggernaut",
+          "MultiplayerRegicide",
           "MultiplayerInfection",
+          "MultiplayerEscort",
+          "MultiplayerGunGame",
           "MultiplayerGrifball",
-          "MultiplayerLandGrab"
+          "MultiplayerRace",
+          "MultiplayerPrototype",
+          "Test",
+          "TestAcademy",
+          "TestAudio",
+          "TestCampaign",
+          "TestEngine",
+          "TestForge",
+          "TestGraphics",
+          "TestMultiplayer",
+          "TestSandbox",
+          "AcademyTraining",
+          "AcademyWeaponDrill",
+          "MultiplayerLandGrab",
+          "MultiplayerMinigame",
+          "MultiplayerFirefight",
+          "Unknown"
         ],
         "type": "string",
         "description": "Category a game variant falls into."
@@ -4560,6 +5042,72 @@
         },
         "additionalProperties": false
       },
+      "Surprenant.Grunt.Models.HaloInfinite.HelmetConfigurationOptions": {
+        "type": "object",
+        "properties": {
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "defaultOptionPath": {
+            "type": "string"
+          },
+          "optionPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offRegionInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.HelmetOptions"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.HelmetOptions": {
+        "type": "object",
+        "properties": {
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "defaultOptionPath": {
+            "type": "string"
+          },
+          "optionPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offRegionInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "helmetPath": {
+            "type": "string"
+          },
+          "helmetAttachments": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
       "Surprenant.Grunt.Models.HaloInfinite.IdentifierName": {
         "type": "object",
         "properties": {
@@ -4603,6 +5151,261 @@
             "items": {
               "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Configuration"
             }
+          },
+          "styleId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "regionPartId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "imagePath": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayPath"
+              }
+            ]
+          },
+          "lightingScalarOverride": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "regionData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "markerLocation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.MarkerLocation"
+              }
+            ]
+          },
+          "meshIndex": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isItemOwnershipRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "coatings": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "helmets": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.HelmetConfigurationOptions"
+              }
+            ]
+          },
+          "visors": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "leftShoulderPads": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "rightShoulderPads": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "gloves": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "kneePads": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "chestAttachments": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "wristAttachments": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "hipAttachments": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "emblems": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EmblemConfigurationOptions"
+              }
+            ]
+          },
+          "armorFx": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "mythicFx": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "coreRegionData": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CoreRegionData"
+              }
+            ]
+          },
+          "variantId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "isKit": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "kitBaseThemePath": {
+            "type": "string"
+          },
+          "stanceId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "weaponTagId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fxIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "fxContentType": {
+            "type": "string"
+          },
+          "composerSceneName": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.InfectionStats": {
+        "type": "object",
+        "properties": {
+          "humansInfected": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "humansInfectedAsAlpha": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "lastHumansStandingInfected": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zombiesKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "alphaZombiesKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "killsAsLastHumanStanding": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roundsSurvivedAsHuman": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roundsSurvivedAsLastHumanStanding": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roundsAsLastHumanStanding": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsLastHumanStanding": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "roundsAsAlphaZombie": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roundsFinishedAsZombie": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4801,6 +5604,10 @@
             "items": {
               "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayerItem"
             }
+          },
+          "WeaponCorersOwnableCount": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -4827,6 +5634,30 @@
           "deaths": {
             "type": "number",
             "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.LocalizedDataContainer": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.MarkerLocation": {
+        "type": "object",
+        "properties": {
+          "markerName": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "variantId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
           }
         },
         "additionalProperties": false
@@ -5011,6 +5842,15 @@
             "items": {
               "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ChallengeProgressState"
             }
+          },
+          "rewardIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customXpEligibilityReason": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5285,6 +6125,42 @@
           },
           "fileName": {
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.OddballStats": {
+        "type": "object",
+        "properties": {
+          "killsAsSkullCarrier": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "longestTimeAsSkullCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "skullCarriersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "skullGrabs": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsSkullCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "skullScoringTicks": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -5710,10 +6586,108 @@
       "Surprenant.Grunt.Models.HaloInfinite.PlaylistExperience": {
         "enum": [
           "Arena",
+          "BTB",
           "Featured"
         ],
         "type": "string",
         "description": "Playlist experience associated with a given match."
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.PveStats": {
+        "type": "object",
+        "properties": {
+          "kills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "deaths": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "assists": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "kda": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "marineKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "gruntKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "jackalKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "eliteKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bruteKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "hunterKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "skimmerKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "sentinelKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bossKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.PvpStats": {
+        "type": "object",
+        "properties": {
+          "assists": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "deaths": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "kda": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "kills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "Surprenant.Grunt.Models.HaloInfinite.RankRecap": {
         "type": "object",
@@ -5731,6 +6705,57 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.MatchCsr"
               }
             ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RegionMetadata": {
+        "type": "object",
+        "properties": {
+          "regionId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "permutationId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "styleIdOverride": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RegionOverrides": {
+        "type": "object",
+        "properties": {
+          "full": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "half": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "extremity": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
           }
         },
         "additionalProperties": false
@@ -5823,6 +6848,34 @@
           "voice": {
             "type": "integer",
             "format": "int32"
+          },
+          "voicePath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions": {
+        "type": "object",
+        "properties": {
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "defaultOptionPath": {
+            "type": "string"
+          },
+          "optionPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offRegionInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
           }
         },
         "additionalProperties": false
@@ -5857,8 +6910,20 @@
               }
             ]
           },
-          "bombStats": { },
-          "captureTheFlagStats": { },
+          "bombStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.BombStats"
+              }
+            ]
+          },
+          "captureTheFlagStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CaptureTheFlagStats"
+              }
+            ]
+          },
           "eliminationStats": {
             "allOf": [
               {
@@ -5867,11 +6932,114 @@
             ],
             "nullable": true
           },
-          "extractionStats": { },
-          "infectionStats": { },
-          "oddballStats": { },
-          "zonesStats": { },
-          "stockpileStats": { }
+          "extractionStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ExtractionStats"
+              }
+            ]
+          },
+          "infectionStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.InfectionStats"
+              }
+            ]
+          },
+          "oddballStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.OddballStats"
+              }
+            ]
+          },
+          "zonesStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ZonesStats"
+              }
+            ]
+          },
+          "stockpileStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StockpileStats"
+              }
+            ]
+          },
+          "vipStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.VIPStats"
+              }
+            ]
+          },
+          "pveStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PveStats"
+              }
+            ]
+          },
+          "pvpStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PvpStats"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.StockpileStats": {
+        "type": "object",
+        "properties": {
+          "killsAsPowerSeedCarrier": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "powerSeedsDeposited": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "powerSeedsStolen": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "powerSeedCarriersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsPowerSeedCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "timeAsPowerSeedDriver": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.SubsetDataContainer": {
+        "type": "object",
+        "properties": {
+          "statBucketGameType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "engineName": {
+            "type": "string"
+          },
+          "variantName": {
+            "type": "string"
+          }
         },
         "additionalProperties": false
       },
@@ -6024,6 +7192,38 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayAssetStats"
               }
             ]
+          },
+          "engineGameVariantLink": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EngineGameVariant"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.VIPStats": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.Vector": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "y": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "z": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -6229,6 +7429,42 @@
           },
           "ammoCounterPath": {
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.ZonesStats": {
+        "type": "object",
+        "properties": {
+          "zoneCaptures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zoneDefensiveKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zoneOffensiveKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zoneSecures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totalZoneOccupationTime": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "zoneScoringTicks": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
