@@ -14,4 +14,5 @@ public enum PlaylistExperience
 {
     Arena = 2,
     Featured = 5
+    BTB = 3,
 }

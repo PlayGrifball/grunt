@@ -11,12 +11,15 @@ namespace Surprenant.Grunt.Models.HaloInfinite;
 public class Stats
 {
     public CoreStats CoreStats { get; set; }
-    public object? BombStats { get; set; }
-    public object? CaptureTheFlagStats { get; set; }
+    public BombStats BombStats { get; set; }
+    public CaptureTheFlagStats CaptureTheFlagStats { get; set; }
     public EliminationStats? EliminationStats { get; set; }
-    public object? ExtractionStats { get; set; }
-    public object? InfectionStats { get; set; }
-    public object? OddballStats { get; set; }
-    public object? ZonesStats { get; set; }
-    public object? StockpileStats { get; set; }
+    public ExtractionStats ExtractionStats { get; set; }
+    public InfectionStats InfectionStats { get; set; }
+    public OddballStats OddballStats { get; set; }
+    public ZonesStats ZonesStats { get; set; }
+    public StockpileStats StockpileStats { get; set; }
+    public VIPStats VipStats { get; set; }
+    public PveStats PveStats { get; set; }
+    public PvpStats PvpStats { get; set; }
 }

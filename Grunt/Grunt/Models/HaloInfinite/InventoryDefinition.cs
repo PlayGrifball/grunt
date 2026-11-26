@@ -7,6 +7,8 @@
 
 using System.Collections.Generic;
 
+using System.Text.Json.Serialization;
+
 namespace Surprenant.Grunt.Models.HaloInfinite;
 
 [IsAutomaticallySerializable]
@@ -58,4 +60,6 @@ public class InventoryDefinition
     public int SpartanVoicesOwnableCount { get; set; }
     public List<PlayerItem> EmblemCoatings { get; set; }
     public List<PlayerItem> Consumables { get; set; }
+    [JsonPropertyName("WeaponCorersOwnableCount")]
+    public int WeaponCoresOwnableCountAlt { get; set; }
 }

@@ -17,4 +17,5 @@ public class Appearance
     public string BackdropImagePath { get; set; }
     public Emblem Emblem { get; set; }
     public string IntroEmotePath { get; set; }
+    public string PlayerTitlePath { get; set; }
 }

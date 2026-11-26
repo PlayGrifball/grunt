@@ -16,4 +16,11 @@ public class Challenge
     public Reward Reward { get; set; }
     public int ThresholdForSuccess { get; set; }
     public DisplayString Title { get; set; }
+    public Reward SecondaryReward { get; set; }
+    public string TypeIconPath { get; set; }
+    public bool? IsUserEvent { get; set; }
+    public string Path { get; set; }
+    public int? Progress { get; set; }
+    public string Id { get; set; }
+    public bool? CanReroll { get; set; }
 }

@@ -7,6 +7,8 @@
 
 using Surprenant.Grunt.Models.HaloInfinite.Foundation;
 
+using System;
+
 namespace Surprenant.Grunt.Models.HaloInfinite;
 
 [IsAutomaticallySerializable]
@@ -30,4 +32,12 @@ public class AssetSearchResult : Asset
     public int ParentAssetCount { get; set; }
     public float AverageRating { get; set; }
     public int NumberOfRatings { get; set; }
+    public Guid? PublishedVersion { get; set; }
+    public bool? IsBanned { get; set; }
+    public int FavoritesCount { get; set; }
+    public float RatingScore { get; set; }
+    public int RatingCount { get; set; }
+    public int AssetState { get; set; }
+    public APIFormattedDate AssetCreatedDate { get; set; }
+    public APIFormattedDate AssetLastModified { get; set; }
 }

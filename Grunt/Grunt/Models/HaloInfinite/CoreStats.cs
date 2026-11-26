@@ -45,4 +45,5 @@ public class CoreStats
     public float DeprecatedDamageTaken { get; set; }
     public int Spawns { get; set; }
     public int ObjectivesCompleted { get; set; }
+    public float? AverageKDA { get; set; }
 }

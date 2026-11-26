@@ -5,6 +5,8 @@
 // The underlying API powering Grunt is managed by 343 Industries and Microsoft. This wrapper is not endorsed by 343 Industries or Microsoft.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Surprenant.Grunt.Models.HaloInfinite;
 
 [IsAutomaticallySerializable]
@@ -33,4 +35,18 @@ public class CommonItemData
     public int SeasonNumber { get; set; }
     public int OriginalSeasonNumber { get; set; }
     public DisplayString Season { get; set; }
+    public IdentifierName FocusMarker { get; set; }
+    public int? FocalDistance { get; set; }
+    public int? FocusMarkerOffset { get; set; }
+    public string DOFType { get; set; }
+    public int? DOFFocalLength { get; set; }
+    public int? DOFFocalDistance { get; set; }
+    public int? DOFFStop { get; set; }
+    public List<object> CameraPositions { get; set; }
+    public int? CameraOffset { get; set; }
+    public int? CameraFOV { get; set; }
+    public int? CameraTransition { get; set; }
+    public Vector Orientation { get; set; }
+    public Vector FocusedObjectOrientation { get; set; }
+    public string ParentTheme { get; set; }
 }
