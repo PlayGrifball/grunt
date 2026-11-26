@@ -13,5 +13,5 @@ namespace Surprenant.Grunt.Models.HaloInfinite;
 public class AiCoreContainer
 {
     public AiCore[] Cores { get; set; }
-    public List<AiCore> AiCores { get; set; }
+    public AiCore[] AiCores { get; set; }
 }
