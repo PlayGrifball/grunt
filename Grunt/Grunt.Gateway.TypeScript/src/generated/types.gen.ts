@@ -1343,7 +1343,7 @@ export type SurprenantGruntModelsHaloInfiniteStatPerformances = {
 };
 
 export type SurprenantGruntModelsHaloInfiniteStats = {
-    coreStats?: SurprenantGruntModelsHaloInfiniteCoreStats | null;
+    coreStats?: SurprenantGruntModelsHaloInfiniteCoreStats;
     bombStats?: SurprenantGruntModelsHaloInfiniteBombStats | null;
     captureTheFlagStats?: SurprenantGruntModelsHaloInfiniteCaptureTheFlagStats | null;
     eliminationStats?: SurprenantGruntModelsHaloInfiniteEliminationStats | null;

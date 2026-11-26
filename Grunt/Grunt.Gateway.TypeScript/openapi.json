@@ -9332,8 +9332,7 @@
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CoreStats"
               }
-            ],
-            "nullable": true
+            ]
           },
           "bombStats": {
             "allOf": [
