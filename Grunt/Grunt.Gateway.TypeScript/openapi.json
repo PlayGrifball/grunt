@@ -6206,31 +6206,31 @@
             ]
           },
           "focalDistance": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "focusMarkerOffset": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "dofType": {
             "type": "string"
           },
           "dofFocalLength": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "dofFocalDistance": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "doffStop": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "cameraPositions": {
@@ -6238,18 +6238,18 @@
             "items": { }
           },
           "cameraOffset": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "cameraFOV": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "cameraTransition": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "orientation": {
@@ -9695,18 +9695,18 @@
         "type": "object",
         "properties": {
           "x": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "y": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           },
           "z": {
-            "type": "number",
-            "format": "double",
+            "type": "integer",
+            "format": "int32",
             "nullable": true
           }
         },

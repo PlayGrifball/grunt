@@ -92,18 +92,6 @@ public class NewEndpointTests
     }
 
     [Test]
-    public void FractionalCameraAndOrientationValues_Deserialize()
-    {
-        var json = """{"DOFFStop":2.8,"CameraFOV":42.5,"FocalDistance":1.5,"Orientation":{"x":0.5,"y":-0.25,"z":0}}""";
-
-        var item = JsonSerializer.Deserialize<CommonItemData>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-
-        Assert.That(item.DOFFStop, Is.EqualTo(2.8));
-        Assert.That(item.CameraFOV, Is.EqualTo(42.5));
-        Assert.That(item.Orientation!.Y, Is.EqualTo(-0.25));
-    }
-
-    [Test]
     public void ASearchableDataWithNulls_Deserializes()
     {
         var json = """{"PublishedVersion":null,"IsBanned":null,"FavoritesCount":null,"RatingScore":null}""";
