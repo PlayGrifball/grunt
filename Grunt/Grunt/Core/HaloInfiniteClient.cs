@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -1118,6 +1119,190 @@ public class HaloInfiniteClient : IHaloInfiniteClient
             true,
             true,
             GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the calendar of seasons.
+    /// </summary>
+    /// <returns>The season calendar.</returns>
+    [GatewayExposed("gamecms/season-calendar", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
+    public async Task<HaloApiResultContainer<SeasonCalendar, HaloApiErrorContainer>> GameCmsGetSeasonCalendar()
+    {
+        return await ExecuteAPIRequest<SeasonCalendar>(
+            $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Progression/file/Calendars/Seasons/SeasonCalendar.json",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the calendar of ranked (CSR) seasons.
+    /// </summary>
+    /// <returns>The CSR season calendar.</returns>
+    [GatewayExposed("gamecms/csr-calendar", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
+    public async Task<HaloApiResultContainer<SeasonCalendar, HaloApiErrorContainer>> GameCmsGetCsrCalendar()
+    {
+        return await ExecuteAPIRequest<SeasonCalendar>(
+            $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Progression/file/Csr/Calendars/CsrSeasonCalendar.json",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the career rank reward track.
+    /// </summary>
+    /// <param name="careerPathId">The career path, for example "careerRank1".</param>
+    /// <returns>The career ranks.</returns>
+    [GatewayExposed("gamecms/career-ranks", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
+    public async Task<HaloApiResultContainer<CareerTrackContainer, HaloApiErrorContainer>> GameCmsGetCareerRanks(string careerPathId)
+    {
+        if (!HaloInput.IsCoreId(careerPathId))
+            return BadRequest<CareerTrackContainer>("careerPathId must be letters, digits and dashes");
+        return await ExecuteAPIRequest<CareerTrackContainer>(
+            $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Progression/file/RewardTracks/CareerRanks/{careerPathId}.json",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the settings of the Play Now button.
+    /// </summary>
+    /// <returns>The fallback playlist settings.</returns>
+    [GatewayExposed("gamecms/play-now-settings", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
+    public async Task<HaloApiResultContainer<FallbackPlaylist, HaloApiErrorContainer>> GameCmsGetPlayNowButtonSettings()
+    {
+        return await ExecuteAPIRequest<FallbackPlaylist>(
+            $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Multiplayer/file/playlists/playNowButton/settings.json",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the configuration of a multiplayer playlist.
+    /// </summary>
+    /// <param name="playlistFile">The playlist asset file name, ending in .json.</param>
+    /// <returns>The playlist configuration.</returns>
+    [GatewayExposed("gamecms/playlist-assets", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 3600)]
+    public async Task<HaloApiResultContainer<PlaylistConfiguration, HaloApiErrorContainer>> GameCmsGetPlaylistAsset(string playlistFile)
+    {
+        if (!HaloInput.IsItemPath(playlistFile))
+            return BadRequest<PlaylistConfiguration>("playlistFile must be a .json file name");
+        return await ExecuteAPIRequest<PlaylistConfiguration>(
+            $"https://{HaloCoreEndpoints.GameCmsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/Multiplayer/file/playlists/assets/{playlistFile}",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the soft currency offers of a player's store.
+    /// </summary>
+    /// <param name="player">The player identifier in the format "xuid(000000)".</param>
+    /// <returns>The offers.</returns>
+    [GatewayExposed("economy/players/{player}/soft-currency-offers", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
+    public async Task<HaloApiResultContainer<StoreItem, HaloApiErrorContainer>> EconomyGetSoftCurrencyOffers(string player)
+    {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<StoreItem>("player must be xuid(XUID_VALUE)");
+        return await ExecuteAPIRequest<StoreItem>(
+            $"https://{HaloCoreEndpoints.EconomyOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/stores/softcurrencyoffers",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the customization offers of a player's store.
+    /// </summary>
+    /// <param name="player">The player identifier in the format "xuid(000000)".</param>
+    /// <returns>The offers.</returns>
+    [GatewayExposed("economy/players/{player}/customization-offers", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
+    public async Task<HaloApiResultContainer<StoreItem, HaloApiErrorContainer>> EconomyGetCustomizationOffers(string player)
+    {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<StoreItem>("player must be xuid(XUID_VALUE)");
+        return await ExecuteAPIRequest<StoreItem>(
+            $"https://{HaloCoreEndpoints.EconomyOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/stores/customizationoffers",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets the career rank of players.
+    /// </summary>
+    /// <param name="playerIds">Player identifiers in the format "xuid(000000)".</param>
+    /// <param name="careerPathId">The career path, for example "careerRank1".</param>
+    /// <returns>The players' career rank results.</returns>
+    [GatewayExposed("economy/career-ranks", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
+    public async Task<HaloApiResultContainer<RewardTrackResultContainer, HaloApiErrorContainer>> EconomyGetCareerRanks(List<string> playerIds, string careerPathId)
+    {
+        if (playerIds is null || playerIds.Count == 0 || playerIds.Count > HaloInput.MaxPlayersPerCall || !playerIds.TrueForAll(HaloInput.IsPlayer))
+            return BadRequest<RewardTrackResultContainer>($"playerIds must hold 1 to {HaloInput.MaxPlayersPerCall} values of the form xuid(XUID_VALUE)");
+        if (!HaloInput.IsCoreId(careerPathId))
+            return BadRequest<RewardTrackResultContainer>("careerPathId must be letters, digits and dashes");
+        return await ExecuteAPIRequest<RewardTrackResultContainer>(
+            $"https://{HaloCoreEndpoints.EconomyOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/careerranks/{careerPathId}?players={string.Join(",", playerIds)}",
+            HttpMethod.Get,
+            true,
+            true,
+            GlobalConstants.HALO_PC_USER_AGENT);
+    }
+
+    private static readonly string[] ServiceRecordModes = { "Matchmade", "Custom", "Local" };
+
+    /// <summary>
+    /// Gets a player's service record.
+    /// </summary>
+    /// <param name="player">The player identifier in the format "xuid(000000)".</param>
+    /// <param name="mode">The lifecycle mode: Matchmade, Custom or Local.</param>
+    /// <param name="seasonId">Optional season, for example "Seasons/Season7.json". Empty for all time.</param>
+    /// <returns>The service record.</returns>
+    [GatewayExposed("stats/players/{player}/service-record", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
+    public async Task<HaloApiResultContainer<PlayerServiceRecord, HaloApiErrorContainer>> StatsGetServiceRecord(string player, string mode, string seasonId)
+    {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<PlayerServiceRecord>("player must be xuid(XUID_VALUE)");
+        var lifecycle = ServiceRecordModes.FirstOrDefault(m => string.Equals(m, mode, StringComparison.OrdinalIgnoreCase));
+        if (lifecycle is null)
+            return BadRequest<PlayerServiceRecord>("mode must be Matchmade, Custom or Local");
+        if (!string.IsNullOrEmpty(seasonId) && !HaloInput.IsItemPath(seasonId))
+            return BadRequest<PlayerServiceRecord>("seasonId must be a .json season path");
+        var season = string.IsNullOrEmpty(seasonId) ? string.Empty : "?seasonId=" + Uri.EscapeDataString(seasonId);
+        return await ExecuteAPIRequest<PlayerServiceRecord>(
+            $"https://{HaloCoreEndpoints.StatsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/{lifecycle}/servicerecord{season}",
+            HttpMethod.Get,
+            true,
+            false,
+            GlobalConstants.HALO_WAYPOINT_USER_AGENT);
+    }
+
+    /// <summary>
+    /// Gets a player's daily custom experience.
+    /// </summary>
+    /// <param name="player">The player identifier in the format "xuid(000000)".</param>
+    /// <returns>The custom experience.</returns>
+    [GatewayExposed("stats/players/{player}/custom-experience", Cache = GatewayCachePolicy.ShortTtl, CacheSeconds = 60)]
+    public async Task<HaloApiResultContainer<PlayerDailyCustomExperience, HaloApiErrorContainer>> StatsGetCustomExperience(string player)
+    {
+        if (!HaloInput.IsPlayer(player))
+            return BadRequest<PlayerDailyCustomExperience>("player must be xuid(XUID_VALUE)");
+        return await ExecuteAPIRequest<PlayerDailyCustomExperience>(
+            $"https://{HaloCoreEndpoints.StatsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/customexperience",
+            HttpMethod.Get,
+            true,
+            false,
+            GlobalConstants.HALO_WAYPOINT_USER_AGENT);
     }
 
     // ================================================

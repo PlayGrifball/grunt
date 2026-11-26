@@ -17,4 +17,5 @@ public class SpartanBody
     public string RightLeg { get; set; }
     public string BodyType { get; set; }
     public int Voice { get; set; }
+    public string VoicePath { get; set; }
 }

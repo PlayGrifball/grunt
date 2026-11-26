@@ -14,4 +14,5 @@ public class UGCGameVariant : Asset
 {
     public object CustomData { get; set; }
     public PlayAssetStats AssetStats { get; set; }
+    public EngineGameVariant EngineGameVariantLink { get; set; }
 }

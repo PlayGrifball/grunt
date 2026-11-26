@@ -10,4 +10,5 @@ namespace Surprenant.Grunt.Models.HaloInfinite;
 [IsAutomaticallySerializable]
 public class CustomProjectData
 {
+    public int Intent { get; set; }
 }

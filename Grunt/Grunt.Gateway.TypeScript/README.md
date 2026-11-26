@@ -48,6 +48,16 @@ const result = await userByGamertag({
 | `gameCmsGetEmblemMapping` | `GET /halo/v1/gamecms/emblem-mapping` | Gets the emblem image paths: every emblem and each of its configurations, with the paths of the emblem and nameplate images. |
 | `gameCmsWaypointGetImage` | `GET /halo/v1/gamecms/waypoint-image` | Downloads an image from Halo Infinite's Waypoint file store, such as an emblem or nameplate. |
 | `gameCmsGetItem` | `GET /halo/v1/gamecms/item` | Gets a specific item from the Game CMS, such as armor emplems, weapon cores, vehicle cores, and others. |
+| `gameCmsGetSeasonCalendar` | `GET /halo/v1/gamecms/season-calendar` | Retrieve the calendar of seasons |
+| `gameCmsGetCsrCalendar` | `GET /halo/v1/gamecms/csr-calendar` | Retrieve the calendar of ranked (CSR) seasons |
+| `gameCmsGetCareerRanks` | `GET /halo/v1/gamecms/career-ranks` | Retrieve the career rank reward track |
+| `gameCmsGetPlayNowButtonSettings` | `GET /halo/v1/gamecms/play-now-settings` | Retrieve the settings of the Play Now button |
+| `gameCmsGetPlaylistAsset` | `GET /halo/v1/gamecms/playlist-assets` | Retrieve the configuration of a multiplayer playlist |
+| `economyGetSoftCurrencyOffers` | `GET /halo/v1/economy/players/{player}/soft-currency-offers` | Retrieve the soft currency offers of a player's store |
+| `economyGetCustomizationOffers` | `GET /halo/v1/economy/players/{player}/customization-offers` | Retrieve the customization offers of a player's store |
+| `economyGetCareerRanks` | `GET /halo/v1/economy/career-ranks` | Retrieve the career rank of players |
+| `statsGetServiceRecord` | `GET /halo/v1/stats/players/{player}/service-record` | Retrieve a player's service record |
+| `statsGetCustomExperience` | `GET /halo/v1/stats/players/{player}/custom-experience` | Retrieve a player's daily custom experience |
 | `skillGetMatchPlayerResult` | `GET /halo/v1/skill/matches/{matchId}/players` | Retrieve per-player skill results for a match |
 | `skillGetPlaylistCsr` | `GET /halo/v1/skill/playlists/{playlistId}/csr` | Retrieve current playlist CSR for one or more players |
 | `statsGetMatchCount` | `GET /halo/v1/stats/players/{player}/match-count` | Retrieve a player's match count |

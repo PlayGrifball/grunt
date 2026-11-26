@@ -14,4 +14,5 @@ public class AcademyDrill
     public AcademySeries[] Series { get; set; }
     public int SpriteFrameIndex { get; set; }
     public string DescriptionStringID { get; set; }
+    public string Title { get; set; }
 }

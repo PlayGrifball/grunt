@@ -1626,6 +1626,1627 @@
         }
       }
     },
+    "/halo/v1/gamecms/season-calendar": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets the calendar of seasons.",
+        "description": "The season calendar.",
+        "operationId": "GameCmsGetSeasonCalendar",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/gamecms/csr-calendar": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets the calendar of ranked (CSR) seasons.",
+        "description": "The CSR season calendar.",
+        "operationId": "GameCmsGetCsrCalendar",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/gamecms/career-ranks": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets the career rank reward track.",
+        "description": "The career ranks.",
+        "operationId": "GameCmsGetCareerRanks",
+        "parameters": [
+          {
+            "name": "careerPathId",
+            "in": "query",
+            "description": "The career path, for example \"careerRank1\".",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/gamecms/play-now-settings": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets the settings of the Play Now button.",
+        "description": "The fallback playlist settings.",
+        "operationId": "GameCmsGetPlayNowButtonSettings",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/gamecms/playlist-assets": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets the configuration of a multiplayer playlist.",
+        "description": "The playlist configuration.",
+        "operationId": "GameCmsGetPlaylistAsset",
+        "parameters": [
+          {
+            "name": "playlistFile",
+            "in": "query",
+            "description": "The playlist asset file name, ending in .json.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/economy/players/{player}/soft-currency-offers": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets the soft currency offers of a player's store.",
+        "description": "The offers.",
+        "operationId": "EconomyGetSoftCurrencyOffers",
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "description": "The player identifier in the format \"xuid(000000)\".",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/economy/players/{player}/customization-offers": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets the customization offers of a player's store.",
+        "description": "The offers.",
+        "operationId": "EconomyGetCustomizationOffers",
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "description": "The player identifier in the format \"xuid(000000)\".",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/economy/career-ranks": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets the career rank of players.",
+        "description": "The players' career rank results.",
+        "operationId": "EconomyGetCareerRanks",
+        "parameters": [
+          {
+            "name": "playerIds",
+            "in": "query",
+            "description": "Player identifiers in the format \"xuid(000000)\".",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "careerPathId",
+            "in": "query",
+            "description": "The career path, for example \"careerRank1\".",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/stats/players/{player}/service-record": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets a player's service record.",
+        "description": "The service record.",
+        "operationId": "StatsGetServiceRecord",
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "description": "The player identifier in the format \"xuid(000000)\".",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "The lifecycle mode: Matchmade, Custom or Local.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "seasonId",
+            "in": "query",
+            "description": "Optional season, for example \"Seasons/Season7.json\". Empty for all time.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/halo/v1/stats/players/{player}/custom-experience": {
+      "get": {
+        "tags": [
+          "HaloInfinite"
+        ],
+        "summary": "Gets a player's daily custom experience.",
+        "description": "The custom experience.",
+        "operationId": "StatsGetCustomExperience",
+        "parameters": [
+          {
+            "name": "player",
+            "in": "path",
+            "description": "The player identifier in the format \"xuid(000000)\".",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Halo could not find the requested player, match, playlist, asset, or other resource.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The gateway could not authenticate to Halo or get a usable upstream response after retries.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The X-Api-Key header is missing or invalid.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Microsoft.AspNetCore.Mvc.ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/halo/v1/skill/matches/{matchId}/players": {
       "get": {
         "tags": [
@@ -3304,6 +4925,30 @@
         "additionalProperties": false,
         "description": "Container class that encapsulates the result from a Halo API call."
       },
+      "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer"
+              }
+            ],
+            "nullable": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiErrorContainer"
+              }
+            ],
+            "description": "Container class used to encapsulate any API errors.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Container class that encapsulates the result from a Halo API call."
+      },
       "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.CustomizationData, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
         "type": "object",
         "properties": {
@@ -3311,6 +4956,30 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CustomizationData"
+              }
+            ],
+            "nullable": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiErrorContainer"
+              }
+            ],
+            "description": "Container class used to encapsulate any API errors.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Container class that encapsulates the result from a Halo API call."
+      },
+      "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist"
               }
             ],
             "nullable": true
@@ -3496,6 +5165,30 @@
         "additionalProperties": false,
         "description": "Container class that encapsulates the result from a Halo API call."
       },
+      "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience"
+              }
+            ],
+            "nullable": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiErrorContainer"
+              }
+            ],
+            "description": "Container class used to encapsulate any API errors.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Container class that encapsulates the result from a Halo API call."
+      },
       "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
         "type": "object",
         "properties": {
@@ -3503,6 +5196,30 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayerMatchCount"
+              }
+            ],
+            "nullable": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiErrorContainer"
+              }
+            ],
+            "description": "Container class used to encapsulate any API errors.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Container class that encapsulates the result from a Halo API call."
+      },
+      "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord"
               }
             ],
             "nullable": true
@@ -3544,6 +5261,30 @@
         "additionalProperties": false,
         "description": "Container class that encapsulates the result from a Halo API call."
       },
+      "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration"
+              }
+            ],
+            "nullable": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiErrorContainer"
+              }
+            ],
+            "description": "Container class used to encapsulate any API errors.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Container class that encapsulates the result from a Halo API call."
+      },
       "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
         "type": "object",
         "properties": {
@@ -3551,6 +5292,78 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlaylistCsrResultContainer"
+              }
+            ],
+            "nullable": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiErrorContainer"
+              }
+            ],
+            "description": "Container class used to encapsulate any API errors.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Container class that encapsulates the result from a Halo API call."
+      },
+      "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer"
+              }
+            ],
+            "nullable": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiErrorContainer"
+              }
+            ],
+            "description": "Container class used to encapsulate any API errors.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Container class that encapsulates the result from a Halo API call."
+      },
+      "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar"
+              }
+            ],
+            "nullable": true
+          },
+          "error": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloApiErrorContainer"
+              }
+            ],
+            "description": "Container class used to encapsulate any API errors.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Container class that encapsulates the result from a Halo API call."
+      },
+      "Surprenant.Grunt.Models.HaloApiResultContainer`2[[Surprenant.Grunt.Models.HaloInfinite.StoreItem, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[Surprenant.Grunt.Models.HaloApiErrorContainer, Surprenant.Grunt, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StoreItem"
               }
             ],
             "nullable": true
@@ -3812,6 +5625,9 @@
           },
           "introEmotePath": {
             "type": "string"
+          },
+          "playerTitlePath": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -3955,6 +5771,12 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Emblem"
               }
             ]
+          },
+          "armorFxPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "additionalProperties": false
@@ -3977,6 +5799,263 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ApiIngress.ApiEndpoint"
               }
             ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.BombStats": {
+        "type": "object",
+        "properties": {
+          "bombCarriersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombDefusals": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombDefusersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombDetonations": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombPickUps": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombPlants": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bombReturns": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "killsAsBombCarrier": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsBombCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.CaptureTheFlagStats": {
+        "type": "object",
+        "properties": {
+          "flagCaptureAssists": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagCaptures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagCarriersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagGrabs": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagReturnersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagReturns": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagSecures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "flagSteals": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "killsAsFlagCarrier": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "killsAsFlagReturner": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsFlagCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.CareerRank": {
+        "type": "object",
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "freeRewards": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RewardContainer"
+              }
+            ],
+            "nullable": true
+          },
+          "paidRewards": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RewardContainer"
+              }
+            ],
+            "nullable": true
+          },
+          "xpRequiredForRank": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "rankTitle": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayString"
+              }
+            ],
+            "nullable": true
+          },
+          "rankSubTitle": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayString"
+              }
+            ],
+            "nullable": true
+          },
+          "rankTier": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayString"
+              }
+            ],
+            "nullable": true
+          },
+          "rankIcon": {
+            "type": "string",
+            "nullable": true
+          },
+          "rankLargeIcon": {
+            "type": "string",
+            "nullable": true
+          },
+          "rankAdornmentIcon": {
+            "type": "string",
+            "nullable": true
+          },
+          "tierType": {
+            "type": "string",
+            "nullable": true
+          },
+          "rankGrade": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.CareerTrackContainer": {
+        "type": "object",
+        "properties": {
+          "trackId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ranks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CareerRank"
+            },
+            "nullable": true
+          },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayString"
+              }
+            ],
+            "nullable": true
+          },
+          "description": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayString"
+              }
+            ],
+            "nullable": true
+          },
+          "operationNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "dateRange": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayString"
+              }
+            ],
+            "nullable": true
+          },
+          "isRitual": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "summaryImagePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "weekNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "xpPerRank": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "backgroundImagePath": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4118,6 +6197,77 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayString"
               }
             ]
+          },
+          "focusMarker": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "focalDistance": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "focusMarkerOffset": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "dofType": {
+            "type": "string"
+          },
+          "dofFocalLength": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "dofFocalDistance": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "doffStop": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cameraPositions": {
+            "type": "array",
+            "items": { }
+          },
+          "cameraOffset": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cameraFOV": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cameraTransition": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "orientation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Vector"
+              }
+            ]
+          },
+          "focusedObjectOrientation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Vector"
+              }
+            ]
+          },
+          "parentTheme": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4131,6 +6281,58 @@
           },
           "configurationPath": {
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.CoreRegionData": {
+        "type": "object",
+        "properties": {
+          "baseRegionData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "bodyTypeSmallOverrides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "bodyTypeLargeOverrides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "prostheticLeftArmOverrides": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionOverrides"
+              }
+            ]
+          },
+          "prostheticRightArmOverrides": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionOverrides"
+              }
+            ]
+          },
+          "prostheticLeftLegOverrides": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionOverrides"
+              }
+            ]
+          },
+          "prostheticRightLegOverrides": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionOverrides"
+              }
+            ]
           }
         },
         "additionalProperties": false
@@ -4273,6 +6475,11 @@
           "objectivesCompleted": {
             "type": "integer",
             "format": "int32"
+          },
+          "averageKDA": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -4293,6 +6500,22 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.TierCounterfactuals"
               }
             ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.CurrencyAmount": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currencyPath": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4370,6 +6593,12 @@
             "type": "string"
           },
           "fileName": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "alternateText": {
             "type": "string"
           }
         },
@@ -4453,6 +6682,45 @@
           "configurationId": {
             "type": "integer",
             "format": "int32"
+          },
+          "path": {
+            "type": "string"
+          },
+          "locationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.EmblemConfigurationOptions": {
+        "type": "object",
+        "properties": {
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "defaultOptionPath": {
+            "type": "string"
+          },
+          "optionPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offRegionInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "availableLocations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EmblemLocation"
+            }
           }
         },
         "additionalProperties": false
@@ -4472,18 +6740,216 @@
         },
         "additionalProperties": false
       },
+      "Surprenant.Grunt.Models.HaloInfinite.EmblemLocation": {
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "defaultOption": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Emblem"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.EngineGameVariant": {
+        "type": "object",
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "versionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "publicName": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "inspectionResult": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cloneBehavior": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "assetHome": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "contributors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "files": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.AssetVersionFile"
+              }
+            ],
+            "nullable": true
+          },
+          "assetKind": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "assetStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayAssetStats"
+              }
+            ]
+          },
+          "customData": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EngineGameVariantCustomData"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.EngineGameVariantCustomData": {
+        "type": "object",
+        "properties": {
+          "subsetData": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.SubsetDataContainer"
+              }
+            ]
+          },
+          "localizedData": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.LocalizedDataContainer"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.ExtractionStats": {
+        "type": "object",
+        "properties": {
+          "extractionConversionsCompleted": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "extractionConversionsDenied": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "extractionInitiationsCompleted": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "extractionInitiationsDenied": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "successfulExtractions": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.FallbackPlaylist": {
+        "type": "object",
+        "properties": {
+          "fallbackPlaylistId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Surprenant.Grunt.Models.HaloInfinite.GameVariantCategory": {
         "enum": [
+          "None",
+          "Campaign",
+          "Forge",
+          "Academy",
+          "AcademyTutorial",
+          "AcademyPractice",
           "MultiplayerSlayer",
           "MultiplayerAttrition",
+          "MultiplayerElimination",
           "MultiplayerFiesta",
+          "MultiplayerSwat",
           "MultiplayerStrongholds",
           "MultiplayerBastion",
+          "MultiplayerKingOfTheHill",
+          "MultiplayerTotalControl",
           "MultiplayerCtf",
+          "MultiplayerAssault",
+          "MultiplayerExtraction",
           "MultiplayerOddball",
+          "MultiplayerStockpile",
+          "MultiplayerJuggernaut",
+          "MultiplayerRegicide",
           "MultiplayerInfection",
+          "MultiplayerEscort",
+          "MultiplayerGunGame",
           "MultiplayerGrifball",
-          "MultiplayerLandGrab"
+          "MultiplayerRace",
+          "MultiplayerPrototype",
+          "Test",
+          "TestAcademy",
+          "TestAudio",
+          "TestCampaign",
+          "TestEngine",
+          "TestForge",
+          "TestGraphics",
+          "TestMultiplayer",
+          "TestSandbox",
+          "AcademyTraining",
+          "AcademyWeaponDrill",
+          "MultiplayerLandGrab",
+          "MultiplayerMinigame",
+          "MultiplayerFirefight",
+          "Unknown"
         ],
         "type": "string",
         "description": "Category a game variant falls into."
@@ -4560,6 +7026,72 @@
         },
         "additionalProperties": false
       },
+      "Surprenant.Grunt.Models.HaloInfinite.HelmetConfigurationOptions": {
+        "type": "object",
+        "properties": {
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "defaultOptionPath": {
+            "type": "string"
+          },
+          "optionPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offRegionInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.HelmetOptions"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.HelmetOptions": {
+        "type": "object",
+        "properties": {
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "defaultOptionPath": {
+            "type": "string"
+          },
+          "optionPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offRegionInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "helmetPath": {
+            "type": "string"
+          },
+          "helmetAttachments": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
       "Surprenant.Grunt.Models.HaloInfinite.IdentifierName": {
         "type": "object",
         "properties": {
@@ -4603,6 +7135,277 @@
             "items": {
               "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Configuration"
             }
+          },
+          "styleId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "regionPartId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "imagePath": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.DisplayPath"
+              }
+            ]
+          },
+          "lightingScalarOverride": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "regionData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "markerLocation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.MarkerLocation"
+              }
+            ]
+          },
+          "meshIndex": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "isItemOwnershipRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "coatings": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "helmets": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.HelmetConfigurationOptions"
+              }
+            ]
+          },
+          "visors": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "leftShoulderPads": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "rightShoulderPads": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "gloves": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "kneePads": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "chestAttachments": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "wristAttachments": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "hipAttachments": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "emblems": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EmblemConfigurationOptions"
+              }
+            ]
+          },
+          "armorFx": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "mythicFx": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions"
+              }
+            ]
+          },
+          "coreRegionData": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CoreRegionData"
+              }
+            ]
+          },
+          "variantId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "isKit": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "kitBaseThemePath": {
+            "type": "string"
+          },
+          "stanceId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "weaponTagId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "fxIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "fxContentType": {
+            "type": "string"
+          },
+          "composerSceneName": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.InfectionStats": {
+        "type": "object",
+        "properties": {
+          "humansInfected": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "humansInfectedAsAlpha": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "lastHumansStandingInfected": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zombiesKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "alphaZombiesKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "killsAsLastHumanStanding": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roundsSurvivedAsHuman": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roundsSurvivedAsLastHumanStanding": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roundsAsLastHumanStanding": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsLastHumanStanding": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "roundsAsAlphaZombie": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "roundsFinishedAsZombie": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.InventoryAmount": {
+        "type": "object",
+        "properties": {
+          "inventoryItemPath": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "type": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -4801,6 +7604,10 @@
             "items": {
               "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayerItem"
             }
+          },
+          "WeaponCorersOwnableCount": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -4827,6 +7634,30 @@
           "deaths": {
             "type": "number",
             "format": "double"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.LocalizedDataContainer": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.MarkerLocation": {
+        "type": "object",
+        "properties": {
+          "markerName": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "variantId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
           }
         },
         "additionalProperties": false
@@ -5011,6 +7842,15 @@
             "items": {
               "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ChallengeProgressState"
             }
+          },
+          "rewardIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customXpEligibilityReason": {
+            "type": "string"
           }
         },
         "additionalProperties": false
@@ -5289,6 +8129,103 @@
         },
         "additionalProperties": false
       },
+      "Surprenant.Grunt.Models.HaloInfinite.OddballStats": {
+        "type": "object",
+        "properties": {
+          "killsAsSkullCarrier": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "longestTimeAsSkullCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "skullCarriersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "skullGrabs": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsSkullCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "skullScoringTicks": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.Offering": {
+        "type": "object",
+        "properties": {
+          "offeringId": {
+            "type": "string"
+          },
+          "offeringDisplayPath": {
+            "type": "string"
+          },
+          "offeringExpirationDate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.APIFormattedDate"
+              }
+            ]
+          },
+          "includedItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayerItem"
+            }
+          },
+          "prices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Price"
+            }
+          },
+          "includedCurrencies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CurrencyAmount"
+            }
+          },
+          "includedRewardTracks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "boostPath": {
+            "type": "string"
+          },
+          "operationXp": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "eventXp": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "matchBoosts": { },
+          "rewardTrackAdjustments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RewardTrackAdjustment"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
       "Surprenant.Grunt.Models.HaloInfinite.ParticipationInfo": {
         "type": "object",
         "properties": {
@@ -5473,6 +8410,16 @@
         },
         "additionalProperties": false
       },
+      "Surprenant.Grunt.Models.HaloInfinite.PlayerDailyCustomExperience": {
+        "type": "object",
+        "properties": {
+          "dailyExperience": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "Surprenant.Grunt.Models.HaloInfinite.PlayerItem": {
         "type": "object",
         "properties": {
@@ -5559,6 +8506,112 @@
         },
         "additionalProperties": false
       },
+      "Surprenant.Grunt.Models.HaloInfinite.PlayerServiceRecord": {
+        "type": "object",
+        "properties": {
+          "subqueries": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.SubqueryContainer"
+              }
+            ],
+            "nullable": true
+          },
+          "timePlayed": {
+            "type": "string",
+            "format": "date-span"
+          },
+          "matchesCompleted": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "wins": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "losses": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ties": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "coreStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CoreStats"
+              }
+            ],
+            "nullable": true
+          },
+          "bombStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.BombStats"
+              }
+            ],
+            "nullable": true
+          },
+          "captureTheFlagStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CaptureTheFlagStats"
+              }
+            ],
+            "nullable": true
+          },
+          "eliminationStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EliminationStats"
+              }
+            ],
+            "nullable": true
+          },
+          "extractionStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ExtractionStats"
+              }
+            ],
+            "nullable": true
+          },
+          "infectionStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.InfectionStats"
+              }
+            ],
+            "nullable": true
+          },
+          "oddballStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.OddballStats"
+              }
+            ],
+            "nullable": true
+          },
+          "zonesStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ZonesStats"
+              }
+            ],
+            "nullable": true
+          },
+          "stockpileStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StockpileStats"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Surprenant.Grunt.Models.HaloInfinite.PlayerSkillResult": {
         "type": "object",
         "properties": {
@@ -5604,6 +8657,52 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Stats"
               }
             ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.PlaylistConfiguration": {
+        "type": "object",
+        "properties": {
+          "nameHint": {
+            "type": "string",
+            "nullable": true
+          },
+          "ugcPlaylistVersion": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "platformMatchmakingHopperId": {
+            "type": "string",
+            "nullable": true
+          },
+          "gameStartRulesId": {
+            "type": "string",
+            "nullable": true
+          },
+          "thunderheadContentConfiguration": {
+            "type": "string",
+            "nullable": true
+          },
+          "thunderheadVmSize": {
+            "type": "string",
+            "nullable": true
+          },
+          "trueMatchSettings": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasCsr": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "playlistExperience": {
+            "type": "string",
+            "nullable": true
+          },
+          "matchmakingDelaySec": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -5710,10 +8809,121 @@
       "Surprenant.Grunt.Models.HaloInfinite.PlaylistExperience": {
         "enum": [
           "Arena",
+          "BTB",
           "Featured"
         ],
         "type": "string",
         "description": "Playlist experience associated with a given match."
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.Price": {
+        "type": "object",
+        "properties": {
+          "cost": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "currencyPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.PveStats": {
+        "type": "object",
+        "properties": {
+          "kills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "deaths": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "assists": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "kda": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "marineKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "gruntKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "jackalKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "eliteKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bruteKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "hunterKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "skimmerKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "sentinelKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "bossKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.PvpStats": {
+        "type": "object",
+        "properties": {
+          "assists": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "deaths": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "kda": {
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "kills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "Surprenant.Grunt.Models.HaloInfinite.RankRecap": {
         "type": "object",
@@ -5731,6 +8941,245 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.MatchCsr"
               }
             ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RegionMetadata": {
+        "type": "object",
+        "properties": {
+          "regionId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "permutationId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          },
+          "styleIdOverride": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.IdentifierName"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RegionOverrides": {
+        "type": "object",
+        "properties": {
+          "full": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "half": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          },
+          "extremity": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RewardContainer": {
+        "type": "object",
+        "properties": {
+          "inventoryRewards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.InventoryAmount"
+            }
+          },
+          "currencyRewards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CurrencyAmount"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RewardTrack": {
+        "type": "object",
+        "properties": {
+          "rewardTrackPath": {
+            "type": "string"
+          },
+          "trackType": {
+            "type": "string"
+          },
+          "currentProgress": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RewardTrackProgress"
+              }
+            ]
+          },
+          "previousProgress": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RewardTrackProgress"
+              }
+            ]
+          },
+          "isOwned": {
+            "type": "boolean"
+          },
+          "baseXp": { },
+          "boostXp": { },
+          "hasReachedMaxRank": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RewardTrackAdjustment": {
+        "type": "object",
+        "properties": {
+          "grantedXp": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rewardTrackPath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RewardTrackProgress": {
+        "type": "object",
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "partialProgress": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isOwned": {
+            "type": "boolean"
+          },
+          "hasReachedMaxRank": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RewardTrackResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "resultCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RewardTrack"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.RewardTrackResultContainer": {
+        "type": "object",
+        "properties": {
+          "rewardTracks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RewardTrackResult"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.SeasonCalendar": {
+        "type": "object",
+        "properties": {
+          "seasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.SeasonCalendarEntry"
+            },
+            "nullable": true
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.SeasonCalendarEntry"
+            },
+            "nullable": true
+          },
+          "careerRank": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.SeasonCalendarEntry"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.SeasonCalendarEntry": {
+        "type": "object",
+        "properties": {
+          "csrSeasonFilePath": {
+            "type": "string",
+            "nullable": true
+          },
+          "operationTrackPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "seasonMetadata": {
+            "type": "string",
+            "nullable": true
+          },
+          "rewardTrackPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.APIFormattedDate"
+              }
+            ],
+            "nullable": true
+          },
+          "endDate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.APIFormattedDate"
+              }
+            ],
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -5823,6 +9272,34 @@
           "voice": {
             "type": "integer",
             "format": "int32"
+          },
+          "voicePath": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.StandardConfigurationOptions": {
+        "type": "object",
+        "properties": {
+          "isRequired": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "defaultOptionPath": {
+            "type": "string"
+          },
+          "optionPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "offRegionInfo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.RegionMetadata"
+            }
           }
         },
         "additionalProperties": false
@@ -5857,8 +9334,22 @@
               }
             ]
           },
-          "bombStats": { },
-          "captureTheFlagStats": { },
+          "bombStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.BombStats"
+              }
+            ],
+            "nullable": true
+          },
+          "captureTheFlagStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CaptureTheFlagStats"
+              }
+            ],
+            "nullable": true
+          },
           "eliminationStats": {
             "allOf": [
               {
@@ -5867,11 +9358,182 @@
             ],
             "nullable": true
           },
-          "extractionStats": { },
-          "infectionStats": { },
-          "oddballStats": { },
-          "zonesStats": { },
-          "stockpileStats": { }
+          "extractionStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ExtractionStats"
+              }
+            ],
+            "nullable": true
+          },
+          "infectionStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.InfectionStats"
+              }
+            ],
+            "nullable": true
+          },
+          "oddballStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.OddballStats"
+              }
+            ],
+            "nullable": true
+          },
+          "zonesStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ZonesStats"
+              }
+            ],
+            "nullable": true
+          },
+          "stockpileStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StockpileStats"
+              }
+            ],
+            "nullable": true
+          },
+          "vipStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.VIPStats"
+              }
+            ],
+            "nullable": true
+          },
+          "pveStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PveStats"
+              }
+            ],
+            "nullable": true
+          },
+          "pvpStats": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PvpStats"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.StockpileStats": {
+        "type": "object",
+        "properties": {
+          "killsAsPowerSeedCarrier": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "powerSeedsDeposited": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "powerSeedsStolen": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "powerSeedCarriersKilled": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "timeAsPowerSeedCarrier": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "timeAsPowerSeedDriver": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.StoreItem": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string"
+          },
+          "storefrontExpirationDate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.APIFormattedDate"
+              }
+            ]
+          },
+          "storefrontDisplayPath": {
+            "type": "string"
+          },
+          "offerings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Offering"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.SubqueryContainer": {
+        "type": "object",
+        "properties": {
+          "seasonIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "gameVariantCategories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.GameVariantCategory"
+            },
+            "nullable": true
+          },
+          "isRanked": {
+            "type": "array",
+            "items": {
+              "type": "boolean"
+            },
+            "nullable": true
+          },
+          "playlistAssetIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.SubsetDataContainer": {
+        "type": "object",
+        "properties": {
+          "statBucketGameType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "engineName": {
+            "type": "string"
+          },
+          "variantName": {
+            "type": "string"
+          }
         },
         "additionalProperties": false
       },
@@ -6024,6 +9686,38 @@
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PlayAssetStats"
               }
             ]
+          },
+          "engineGameVariantLink": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.EngineGameVariant"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.VIPStats": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.Vector": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "y": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "z": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -6229,6 +9923,42 @@
           },
           "ammoCounterPath": {
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Surprenant.Grunt.Models.HaloInfinite.ZonesStats": {
+        "type": "object",
+        "properties": {
+          "zoneCaptures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zoneDefensiveKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zoneOffensiveKills": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "zoneSecures": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totalZoneOccupationTime": {
+            "type": "string",
+            "format": "date-span",
+            "nullable": true
+          },
+          "zoneScoringTicks": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false

@@ -5,10 +5,13 @@
 // The underlying API powering Grunt is managed by 343 Industries and Microsoft. This wrapper is not endorsed by 343 Industries or Microsoft.
 // </copyright>
 
+using System.Collections.Generic;
+
 namespace Surprenant.Grunt.Models.HaloInfinite;
 
 [IsAutomaticallySerializable]
 public class AiCoreContainer
 {
     public AiCore[] Cores { get; set; }
+    public AiCore[] AiCores { get; set; }
 }

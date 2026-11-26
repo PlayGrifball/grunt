@@ -17,4 +17,5 @@ public class RewardTrack
     public bool IsOwned { get; set; }
     public object BaseXp { get; set; }
     public object BoostXp { get; set; }
+    public bool? HasReachedMaxRank { get; set; }
 }

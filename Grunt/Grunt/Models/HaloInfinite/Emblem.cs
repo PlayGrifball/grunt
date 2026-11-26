@@ -12,4 +12,6 @@ public class Emblem
 {
     public string EmblemPath { get; set; }
     public int ConfigurationId { get; set; }
+    public string Path { get; set; }
+    public int? LocationId { get; set; }
 }

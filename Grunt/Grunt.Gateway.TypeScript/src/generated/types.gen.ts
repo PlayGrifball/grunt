@@ -84,8 +84,30 @@ export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHal
 /**
  * Container class that encapsulates the result from a Halo API call.
  */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCareerTrackContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfiniteCareerTrackContainer | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
 export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCustomizationData_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
     result?: SurprenantGruntModelsHaloInfiniteCustomizationData | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteFallbackPlaylist_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfiniteFallbackPlaylist | null;
     /**
      * Container class used to encapsulate any API errors.
      */
@@ -172,8 +194,30 @@ export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHal
 /**
  * Container class that encapsulates the result from a Halo API call.
  */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
 export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerMatchCount_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
     result?: SurprenantGruntModelsHaloInfinitePlayerMatchCount | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerServiceRecord_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfinitePlayerServiceRecord | null;
     /**
      * Container class used to encapsulate any API errors.
      */
@@ -194,8 +238,52 @@ export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHal
 /**
  * Container class that encapsulates the result from a Halo API call.
  */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlaylistConfiguration_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfinitePlaylistConfiguration | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
 export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlaylistCsrResultContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
     result?: SurprenantGruntModelsHaloInfinitePlaylistCsrResultContainer | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfiniteSeasonCalendar | null;
+    /**
+     * Container class used to encapsulate any API errors.
+     */
+    error?: SurprenantGruntModelsHaloApiErrorContainer | null;
+};
+
+/**
+ * Container class that encapsulates the result from a Halo API call.
+ */
+export type SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null = {
+    result?: SurprenantGruntModelsHaloInfiniteStoreItem | null;
     /**
      * Container class used to encapsulate any API errors.
      */
@@ -299,6 +387,7 @@ export type SurprenantGruntModelsHaloInfiniteAppearance = {
     backdropImagePath?: string;
     emblem?: SurprenantGruntModelsHaloInfiniteEmblem;
     introEmotePath?: string;
+    playerTitlePath?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteAppearanceCustomization = {
@@ -340,12 +429,68 @@ export type SurprenantGruntModelsHaloInfiniteArmorCoreTheme = {
     hipAttachmentPath?: string;
     wristAttachmentPath?: string;
     bigEmblem?: SurprenantGruntModelsHaloInfiniteEmblem;
+    armorFxPaths?: Array<string>;
 };
 
 export type SurprenantGruntModelsHaloInfiniteAssetVersionFile = {
     prefix?: string;
     fileRelativePaths?: Array<string>;
     prefixEndpoint?: SurprenantGruntModelsHaloInfiniteApiIngressApiEndpoint;
+};
+
+export type SurprenantGruntModelsHaloInfiniteBombStats = {
+    bombCarriersKilled?: number | null;
+    bombDefusals?: number | null;
+    bombDefusersKilled?: number | null;
+    bombDetonations?: number | null;
+    bombPickUps?: number | null;
+    bombPlants?: number | null;
+    bombReturns?: number | null;
+    killsAsBombCarrier?: number | null;
+    timeAsBombCarrier?: string | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteCaptureTheFlagStats = {
+    flagCaptureAssists?: number | null;
+    flagCaptures?: number | null;
+    flagCarriersKilled?: number | null;
+    flagGrabs?: number | null;
+    flagReturnersKilled?: number | null;
+    flagReturns?: number | null;
+    flagSecures?: number | null;
+    flagSteals?: number | null;
+    killsAsFlagCarrier?: number | null;
+    killsAsFlagReturner?: number | null;
+    timeAsFlagCarrier?: string | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteCareerRank = {
+    rank?: number | null;
+    freeRewards?: SurprenantGruntModelsHaloInfiniteRewardContainer | null;
+    paidRewards?: SurprenantGruntModelsHaloInfiniteRewardContainer | null;
+    xpRequiredForRank?: number | null;
+    rankTitle?: SurprenantGruntModelsHaloInfiniteDisplayString | null;
+    rankSubTitle?: SurprenantGruntModelsHaloInfiniteDisplayString | null;
+    rankTier?: SurprenantGruntModelsHaloInfiniteDisplayString | null;
+    rankIcon?: string | null;
+    rankLargeIcon?: string | null;
+    rankAdornmentIcon?: string | null;
+    tierType?: string | null;
+    rankGrade?: number | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteCareerTrackContainer = {
+    trackId?: string | null;
+    ranks?: Array<SurprenantGruntModelsHaloInfiniteCareerRank> | null;
+    name?: SurprenantGruntModelsHaloInfiniteDisplayString | null;
+    description?: SurprenantGruntModelsHaloInfiniteDisplayString | null;
+    operationNumber?: number | null;
+    dateRange?: SurprenantGruntModelsHaloInfiniteDisplayString | null;
+    isRitual?: boolean | null;
+    summaryImagePath?: string | null;
+    weekNumber?: number | null;
+    xpPerRank?: number | null;
+    backgroundImagePath?: string | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteChallengeProgressState = {
@@ -379,11 +524,35 @@ export type SurprenantGruntModelsHaloInfiniteCommonItemData = {
     seasonNumber?: number;
     originalSeasonNumber?: number;
     season?: SurprenantGruntModelsHaloInfiniteDisplayString;
+    focusMarker?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    focalDistance?: number | null;
+    focusMarkerOffset?: number | null;
+    dofType?: string;
+    dofFocalLength?: number | null;
+    dofFocalDistance?: number | null;
+    doffStop?: number | null;
+    cameraPositions?: Array<unknown>;
+    cameraOffset?: number | null;
+    cameraFOV?: number | null;
+    cameraTransition?: number | null;
+    orientation?: SurprenantGruntModelsHaloInfiniteVector;
+    focusedObjectOrientation?: SurprenantGruntModelsHaloInfiniteVector;
+    parentTheme?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteConfiguration = {
     configurationId?: number;
     configurationPath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteCoreRegionData = {
+    baseRegionData?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    bodyTypeSmallOverrides?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    bodyTypeLargeOverrides?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    prostheticLeftArmOverrides?: SurprenantGruntModelsHaloInfiniteRegionOverrides;
+    prostheticRightArmOverrides?: SurprenantGruntModelsHaloInfiniteRegionOverrides;
+    prostheticLeftLegOverrides?: SurprenantGruntModelsHaloInfiniteRegionOverrides;
+    prostheticRightLegOverrides?: SurprenantGruntModelsHaloInfiniteRegionOverrides;
 };
 
 export type SurprenantGruntModelsHaloInfiniteCoreStats = {
@@ -420,11 +589,18 @@ export type SurprenantGruntModelsHaloInfiniteCoreStats = {
     deprecatedDamageTaken?: number;
     spawns?: number;
     objectivesCompleted?: number;
+    averageKDA?: number | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteCounterfactuals = {
     selfCounterfactuals?: SurprenantGruntModelsHaloInfiniteKillDeathStats;
     tierCounterfactuals?: SurprenantGruntModelsHaloInfiniteTierCounterfactuals;
+};
+
+export type SurprenantGruntModelsHaloInfiniteCurrencyAmount = {
+    amount?: number;
+    currencyPath?: string;
+    source?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteCustomizationData = {
@@ -443,6 +619,8 @@ export type SurprenantGruntModelsHaloInfiniteDisplayPath = {
     mimeType?: string;
     folderPath?: string;
     fileName?: string;
+    caption?: string;
+    alternateText?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteDisplayString = {
@@ -470,6 +648,16 @@ export type SurprenantGruntModelsHaloInfiniteEliminationStats = {
 export type SurprenantGruntModelsHaloInfiniteEmblem = {
     emblemPath?: string;
     configurationId?: number;
+    path?: string;
+    locationId?: number | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteEmblemConfigurationOptions = {
+    isRequired?: boolean | null;
+    defaultOptionPath?: string;
+    optionPaths?: Array<string>;
+    offRegionInfo?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    availableLocations?: Array<SurprenantGruntModelsHaloInfiniteEmblemLocation>;
 };
 
 export type SurprenantGruntModelsHaloInfiniteEmblemImageAssets = {
@@ -478,10 +666,51 @@ export type SurprenantGruntModelsHaloInfiniteEmblemImageAssets = {
     textColor?: string;
 };
 
+export type SurprenantGruntModelsHaloInfiniteEmblemLocation = {
+    locationId?: number | null;
+    defaultOption?: SurprenantGruntModelsHaloInfiniteEmblem;
+};
+
+export type SurprenantGruntModelsHaloInfiniteEngineGameVariant = {
+    assetId?: string;
+    versionId?: string;
+    assetVersionId?: string | null;
+    publicName?: string | null;
+    name?: string | null;
+    description?: string | null;
+    inspectionResult?: number;
+    cloneBehavior?: number;
+    assetHome?: number;
+    tags?: Array<string> | null;
+    contributors?: Array<string> | null;
+    files?: SurprenantGruntModelsHaloInfiniteAssetVersionFile | null;
+    assetKind?: number;
+    order?: number;
+    assetStats?: SurprenantGruntModelsHaloInfinitePlayAssetStats;
+    customData?: SurprenantGruntModelsHaloInfiniteEngineGameVariantCustomData;
+};
+
+export type SurprenantGruntModelsHaloInfiniteEngineGameVariantCustomData = {
+    subsetData?: SurprenantGruntModelsHaloInfiniteSubsetDataContainer;
+    localizedData?: SurprenantGruntModelsHaloInfiniteLocalizedDataContainer;
+};
+
+export type SurprenantGruntModelsHaloInfiniteExtractionStats = {
+    extractionConversionsCompleted?: number | null;
+    extractionConversionsDenied?: number | null;
+    extractionInitiationsCompleted?: number | null;
+    extractionInitiationsDenied?: number | null;
+    successfulExtractions?: number | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteFallbackPlaylist = {
+    fallbackPlaylistId?: string | null;
+};
+
 /**
  * Category a game variant falls into.
  */
-export type SurprenantGruntModelsHaloInfiniteGameVariantCategory = 'MultiplayerSlayer' | 'MultiplayerAttrition' | 'MultiplayerFiesta' | 'MultiplayerStrongholds' | 'MultiplayerBastion' | 'MultiplayerCtf' | 'MultiplayerOddball' | 'MultiplayerInfection' | 'MultiplayerGrifball' | 'MultiplayerLandGrab';
+export type SurprenantGruntModelsHaloInfiniteGameVariantCategory = 'None' | 'Campaign' | 'Forge' | 'Academy' | 'AcademyTutorial' | 'AcademyPractice' | 'MultiplayerSlayer' | 'MultiplayerAttrition' | 'MultiplayerElimination' | 'MultiplayerFiesta' | 'MultiplayerSwat' | 'MultiplayerStrongholds' | 'MultiplayerBastion' | 'MultiplayerKingOfTheHill' | 'MultiplayerTotalControl' | 'MultiplayerCtf' | 'MultiplayerAssault' | 'MultiplayerExtraction' | 'MultiplayerOddball' | 'MultiplayerStockpile' | 'MultiplayerJuggernaut' | 'MultiplayerRegicide' | 'MultiplayerInfection' | 'MultiplayerEscort' | 'MultiplayerGunGame' | 'MultiplayerGrifball' | 'MultiplayerRace' | 'MultiplayerPrototype' | 'Test' | 'TestAcademy' | 'TestAudio' | 'TestCampaign' | 'TestEngine' | 'TestForge' | 'TestGraphics' | 'TestMultiplayer' | 'TestSandbox' | 'AcademyTraining' | 'AcademyWeaponDrill' | 'MultiplayerLandGrab' | 'MultiplayerMinigame' | 'MultiplayerFirefight' | 'Unknown';
 
 export type SurprenantGruntModelsHaloInfiniteGenericAsset = {
     assetId?: string;
@@ -500,6 +729,23 @@ export type SurprenantGruntModelsHaloInfiniteGenericAsset = {
     order?: number;
 };
 
+export type SurprenantGruntModelsHaloInfiniteHelmetConfigurationOptions = {
+    isRequired?: boolean | null;
+    defaultOptionPath?: string;
+    optionPaths?: Array<string>;
+    offRegionInfo?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    options?: Array<SurprenantGruntModelsHaloInfiniteHelmetOptions>;
+};
+
+export type SurprenantGruntModelsHaloInfiniteHelmetOptions = {
+    isRequired?: boolean | null;
+    defaultOptionPath?: string;
+    optionPaths?: Array<string>;
+    offRegionInfo?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    helmetPath?: string;
+    helmetAttachments?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+};
+
 export type SurprenantGruntModelsHaloInfiniteIdentifierName = {
     m_identifier?: number;
 };
@@ -510,6 +756,57 @@ export type SurprenantGruntModelsHaloInfiniteInGameItem = {
     emblemShaderName?: SurprenantGruntModelsHaloInfiniteIdentifierName;
     commonData?: SurprenantGruntModelsHaloInfiniteCommonItemData;
     availableConfigurations?: Array<SurprenantGruntModelsHaloInfiniteConfiguration>;
+    styleId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    regionPartId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    imagePath?: SurprenantGruntModelsHaloInfiniteDisplayPath;
+    lightingScalarOverride?: number | null;
+    regionData?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    markerLocation?: SurprenantGruntModelsHaloInfiniteMarkerLocation;
+    meshIndex?: number | null;
+    isItemOwnershipRequired?: boolean | null;
+    coatings?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    helmets?: SurprenantGruntModelsHaloInfiniteHelmetConfigurationOptions;
+    visors?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    leftShoulderPads?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    rightShoulderPads?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    gloves?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    kneePads?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    chestAttachments?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    wristAttachments?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    hipAttachments?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    emblems?: SurprenantGruntModelsHaloInfiniteEmblemConfigurationOptions;
+    armorFx?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    mythicFx?: SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions;
+    coreRegionData?: SurprenantGruntModelsHaloInfiniteCoreRegionData;
+    variantId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    isKit?: boolean | null;
+    kitBaseThemePath?: string;
+    stanceId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    weaponTagId?: number | null;
+    fxIds?: Array<number>;
+    fxContentType?: string;
+    composerSceneName?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+};
+
+export type SurprenantGruntModelsHaloInfiniteInfectionStats = {
+    humansInfected?: number | null;
+    humansInfectedAsAlpha?: number | null;
+    lastHumansStandingInfected?: number | null;
+    zombiesKilled?: number | null;
+    alphaZombiesKilled?: number | null;
+    killsAsLastHumanStanding?: number | null;
+    roundsSurvivedAsHuman?: number | null;
+    roundsSurvivedAsLastHumanStanding?: number | null;
+    roundsAsLastHumanStanding?: number | null;
+    timeAsLastHumanStanding?: string | null;
+    roundsAsAlphaZombie?: number | null;
+    roundsFinishedAsZombie?: number | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteInventoryAmount = {
+    inventoryItemPath?: string;
+    amount?: number;
+    type?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteInventoryDefinition = {
@@ -559,6 +856,7 @@ export type SurprenantGruntModelsHaloInfiniteInventoryDefinition = {
     spartanVoicesOwnableCount?: number;
     emblemCoatings?: Array<SurprenantGruntModelsHaloInfinitePlayerItem>;
     consumables?: Array<SurprenantGruntModelsHaloInfinitePlayerItem>;
+    WeaponCorersOwnableCount?: number;
 };
 
 export type SurprenantGruntModelsHaloInfiniteItemPath = {
@@ -569,6 +867,15 @@ export type SurprenantGruntModelsHaloInfiniteItemPath = {
 export type SurprenantGruntModelsHaloInfiniteKillDeathStats = {
     kills?: number;
     deaths?: number;
+};
+
+export type SurprenantGruntModelsHaloInfiniteLocalizedDataContainer = {
+    [key: string]: never;
+};
+
+export type SurprenantGruntModelsHaloInfiniteMarkerLocation = {
+    markerName?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    variantId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
 };
 
 export type SurprenantGruntModelsHaloInfiniteMatchCsr = {
@@ -621,6 +928,8 @@ export type SurprenantGruntModelsHaloInfiniteMatchProgression = {
     clearanceId?: string;
     rewardId?: string;
     challengeProgressState?: Array<SurprenantGruntModelsHaloInfiniteChallengeProgressState>;
+    rewardIds?: Array<string>;
+    customXpEligibilityReason?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteMatchStats = {
@@ -704,6 +1013,30 @@ export type SurprenantGruntModelsHaloInfiniteMedia = {
     fileName?: string;
 };
 
+export type SurprenantGruntModelsHaloInfiniteOddballStats = {
+    killsAsSkullCarrier?: number | null;
+    longestTimeAsSkullCarrier?: string | null;
+    skullCarriersKilled?: number | null;
+    skullGrabs?: number | null;
+    timeAsSkullCarrier?: string | null;
+    skullScoringTicks?: number | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteOffering = {
+    offeringId?: string;
+    offeringDisplayPath?: string;
+    offeringExpirationDate?: SurprenantGruntModelsApiFormattedDate;
+    includedItems?: Array<SurprenantGruntModelsHaloInfinitePlayerItem>;
+    prices?: Array<SurprenantGruntModelsHaloInfinitePrice>;
+    includedCurrencies?: Array<SurprenantGruntModelsHaloInfiniteCurrencyAmount>;
+    includedRewardTracks?: Array<string>;
+    boostPath?: string;
+    operationXp?: number;
+    eventXp?: number;
+    matchBoosts?: unknown;
+    rewardTrackAdjustments?: Array<SurprenantGruntModelsHaloInfiniteRewardTrackAdjustment>;
+};
+
 export type SurprenantGruntModelsHaloInfiniteParticipationInfo = {
     firstJoinedTime?: string;
     lastLeaveTime?: string | null;
@@ -759,6 +1092,10 @@ export type SurprenantGruntModelsHaloInfinitePlayerCustomizationCollection = {
     playerCustomizations?: Array<SurprenantGruntModelsHaloInfinitePlayerCustomization>;
 };
 
+export type SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience = {
+    dailyExperience?: number;
+};
+
 export type SurprenantGruntModelsHaloInfinitePlayerItem = {
     amount?: number;
     itemId?: string;
@@ -788,6 +1125,24 @@ export type SurprenantGruntModelsHaloInfinitePlayerMatchHistoryRecord = {
     presentAtEndOfMatch?: boolean;
 };
 
+export type SurprenantGruntModelsHaloInfinitePlayerServiceRecord = {
+    subqueries?: SurprenantGruntModelsHaloInfiniteSubqueryContainer | null;
+    timePlayed?: string;
+    matchesCompleted?: number;
+    wins?: number;
+    losses?: number;
+    ties?: number;
+    coreStats?: SurprenantGruntModelsHaloInfiniteCoreStats | null;
+    bombStats?: SurprenantGruntModelsHaloInfiniteBombStats | null;
+    captureTheFlagStats?: SurprenantGruntModelsHaloInfiniteCaptureTheFlagStats | null;
+    eliminationStats?: SurprenantGruntModelsHaloInfiniteEliminationStats | null;
+    extractionStats?: SurprenantGruntModelsHaloInfiniteExtractionStats | null;
+    infectionStats?: SurprenantGruntModelsHaloInfiniteInfectionStats | null;
+    oddballStats?: SurprenantGruntModelsHaloInfiniteOddballStats | null;
+    zonesStats?: SurprenantGruntModelsHaloInfiniteZonesStats | null;
+    stockpileStats?: SurprenantGruntModelsHaloInfiniteStockpileStats | null;
+};
+
 export type SurprenantGruntModelsHaloInfinitePlayerSkillResult = {
     id?: string;
     resultCode?: number;
@@ -801,6 +1156,19 @@ export type SurprenantGruntModelsHaloInfinitePlayerSkillResultContainer = {
 export type SurprenantGruntModelsHaloInfinitePlayerTeamStat = {
     teamId?: number;
     stats?: SurprenantGruntModelsHaloInfiniteStats;
+};
+
+export type SurprenantGruntModelsHaloInfinitePlaylistConfiguration = {
+    nameHint?: string | null;
+    ugcPlaylistVersion?: string;
+    platformMatchmakingHopperId?: string | null;
+    gameStartRulesId?: string | null;
+    thunderheadContentConfiguration?: string | null;
+    thunderheadVmSize?: string | null;
+    trueMatchSettings?: string | null;
+    hasCsr?: boolean | null;
+    playlistExperience?: string | null;
+    matchmakingDelaySec?: number;
 };
 
 export type SurprenantGruntModelsHaloInfinitePlaylistCsr = {
@@ -834,11 +1202,104 @@ export type SurprenantGruntModelsHaloInfinitePlaylistCsrResults = {
 /**
  * Playlist experience associated with a given match.
  */
-export type SurprenantGruntModelsHaloInfinitePlaylistExperience = 'Arena' | 'Featured';
+export type SurprenantGruntModelsHaloInfinitePlaylistExperience = 'Arena' | 'BTB' | 'Featured';
+
+export type SurprenantGruntModelsHaloInfinitePrice = {
+    cost?: number;
+    currencyPath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfinitePveStats = {
+    kills?: number | null;
+    deaths?: number | null;
+    assists?: number | null;
+    kda?: number | null;
+    marineKills?: number | null;
+    gruntKills?: number | null;
+    jackalKills?: number | null;
+    eliteKills?: number | null;
+    bruteKills?: number | null;
+    hunterKills?: number | null;
+    skimmerKills?: number | null;
+    sentinelKills?: number | null;
+    bossKills?: number | null;
+};
+
+export type SurprenantGruntModelsHaloInfinitePvpStats = {
+    assists?: number | null;
+    deaths?: number | null;
+    kda?: number | null;
+    kills?: number | null;
+};
 
 export type SurprenantGruntModelsHaloInfiniteRankRecap = {
     preMatchCsr?: SurprenantGruntModelsHaloInfiniteMatchCsr;
     postMatchCsr?: SurprenantGruntModelsHaloInfiniteMatchCsr;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRegionMetadata = {
+    regionId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    permutationId?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+    styleIdOverride?: SurprenantGruntModelsHaloInfiniteIdentifierName;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRegionOverrides = {
+    full?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    half?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+    extremity?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRewardContainer = {
+    inventoryRewards?: Array<SurprenantGruntModelsHaloInfiniteInventoryAmount>;
+    currencyRewards?: Array<SurprenantGruntModelsHaloInfiniteCurrencyAmount>;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRewardTrack = {
+    rewardTrackPath?: string;
+    trackType?: string;
+    currentProgress?: SurprenantGruntModelsHaloInfiniteRewardTrackProgress;
+    previousProgress?: SurprenantGruntModelsHaloInfiniteRewardTrackProgress;
+    isOwned?: boolean;
+    baseXp?: unknown;
+    boostXp?: unknown;
+    hasReachedMaxRank?: boolean | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRewardTrackAdjustment = {
+    grantedXp?: number;
+    rewardTrackPath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRewardTrackProgress = {
+    rank?: number;
+    partialProgress?: number;
+    isOwned?: boolean;
+    hasReachedMaxRank?: boolean | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRewardTrackResult = {
+    id?: string | null;
+    resultCode?: string | null;
+    result?: SurprenantGruntModelsHaloInfiniteRewardTrack | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer = {
+    rewardTracks?: Array<SurprenantGruntModelsHaloInfiniteRewardTrackResult> | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteSeasonCalendar = {
+    seasons?: Array<SurprenantGruntModelsHaloInfiniteSeasonCalendarEntry> | null;
+    events?: Array<SurprenantGruntModelsHaloInfiniteSeasonCalendarEntry> | null;
+    careerRank?: SurprenantGruntModelsHaloInfiniteSeasonCalendarEntry | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteSeasonCalendarEntry = {
+    csrSeasonFilePath?: string | null;
+    operationTrackPath?: string | null;
+    seasonMetadata?: string | null;
+    rewardTrackPath?: string | null;
+    startDate?: SurprenantGruntModelsApiFormattedDate | null;
+    endDate?: SurprenantGruntModelsApiFormattedDate | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteSkillResult = {
@@ -866,6 +1327,14 @@ export type SurprenantGruntModelsHaloInfiniteSpartanBody = {
     rightLeg?: string;
     bodyType?: string;
     voice?: number;
+    voicePath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteStandardConfigurationOptions = {
+    isRequired?: boolean | null;
+    defaultOptionPath?: string;
+    optionPaths?: Array<string>;
+    offRegionInfo?: Array<SurprenantGruntModelsHaloInfiniteRegionMetadata>;
 };
 
 export type SurprenantGruntModelsHaloInfiniteStatPerformances = {
@@ -875,14 +1344,46 @@ export type SurprenantGruntModelsHaloInfiniteStatPerformances = {
 
 export type SurprenantGruntModelsHaloInfiniteStats = {
     coreStats?: SurprenantGruntModelsHaloInfiniteCoreStats;
-    bombStats?: unknown;
-    captureTheFlagStats?: unknown;
+    bombStats?: SurprenantGruntModelsHaloInfiniteBombStats | null;
+    captureTheFlagStats?: SurprenantGruntModelsHaloInfiniteCaptureTheFlagStats | null;
     eliminationStats?: SurprenantGruntModelsHaloInfiniteEliminationStats | null;
-    extractionStats?: unknown;
-    infectionStats?: unknown;
-    oddballStats?: unknown;
-    zonesStats?: unknown;
-    stockpileStats?: unknown;
+    extractionStats?: SurprenantGruntModelsHaloInfiniteExtractionStats | null;
+    infectionStats?: SurprenantGruntModelsHaloInfiniteInfectionStats | null;
+    oddballStats?: SurprenantGruntModelsHaloInfiniteOddballStats | null;
+    zonesStats?: SurprenantGruntModelsHaloInfiniteZonesStats | null;
+    stockpileStats?: SurprenantGruntModelsHaloInfiniteStockpileStats | null;
+    vipStats?: SurprenantGruntModelsHaloInfiniteVipStats | null;
+    pveStats?: SurprenantGruntModelsHaloInfinitePveStats | null;
+    pvpStats?: SurprenantGruntModelsHaloInfinitePvpStats | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteStockpileStats = {
+    killsAsPowerSeedCarrier?: number | null;
+    powerSeedsDeposited?: number | null;
+    powerSeedsStolen?: number | null;
+    powerSeedCarriersKilled?: number | null;
+    timeAsPowerSeedCarrier?: string | null;
+    timeAsPowerSeedDriver?: string | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteStoreItem = {
+    storeId?: string;
+    storefrontExpirationDate?: SurprenantGruntModelsApiFormattedDate;
+    storefrontDisplayPath?: string;
+    offerings?: Array<SurprenantGruntModelsHaloInfiniteOffering>;
+};
+
+export type SurprenantGruntModelsHaloInfiniteSubqueryContainer = {
+    seasonIds?: Array<string> | null;
+    gameVariantCategories?: Array<SurprenantGruntModelsHaloInfiniteGameVariantCategory> | null;
+    isRanked?: Array<boolean> | null;
+    playlistAssetIds?: Array<string> | null;
+};
+
+export type SurprenantGruntModelsHaloInfiniteSubsetDataContainer = {
+    statBucketGameType?: number;
+    engineName?: string;
+    variantName?: string;
 };
 
 export type SurprenantGruntModelsHaloInfiniteTeam = {
@@ -918,6 +1419,17 @@ export type SurprenantGruntModelsHaloInfiniteUgcGameVariant = {
     order?: number;
     customData?: unknown;
     assetStats?: SurprenantGruntModelsHaloInfinitePlayAssetStats;
+    engineGameVariantLink?: SurprenantGruntModelsHaloInfiniteEngineGameVariant;
+};
+
+export type SurprenantGruntModelsHaloInfiniteVipStats = {
+    [key: string]: never;
+};
+
+export type SurprenantGruntModelsHaloInfiniteVector = {
+    x?: number | null;
+    y?: number | null;
+    z?: number | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteVehicleCore = {
@@ -975,6 +1487,15 @@ export type SurprenantGruntModelsHaloInfiniteWeaponCoreTheme = {
     weaponCharmPath?: string;
     alternateGeometryRegionPath?: string;
     ammoCounterPath?: string;
+};
+
+export type SurprenantGruntModelsHaloInfiniteZonesStats = {
+    zoneCaptures?: number | null;
+    zoneDefensiveKills?: number | null;
+    zoneOffensiveKills?: number | null;
+    zoneSecures?: number | null;
+    totalZoneOccupationTime?: string | null;
+    zoneScoringTicks?: number | null;
 };
 
 export type SurprenantGruntModelsUser = {
@@ -1485,6 +2006,504 @@ export type GameCmsGetItemResponses = {
 };
 
 export type GameCmsGetItemResponse = GameCmsGetItemResponses[keyof GameCmsGetItemResponses];
+
+export type GameCmsGetSeasonCalendarData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/halo/v1/gamecms/season-calendar';
+};
+
+export type GameCmsGetSeasonCalendarErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetSeasonCalendarError = GameCmsGetSeasonCalendarErrors[keyof GameCmsGetSeasonCalendarErrors];
+
+export type GameCmsGetSeasonCalendarResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetSeasonCalendarResponse = GameCmsGetSeasonCalendarResponses[keyof GameCmsGetSeasonCalendarResponses];
+
+export type GameCmsGetCsrCalendarData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/halo/v1/gamecms/csr-calendar';
+};
+
+export type GameCmsGetCsrCalendarErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetCsrCalendarError = GameCmsGetCsrCalendarErrors[keyof GameCmsGetCsrCalendarErrors];
+
+export type GameCmsGetCsrCalendarResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteSeasonCalendar_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetCsrCalendarResponse = GameCmsGetCsrCalendarResponses[keyof GameCmsGetCsrCalendarResponses];
+
+export type GameCmsGetCareerRanksData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * The career path, for example "careerRank1".
+         */
+        careerPathId?: string;
+    };
+    url: '/halo/v1/gamecms/career-ranks';
+};
+
+export type GameCmsGetCareerRanksErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCareerTrackContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCareerTrackContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCareerTrackContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCareerTrackContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCareerTrackContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetCareerRanksError = GameCmsGetCareerRanksErrors[keyof GameCmsGetCareerRanksErrors];
+
+export type GameCmsGetCareerRanksResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteCareerTrackContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetCareerRanksResponse = GameCmsGetCareerRanksResponses[keyof GameCmsGetCareerRanksResponses];
+
+export type GameCmsGetPlayNowButtonSettingsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/halo/v1/gamecms/play-now-settings';
+};
+
+export type GameCmsGetPlayNowButtonSettingsErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteFallbackPlaylist_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteFallbackPlaylist_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteFallbackPlaylist_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteFallbackPlaylist_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteFallbackPlaylist_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetPlayNowButtonSettingsError = GameCmsGetPlayNowButtonSettingsErrors[keyof GameCmsGetPlayNowButtonSettingsErrors];
+
+export type GameCmsGetPlayNowButtonSettingsResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteFallbackPlaylist_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetPlayNowButtonSettingsResponse = GameCmsGetPlayNowButtonSettingsResponses[keyof GameCmsGetPlayNowButtonSettingsResponses];
+
+export type GameCmsGetPlaylistAssetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * The playlist asset file name, ending in .json.
+         */
+        playlistFile?: string;
+    };
+    url: '/halo/v1/gamecms/playlist-assets';
+};
+
+export type GameCmsGetPlaylistAssetErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlaylistConfiguration_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlaylistConfiguration_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlaylistConfiguration_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlaylistConfiguration_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlaylistConfiguration_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetPlaylistAssetError = GameCmsGetPlaylistAssetErrors[keyof GameCmsGetPlaylistAssetErrors];
+
+export type GameCmsGetPlaylistAssetResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlaylistConfiguration_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type GameCmsGetPlaylistAssetResponse = GameCmsGetPlaylistAssetResponses[keyof GameCmsGetPlaylistAssetResponses];
+
+export type EconomyGetSoftCurrencyOffersData = {
+    body?: never;
+    path: {
+        /**
+         * The player identifier in the format "xuid(000000)".
+         */
+        player: string;
+    };
+    query?: never;
+    url: '/halo/v1/economy/players/{player}/soft-currency-offers';
+};
+
+export type EconomyGetSoftCurrencyOffersErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type EconomyGetSoftCurrencyOffersError = EconomyGetSoftCurrencyOffersErrors[keyof EconomyGetSoftCurrencyOffersErrors];
+
+export type EconomyGetSoftCurrencyOffersResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type EconomyGetSoftCurrencyOffersResponse = EconomyGetSoftCurrencyOffersResponses[keyof EconomyGetSoftCurrencyOffersResponses];
+
+export type EconomyGetCustomizationOffersData = {
+    body?: never;
+    path: {
+        /**
+         * The player identifier in the format "xuid(000000)".
+         */
+        player: string;
+    };
+    query?: never;
+    url: '/halo/v1/economy/players/{player}/customization-offers';
+};
+
+export type EconomyGetCustomizationOffersErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type EconomyGetCustomizationOffersError = EconomyGetCustomizationOffersErrors[keyof EconomyGetCustomizationOffersErrors];
+
+export type EconomyGetCustomizationOffersResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteStoreItem_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type EconomyGetCustomizationOffersResponse = EconomyGetCustomizationOffersResponses[keyof EconomyGetCustomizationOffersResponses];
+
+export type EconomyGetCareerRanksData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Player identifiers in the format "xuid(000000)".
+         */
+        playerIds?: Array<string>;
+        /**
+         * The career path, for example "careerRank1".
+         */
+        careerPathId?: string;
+    };
+    url: '/halo/v1/economy/career-ranks';
+};
+
+export type EconomyGetCareerRanksErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type EconomyGetCareerRanksError = EconomyGetCareerRanksErrors[keyof EconomyGetCareerRanksErrors];
+
+export type EconomyGetCareerRanksResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfiniteRewardTrackResultContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type EconomyGetCareerRanksResponse = EconomyGetCareerRanksResponses[keyof EconomyGetCareerRanksResponses];
+
+export type StatsGetServiceRecordData = {
+    body?: never;
+    path: {
+        /**
+         * The player identifier in the format "xuid(000000)".
+         */
+        player: string;
+    };
+    query?: {
+        /**
+         * The lifecycle mode: Matchmade, Custom or Local.
+         */
+        mode?: string;
+        /**
+         * Optional season, for example "Seasons/Season7.json". Empty for all time.
+         */
+        seasonId?: string;
+    };
+    url: '/halo/v1/stats/players/{player}/service-record';
+};
+
+export type StatsGetServiceRecordErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerServiceRecord_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerServiceRecord_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerServiceRecord_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerServiceRecord_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerServiceRecord_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type StatsGetServiceRecordError = StatsGetServiceRecordErrors[keyof StatsGetServiceRecordErrors];
+
+export type StatsGetServiceRecordResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerServiceRecord_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type StatsGetServiceRecordResponse = StatsGetServiceRecordResponses[keyof StatsGetServiceRecordResponses];
+
+export type StatsGetCustomExperienceData = {
+    body?: never;
+    path: {
+        /**
+         * The player identifier in the format "xuid(000000)".
+         */
+        player: string;
+    };
+    query?: never;
+    url: '/halo/v1/stats/players/{player}/custom-experience';
+};
+
+export type StatsGetCustomExperienceErrors = {
+    /**
+     * The request is invalid, or Halo rejected it as a bad request. Halo errors use the result-container body and X-Halo-Upstream-Status header.
+     */
+    400: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The X-Api-Key header is missing or invalid.
+     */
+    401: MicrosoftAspNetCoreMvcProblemDetails;
+    /**
+     * Halo could not find the requested player, match, playlist, asset, or other resource.
+     */
+    404: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway's Halo account budget deferred this request. Retry-After says when capacity is expected.
+     */
+    429: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * The gateway could not authenticate to Halo or get a usable upstream response after retries.
+     */
+    502: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+    /**
+     * Halo rate-limited the shared account. Retry-After is forwarded when Halo supplies it.
+     */
+    503: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type StatsGetCustomExperienceError = StatsGetCustomExperienceErrors[keyof StatsGetCustomExperienceErrors];
+
+export type StatsGetCustomExperienceResponses = {
+    /**
+     * OK
+     */
+    200: SurprenantGruntModelsHaloApiResultContainer2SurprenantGruntModelsHaloInfinitePlayerDailyCustomExperience_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null__SurprenantGruntModelsHaloApiErrorContainer_SurprenantGrunt_Version_0000_Culture_neutral_PublicKeyToken_null;
+};
+
+export type StatsGetCustomExperienceResponse = StatsGetCustomExperienceResponses[keyof StatsGetCustomExperienceResponses];
 
 export type SkillGetMatchPlayerResultData = {
     body?: never;

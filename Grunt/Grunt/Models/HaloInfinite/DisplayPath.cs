@@ -16,4 +16,6 @@ public class DisplayPath
     public string MimeType { get; set; }
     public string FolderPath { get; set; }
     public string FileName { get; set; }
+    public string Caption { get; set; }
+    public string AlternateText { get; set; }
 }

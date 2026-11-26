@@ -5,6 +5,8 @@
 // The underlying API powering Grunt is managed by 343 Industries and Microsoft. This wrapper is not endorsed by 343 Industries or Microsoft.
 // </copyright>
 
+using System;
+
 namespace Surprenant.Grunt.Models.HaloInfinite;
 
 [IsAutomaticallySerializable]
@@ -15,4 +17,7 @@ public class AcademySeries
     public bool Available { get; set; }
     public DisplayString Title { get; set; }
     public DisplayString Description { get; set; }
+    public string GameVariant { get; set; }
+    public string MapVariant { get; set; }
+    public Guid? GameplayGUID { get; set; }
 }

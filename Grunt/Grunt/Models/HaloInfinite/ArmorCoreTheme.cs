@@ -28,4 +28,5 @@ public class ArmorCoreTheme : Theme
     public string HipAttachmentPath { get; set; }
     public string WristAttachmentPath { get; set; }
     public Emblem BigEmblem { get; set; }
+    public List<string> ArmorFxPaths { get; set; }
 }

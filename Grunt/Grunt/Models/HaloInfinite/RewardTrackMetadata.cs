@@ -21,4 +21,5 @@ public class RewardTrackMetadata
     public string SummaryImagePath { get; set; }
     public int WeekNumber { get; set; }
     public string BackgroundImagePath { get; set; }
+    public bool? HideIfNotOwned { get; set; }
 }
