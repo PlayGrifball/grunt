@@ -6342,172 +6342,139 @@
         "properties": {
           "score": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "personalScore": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "roundsWon": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "roundsLost": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "roundsTied": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "kills": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "deaths": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "assists": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "kda": {
             "type": "number",
-            "format": "float",
-            "nullable": true
+            "format": "float"
           },
           "suicides": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "betrayals": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "averageLifeDuration": {
             "type": "string",
-            "format": "date-span",
-            "nullable": true
+            "format": "date-span"
           },
           "grenadeKills": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "headshotKills": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "meleeKills": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "powerWeaponKills": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "shotsFired": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "shotsHit": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "accuracy": {
             "type": "number",
-            "format": "float",
-            "nullable": true
+            "format": "float"
           },
           "damageDealt": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "damageTaken": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "calloutAssists": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "vehicleDestroys": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "driverAssists": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "hijacks": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "empAssists": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "maxKillingSpree": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "medals": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.Medal"
-            },
-            "nullable": true
+            }
           },
           "personalScores": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PersonalScore"
-            },
-            "nullable": true
+            }
           },
           "deprecatedDamageDealt": {
             "type": "number",
-            "format": "float",
-            "nullable": true
+            "format": "float"
           },
           "deprecatedDamageTaken": {
             "type": "number",
-            "format": "float",
-            "nullable": true
+            "format": "float"
           },
           "spawns": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "objectivesCompleted": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "averageKDA": {
             "type": "number",
