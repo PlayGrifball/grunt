@@ -1343,18 +1343,18 @@ export type SurprenantGruntModelsHaloInfiniteStatPerformances = {
 };
 
 export type SurprenantGruntModelsHaloInfiniteStats = {
-    coreStats?: SurprenantGruntModelsHaloInfiniteCoreStats;
-    bombStats?: SurprenantGruntModelsHaloInfiniteBombStats;
-    captureTheFlagStats?: SurprenantGruntModelsHaloInfiniteCaptureTheFlagStats;
+    coreStats?: SurprenantGruntModelsHaloInfiniteCoreStats | null;
+    bombStats?: SurprenantGruntModelsHaloInfiniteBombStats | null;
+    captureTheFlagStats?: SurprenantGruntModelsHaloInfiniteCaptureTheFlagStats | null;
     eliminationStats?: SurprenantGruntModelsHaloInfiniteEliminationStats | null;
-    extractionStats?: SurprenantGruntModelsHaloInfiniteExtractionStats;
-    infectionStats?: SurprenantGruntModelsHaloInfiniteInfectionStats;
-    oddballStats?: SurprenantGruntModelsHaloInfiniteOddballStats;
-    zonesStats?: SurprenantGruntModelsHaloInfiniteZonesStats;
-    stockpileStats?: SurprenantGruntModelsHaloInfiniteStockpileStats;
-    vipStats?: SurprenantGruntModelsHaloInfiniteVipStats;
-    pveStats?: SurprenantGruntModelsHaloInfinitePveStats;
-    pvpStats?: SurprenantGruntModelsHaloInfinitePvpStats;
+    extractionStats?: SurprenantGruntModelsHaloInfiniteExtractionStats | null;
+    infectionStats?: SurprenantGruntModelsHaloInfiniteInfectionStats | null;
+    oddballStats?: SurprenantGruntModelsHaloInfiniteOddballStats | null;
+    zonesStats?: SurprenantGruntModelsHaloInfiniteZonesStats | null;
+    stockpileStats?: SurprenantGruntModelsHaloInfiniteStockpileStats | null;
+    vipStats?: SurprenantGruntModelsHaloInfiniteVipStats | null;
+    pveStats?: SurprenantGruntModelsHaloInfinitePveStats | null;
+    pvpStats?: SurprenantGruntModelsHaloInfinitePvpStats | null;
 };
 
 export type SurprenantGruntModelsHaloInfiniteStockpileStats = {

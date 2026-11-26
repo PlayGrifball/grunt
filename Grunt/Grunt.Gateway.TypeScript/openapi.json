@@ -9332,21 +9332,24 @@
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CoreStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "bombStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.BombStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "captureTheFlagStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.CaptureTheFlagStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "eliminationStats": {
             "allOf": [
@@ -9361,56 +9364,64 @@
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ExtractionStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "infectionStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.InfectionStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "oddballStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.OddballStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "zonesStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.ZonesStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "stockpileStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.StockpileStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "vipStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.VIPStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "pveStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PveStats"
               }
-            ]
+            ],
+            "nullable": true
           },
           "pvpStats": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Surprenant.Grunt.Models.HaloInfinite.PvpStats"
               }
-            ]
+            ],
+            "nullable": true
           }
         },
         "additionalProperties": false
