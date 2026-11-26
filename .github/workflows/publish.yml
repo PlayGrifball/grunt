@@ -232,8 +232,7 @@ jobs:
         with:
           name: typescript-client
           path: package
-      # npmjs uses OIDC when its trusted publisher is configured. NPM_TOKEN is a bootstrap fallback for the first
-      # publication, before the package exists on npmjs and can have a trusted publisher attached in its settings.
+      # npmjs publishes through its trusted publisher (OIDC): no token, which would otherwise take precedence.
       - name: Configure npmjs
         uses: actions/setup-node@v4
         with:
@@ -247,7 +246,6 @@ jobs:
 
       - name: Publish TypeScript client to npmjs
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           VERSION: ${{ needs.plan.outputs.version }}
         run: |
           if npm view "@playgrifball/grunt-gateway-client@$VERSION" version --registry https://registry.npmjs.org > /dev/null 2>&1; then
