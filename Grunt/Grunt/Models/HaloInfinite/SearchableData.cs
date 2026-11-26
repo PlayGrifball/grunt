@@ -15,14 +15,14 @@ public class SearchableData
     public string PublicName { get; set; }
     public string Description { get; set; }
     public List<string> Tags { get; set; }
-    public bool HasNodeGraph { get; set; }
-    public int CloneBehavior { get; set; }
-    public string PublishedVersion { get; set; }
-    public bool IsBanned { get; set; }
-    public int FavoritesCount { get; set; }
-    public double RatingScore { get; set; }
-    public int RatingCount { get; set; }
-    public int AssetState { get; set; }
+    public bool? HasNodeGraph { get; set; }
+    public int? CloneBehavior { get; set; }
+    public string? PublishedVersion { get; set; }
+    public bool? IsBanned { get; set; }
+    public int? FavoritesCount { get; set; }
+    public double? RatingScore { get; set; }
+    public int? RatingCount { get; set; }
+    public int? AssetState { get; set; }
     public APIFormattedDate AssetCreatedDate { get; set; }
     public APIFormattedDate AssetLastModified { get; set; }
 }

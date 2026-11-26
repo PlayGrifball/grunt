@@ -1259,6 +1259,8 @@ public class HaloInfiniteClient : IHaloInfiniteClient
             GlobalConstants.HALO_PC_USER_AGENT);
     }
 
+    private static readonly string[] ServiceRecordModes = { "Matchmade", "Custom", "Local" };
+
     /// <summary>
     /// Gets a player's service record.
     /// </summary>
@@ -1271,12 +1273,12 @@ public class HaloInfiniteClient : IHaloInfiniteClient
     {
         if (!HaloInput.IsPlayer(player))
             return BadRequest<PlayerServiceRecord>("player must be xuid(XUID_VALUE)");
-        var lifecycle = new[] { "Matchmade", "Custom", "Local" }.FirstOrDefault(m => string.Equals(m, mode, StringComparison.OrdinalIgnoreCase));
+        var lifecycle = ServiceRecordModes.FirstOrDefault(m => string.Equals(m, mode, StringComparison.OrdinalIgnoreCase));
         if (lifecycle is null)
             return BadRequest<PlayerServiceRecord>("mode must be Matchmade, Custom or Local");
-        var season = string.IsNullOrEmpty(seasonId) ? string.Empty : "?seasonId=" + seasonId;
-        if (season.Length > 0 && !HaloInput.IsItemPath(seasonId))
+        if (!string.IsNullOrEmpty(seasonId) && !HaloInput.IsItemPath(seasonId))
             return BadRequest<PlayerServiceRecord>("seasonId must be a .json season path");
+        var season = string.IsNullOrEmpty(seasonId) ? string.Empty : "?seasonId=" + Uri.EscapeDataString(seasonId);
         return await ExecuteAPIRequest<PlayerServiceRecord>(
             $"https://{HaloCoreEndpoints.StatsOrigin}.{HaloCoreEndpoints.ServiceDomain}/hi/players/{player}/{lifecycle}/servicerecord{season}",
             HttpMethod.Get,
